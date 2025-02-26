@@ -1,0 +1,2 @@
+1) Travel Planner - get device location, send it to AI api and ask what are some things to do in the area.
+2)
