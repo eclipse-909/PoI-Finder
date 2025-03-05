@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+      "target"              : "ES2023",
+      "lib"                 : ["ES2023", "DOM"],
+      "rootDir"             : "src",
+      "outDir"              : "dist",
+      "sourceMap"           : true,
+      "extendedDiagnostics" : true
+    },
+    "include": [
+        "src/**/*"
+    ]
+}
