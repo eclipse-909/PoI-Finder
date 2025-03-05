@@ -17,7 +17,7 @@ Sometimes you want to find things to do in an area that you are either visiting,
 * Insert details on how to use user's location. *
 
 ## AI Integration
-TODO
+We're not quite settled on the specifics, but we will likely have an AI API subscription. We don't know how we will be using it yet, but we have an idea of what we want to send and receive with the API.
 
 ## Technology Stack
-TODO
+We will be using TypeScript. The backend will be run with Node.js and Express for the server. We will not use a frontend framework. We will just use classic TypeScript, HTML, and CSS.
