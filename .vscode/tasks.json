@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build and Copy",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "TypeScript Compile",
+                "Copy Public Files"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "TypeScript Compile",
+            "type": "typescript",
+            "tsconfig": "tsconfig.json",
+            "problemMatcher": ["$tsc"]
+        },
+        {
+            "label": "Copy Public Files",
+            "type": "shell",
+            "command": "mkdir -p dist/public && cp -r src/public/*.{html,css} dist/public/",
+            "windows": {
+                "command": "if not exist dist\\public mkdir dist\\public && copy src\\public\\*.html dist\\public\\ && copy src\\public\\*.css dist\\public\\"
+            }
+        }
+    ]
+} 
