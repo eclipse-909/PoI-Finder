@@ -18,7 +18,7 @@ Additional UI Notes:
 
 Technical Requirements:
 * Use typescript for the front and backend.
-* Use node and express js to run the server.
+* Use node and express js to run the server with a REST API.
 * Use vanilla JS/html/css for the frontend.
 * Go through the @Codebase to look at the initial project structure. There's not much there so please create the structure yourself where necessary, and update any files to make it work correctly.
 * Use session cookies to store user sessions.
