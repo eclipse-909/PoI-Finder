@@ -1,0 +1,49 @@
+I would like to make a web app that is capable of using AI to look for things to do in a given area and generate a list of recommendations for things people can do and see. The main feature of the app is that users can use their current location or specify a location, and they will search for points of interest. This is done by making an API call to the server. The server receives this API call, and it will make an API call to an AI model to generate a list of points of interest in that area.
+
+UI/UX Requirements:
+The web app should have the following pages:
+* An index page with the logo, a login button, and sign up button. The main content of the page should have example pictures and give information about the app and why people might want to use it.
+* A login page where users can enter their credentials to login to the app. Logging in will let the user enter the home page.
+* A sign up page where users can create an account. After creating an account, the user will be brought to the home page.
+* The home page should have the option to use the user's current location or for them to enter a location manually. If entering the location manually, the user should be able to enter an address or pick a point on a map. When the user provides the location, the screen should let them know that it's finding points of interest in the area. This is done by making an API call to the server, and waiting for the response, which might take a little while. Once it finishes, it should display the list of points of interest. There should be a button to save the list, which saves it locally onto the user's device. If it has been saved, it should tell the user that it has been saved, and they can view it in the saved PoI page.
+* A page for saved points of interest. This page shows a list of all the previous searches the user has made. This includes searches not saved locally. This requires an API call to the server to fetch the list of searches the user made. The list should show meta data for each entry like location, date, and time. The user should be able to click on a specific one to view all the points of interest that were suggested and all relevant data for each one. This requires an API call to fetch the points of interest and relevant data for the selected search. There should also be a delete button to delete saved searches.
+* A settings page. This page allows the user to configure their preferences for searches. When the user updates their preferences, it should be sent as a JSON object to the server in an API call. The preferences should include prefered mode of transport, whether you want to find places to eat, time to wake up and be home by, date/time range you will be in the area, text input for any additional context. If you can think of any other relevant preferences that might improve the user experience, feel free to list them out and include them.
+* An account page. This page should display the user's username, and have buttons to change their password, logout, and delete the account. Changing their password should have a popup that lets the user change their password. Logging out should make and API call to end their session and take the user to the index page, and deleting the account should prompt the user if they're sure they want to. Deleting the account will make an API call to delete the account and return to the index page.
+Additional UI Notes:
+* The home page, saved PoI page, settings page, and account page should all have a tab bar that lets you navigate to each of the other pages. The buttons should use icons to represent the pages. A house for the home page, a download icon for the saved PoI page, a gear for the settings, and a person in a circle icon for the account page.
+* Switching between these tabs should preserve the state on each tab. The page should not be reloaded when switching. It might be necessary to combine them all in to one html page to apply this behavior
+* It's important that the UI and UX be good for users accessing the web app through mobile devices. For example, it would be better if the tab bar was on the bottom of the screen for mobile devices. Please try to make the UI mobile-friendly. It might be better to make different styles for desktop and mobile.
+* Apply a consistent and visually appealing style and theme to the UI across all pages.
+* Please let me know what images and other assets I need to provide to make the UI work.
+
+Technical Requirements:
+* Use typescript for the front and backend.
+* Use node and express js to run the server.
+* Use vanilla JS/html/css for the frontend.
+* Go through the @Codebase to look at the initial project structure. There's not much there so please create the structure yourself where necessary, and update any files to make it work correctly.
+* Use session cookies to store user sessions.
+* Use middleware to check if the user is logged in. Users may access index, login, and signup pages without being logged in. Every other route should check if the user is logged in. If they are not logged in, they should be redirected to the login page.
+* Use TLS encryption. Assume I will have a cert.pem and key.pem file in the root of the project.
+* main.ts should be the entry point for the server. There should also be a routes.ts file that contains the routes for the server. There should be a models.ts file that contains data types for the JSON objects, database, and important data types. There should be a controllers.ts file that contains the logic for the routes.
+
+Routes:
+* Serve files from the @dist/public folder. / should get index.html, /login should get login.html, etc, and remember there will be css and js files and images. Don't serve the js.map files.
+* POST /api/login - should include username and password in the body of the request.
+* POST /api/signup - should include username and password in the body of the request.
+* GET /api/logout - should end the user's session.
+* DELETE /api/delete_account - should delete the user's account in the database and end their session.
+* POST /api/search - should include location, date/time range, and any other relevant information in the body of the request.
+* GET /api/saved_searches - should return a list of the user's saved searches.
+* GET /api/saved_search/{id} - should return a single saved search.
+* DELETE /api/delete_search/{id} - should delete a single saved search.
+* GET /api/preferences - should return the user's preferences.
+* PATCH /api/preferences - should update the user's preferences in the database.
+
+Database Requirements:
+* Use SQLite for the database.
+* Updates and deletes should cascade.
+* Use the @migrations folder to create the migrations.
+* Tables should correspond to the models.ts file.
+* There should be an account table with fields for username and password_hash. Username should be the primary key. Both should be strings.
+* There should be a preferences table with fields for username, mode_of_transport, eat_out, wake_up, home_by, start_date, end_date, and context. Username should be the primary key and the foreign key that references the account table. mode_of_transport should be an enum with values for car, taxi, bike, walk, bus, train, and subway. eat_out should be a boolean. wake_up and home_by should be timestamps. start_date and end_date should be dates. context should be a string.
+* There should be a search table with fields for username, id, location, point_of_interest, date, description, image_url, mode_of_transport, arrival_time, and departure_time. Username and id should together be the primary key. Username should be the foreign key that references the account table. The id should be an auto-incrementing integer.
