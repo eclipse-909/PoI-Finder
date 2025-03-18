@@ -13,6 +13,7 @@ Additional UI Notes:
 * The home page, saved PoI page, settings page, and account page should all have a tab bar that lets you navigate to each of the other pages. The buttons should use icons to represent the pages. A house for the home page, a download icon for the saved PoI page, a gear for the settings, and a person in a circle icon for the account page.
 * Switching between these tabs should preserve the state on each tab. The page should not be reloaded when switching. It might be necessary to combine them all in to one html page to apply this behavior
 * It's important that the UI and UX be good for users accessing the web app through mobile devices. For example, it would be better if the tab bar was on the bottom of the screen for mobile devices. Please try to make the UI mobile-friendly. It might be better to make different styles for desktop and mobile.
+* Use the low-fidelity wireframe images in the @wireframes folder to help guide the design of the UI.
 * Apply a consistent and visually appealing style and theme to the UI across all pages.
 * Please let me know what images and other assets I need to provide to make the UI work.
 
