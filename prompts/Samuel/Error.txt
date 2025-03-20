@@ -1,0 +1,25 @@
+samuel@LAPTOP-UTJ55DHG:/mnt/c/users/mingl/documents/github/e_morton-394-lab2$ node dist/server/main.js
+Running migration: 01_initial_schema.sql
+node:internal/fs/utils:351
+    throw err;
+    ^
+
+Error: ENOENT: no such file or directory, open './key.pem'
+    at Object.openSync (node:fs:596:3)
+    at Object.readFileSync (node:fs:464:35)
+    at Object.<anonymous> (/mnt/c/users/mingl/documents/github/e_morton-394-lab2/dist/server/main.js:79:23)
+    at Module._compile (node:internal/modules/cjs/loader:1356:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1414:10)
+    at Module.load (node:internal/modules/cjs/loader:1197:32)
+    at Module._load (node:internal/modules/cjs/loader:1013:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
+    at node:internal/main/run_main_module:28:49 {
+  errno: -2,
+  syscall: 'open',
+  code: 'ENOENT',
+  path: './key.pem'
+}
+
+Node.js v18.19.1
+
+Where is the ./key.pem? Or am I just being too stupid to understand.
