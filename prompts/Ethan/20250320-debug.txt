@@ -30,3 +30,32 @@ I've copied the code back in since it was working before. Can you just clean it 
 
 
 
+are redirect.js, router.js, and tabs.js used anywhere in the @Codebase ?
+
+
+
+This string should not be undefined, so it should jump to the server error if it is
+
+
+
+Can you make it so it compiles the typescript code before doing the watch?
+
+
+
+Can I make it have 2 prelaunchtasks instead
+
+
+
+can I include shell commands in the task?
+
+
+
+Can you put the "save preferences" button on the top of the page rather than the bottom?
+
+
+
+Can you make it so the save preferences button is disabled, but it becomes enabled when the user makes any change to the preferences? The button should be disabled again when the preferences are saved and the server doesn't respond with an error.
+
+
+
+When the button is disabled, it should be gray and non-interactable.

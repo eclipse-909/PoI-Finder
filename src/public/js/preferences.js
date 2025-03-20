@@ -2,12 +2,21 @@
  * Preferences page functionality
  */
 const preferencesPage = {
+	formChanged: false,
+	
 	/**
 	 * Initialize preferences page
 	 */
 	init() {
+		this.formChanged = false;
 		this.loadPreferences();
 		this.setupEventListeners();
+		
+		// Initialize button state
+		const submitButton = document.querySelector('#preferences-form button[type="submit"]');
+		if (submitButton) {
+			submitButton.disabled = true;
+		}
 	},
 	
 	/**
@@ -20,6 +29,19 @@ const preferencesPage = {
 		
 		if (form) {
 			form.addEventListener('submit', this.handleSubmit.bind(this));
+			
+			// Add change detection to all form inputs
+			const formInputs = form.querySelectorAll('input, select, textarea');
+			formInputs.forEach(input => {
+				const eventType = input.type === 'checkbox' ? 'change' : 'input';
+				input.addEventListener(eventType, () => {
+					this.formChanged = true;
+					const submitButton = form.querySelector('button[type="submit"]');
+					if (submitButton) {
+						submitButton.disabled = false;
+					}
+				});
+			});
 		}
 		
 		if (rangeInput && rangeValue) {
@@ -52,8 +74,11 @@ const preferencesPage = {
 			
 			// Hide loading
 			form.classList.remove('loading');
+			
+			// Reset form changed state after loading preferences
+			this.formChanged = false;
 			if (submitButton) {
-				submitButton.disabled = false;
+				submitButton.disabled = true;
 			}
 			
 			if (response.success && response.data) {
@@ -119,6 +144,11 @@ const preferencesPage = {
 	async handleSubmit(event) {
 		event.preventDefault();
 		
+		// If no changes, don't submit
+		if (!this.formChanged) {
+			return;
+		}
+		
 		const form = event.target;
 		const formData = new FormData(form);
 		
@@ -149,11 +179,18 @@ const preferencesPage = {
 			
 			// Hide loading
 			if (submitButton) {
-				submitButton.disabled = false;
 				submitButton.textContent = 'Save Preferences';
 			}
 			
 			if (response.success) {
+				// Reset form changed state
+				this.formChanged = false;
+				
+				// Keep button disabled after successful save
+				if (submitButton) {
+					submitButton.disabled = true;
+				}
+				
 				// Show success message
 				if (statusElement) {
 					statusElement.textContent = 'Preferences saved successfully';
@@ -165,12 +202,17 @@ const preferencesPage = {
 					}, 3000);
 				}
 			} else {
+				// Re-enable button if save failed
+				if (submitButton) {
+					submitButton.disabled = false;
+				}
 				alert(response.error?.message || 'Failed to save preferences');
 			}
 		} catch (error) {
 			console.error('Update preferences error:', error);
 			alert(error.message || 'Failed to save preferences');
 			
+			// Re-enable button if save failed
 			const submitButton = form.querySelector('button[type="submit"]');
 			if (submitButton) {
 				submitButton.disabled = false;

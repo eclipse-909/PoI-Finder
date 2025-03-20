@@ -61,6 +61,11 @@
                 <section id="preferences-content" class="tab-content">
                     <h2>Your Preferences</h2>
                     <form id="preferences-form">
+                        <div class="form-header">
+                            <button type="submit" class="btn btn-primary">Save Preferences</button>
+                            <div id="preferences-status" class="hidden"></div>
+                        </div>
+                        
                         <div class="form-group">
                             <label for="mode-of-transport">Preferred Mode of Transport</label>
                             <select id="mode-of-transport" name="mode_of_transport">
@@ -114,9 +119,6 @@
                             <label for="context">Additional Context</label>
                             <textarea id="context" name="context" placeholder="Any additional preferences or restrictions..."></textarea>
                         </div>
-                        
-                        <button type="submit" class="btn btn-primary">Save Preferences</button>
-                        <div id="preferences-status" class="hidden"></div>
                     </form>
                 </section>
                 

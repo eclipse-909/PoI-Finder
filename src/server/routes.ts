@@ -56,7 +56,7 @@ const authenticateUser = (req: Request, res: Response, next: NextFunction): void
 // CSRF protection middleware
 const csrfProtection = (req: Request, res: Response, next: NextFunction): void => {
 	// Get CSRF token from request header
-	const csrfToken = req.headers['x-csrf-token'] || req.body?._csrf;
+	const csrfToken = req.headers['csrf-token'];
 	
 	// Check if token matches session token
 	if (csrfToken !== req.session.csrfToken) {
