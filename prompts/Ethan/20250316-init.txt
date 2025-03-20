@@ -25,7 +25,14 @@ Technical Requirements:
 * Use session cookies to store user sessions.
 * Use middleware to check if the user is logged in. Users may access index, login, and signup pages without being logged in. Every other route should check if the user is logged in. If they are not logged in, they should be redirected to the login page.
 * Use TLS encryption. Assume I will have a cert.pem and key.pem file in the root of the project.
-* main.ts should be the entry point for the server. There should also be a routes.ts file that contains the routes for the server. There should be a models.ts file that contains data types for the JSON objects, database, and important data types. There should be a controllers.ts file that contains the logic for the routes.
+* Within the src/server folder, main.ts should be the entry point for the server. There should also be a routes.ts file that contains the routes for the server. There should be a models.ts file that contains data types for the JSON objects, database, and important data types. There should be a controllers.ts file that contains the logic for the routes.
+* Implement rate limiting for API endpoints to prevent abuse
+* Add input validation and sanitization for all user inputs
+* Implement password requirements (minimum length, complexity)
+* Use CSRF tokens for forms
+* Set secure and HTTP-only flags for cookies
+* Add request size limits to prevent large payload attacks
+* Implement proper error handling that doesn't expose sensitive information
 
 Routes:
 * Serve files from the @dist/public folder. / should get index.html, /login should get login.html, etc, and remember there will be css and js files and images. Don't serve the js.map files.
@@ -43,11 +50,13 @@ Routes:
 Database Requirements:
 * Use SQLite for the database.
 * Updates and deletes should cascade.
-* Use the @migrations folder to create the migrations.
+* Use the src/migrations folder to create the migrations.
 * Tables should correspond to the models.ts file.
 * There should be an account table with fields for username and password_hash. Username should be the primary key. Both should be strings.
 * There should be a preferences table with fields for username, mode_of_transport, eat_out, wake_up, home_by, start_date, end_date, range (in minutes), and context. Username should be the primary key and the foreign key that references the account table. mode_of_transport should be an enum with values for car, taxi, bike, walk, bus, train, and subway. eat_out should be a boolean. wake_up and home_by should be timestamps. start_date and end_date should be dates. context should be a string.
 * There should be a search table with fields for username, id, location, point_of_interest, date, description, image_url, mode_of_transport, arrival_time, and departure_time. Username and id should together be the primary key. Username should be the foreign key that references the account table. The id should be an auto-incrementing integer.
+* Add indexes for frequently queried fields
+* Add user session tracking table
 
 3rd Party API Integration:
 * We want to use google maps API to be able to pick a point on a map. This will be done on the home page when the user is entering a location manually. There are two ways to do this: the first is to start typing an address into an input field, and it should show a dropdown of addresses to choose from for autocompletion. The second is to pick a point on the map. When you pick a point on the map, it should update the input field with the address of the point. Here is the maps API documentation: https://developers.google.com/maps/documentation/javascript/overview.
@@ -56,4 +65,69 @@ Database Requirements:
 * We will be using GPT-4o Mini for the AI model. Documentation can be found here: https://platform.openai.com/docs/overview. There are other pages in the docs/ folder that might be relevant. We want to feed the AI the following information: the user's location, preferences, the places that were returned from the places API call, and the weather information (if applicable). The AI should return a list of points of interest that the user should visit. The points of interest should be famous places, landmarks, well-known places, and other places that are worth visiting. It should not just be any building or structure in the area. The AI should use the preferences to determine which points of interest are most relevant to the user. If the weather is applicable, the AI should use the weather information to determine which days are good for the user to visit the points of interest within the date/time range specified by the user's preferences. The AI should return a list of points of interest that the user should visit.
 * For each point of interest that the AI returns, we want to use google maps routes API to get the best route to get to the point of interest from the user's current location. Here is the routes API documentation: https://developers.google.com/maps/documentation/routes. You should use the user's preferences to determine the best mode of transport to use.
 * Once we have all this information, the points of interest should be formatted into a JSON object that can be sent to the client.
-* Please make a .env file in the root of the project and add the necessary variables to it for API keys. I will provide the actual API keys.
+* Please use the .env file in the root of the project and add the necessary variables to it for API keys. I will provide the actual API keys.
+* Specify the exact Google Maps API services needed:
+  - Places API (for POI search)
+  - Geocoding API (for address lookup)
+  - Maps JavaScript API (for map display)
+  - Routes API (for navigation)
+* Add fallback options for when APIs fail
+* Specify rate limiting requirements for each API
+* Add caching strategy for API responses
+* Define timeout handling for each API
+
+API Response Format Requirements:
+* All API responses should follow a consistent format:
+  ```typescript
+  interface ApiResponse<T> {
+    success: boolean;
+    data?: T;
+    error?: {
+      code: string;
+      message: string;
+    };
+  }
+  ```
+* Include proper HTTP status codes for different scenarios
+* Document rate limits in response headers
+* Include pagination for list endpoints
+* Add proper error handling for API timeouts and failures
+
+Testing Requirements:
+* Unit tests for backend services and API endpoints
+* Integration tests for database operations
+* End-to-end tests for critical user flows
+* Test coverage requirements (minimum 80%)
+* Performance testing requirements
+* Mobile device testing requirements
+* Cross-browser compatibility testing
+
+Performance Requirements:
+* Image optimization requirements
+* Lazy loading for images and heavy content
+* Implement request debouncing for search inputs
+* Add loading states for all async operations
+
+Error Handling Requirements:
+* Define specific error codes and messages
+* Implement graceful degradation for API failures
+* Add retry logic for failed API calls
+* Implement proper logging for debugging
+* Add monitoring for critical errors
+
+Environment Configuration:
+* Required environment variables:
+  ```
+  GOOGLE_MAPS_API_KEY=
+  GOOGLE_PLACES_API_KEY=
+  OPENWEATHER_API_KEY=
+  OPENAI_API_KEY=
+  SESSION_SECRET=
+  NODE_ENV=
+  PORT=
+  DB_PATH=
+  TLS_CERT_PATH=
+  TLS_KEY_PATH=
+  ```
+* Development, staging, and production environment setups
+* Configuration validation on startup
