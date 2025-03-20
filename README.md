@@ -39,8 +39,8 @@ This web application allows users to discover points of interest in any location
 
 1. Clone this repository:
    ```
-   git clone <repository-url>
-   cd poi-finder
+   git clone https://github.com/eclipse-909/e_morton-394-lab2.git
+   cd e_morton-394-lab2
    ```
 
 2. Install dependencies:
