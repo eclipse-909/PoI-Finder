@@ -315,29 +315,6 @@ header {
 	margin-bottom: 20px;
 }
 
-.testimonials {
-	text-align: center;
-	margin: 50px 0;
-}
-
-.testimonial {
-	max-width: 600px;
-	margin: 30px auto;
-	padding: 20px;
-	background-color: var(--white);
-	border-radius: var(--radius);
-	box-shadow: var(--shadow);
-}
-
-.testimonial p {
-	font-style: italic;
-	margin-bottom: 10px;
-}
-
-.testimonial cite {
-	font-weight: 500;
-}
-
 footer {
 	text-align: center;
 	padding: 20px 0;
@@ -663,4 +640,13 @@ footer {
 
 .account-actions button {
 	width: 100%;
+}
+
+/* Add these rules to your existing CSS file */
+.tab-content {
+	display: none;
+}
+
+.tab-content.active {
+	display: block;
 } 

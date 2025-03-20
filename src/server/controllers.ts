@@ -81,13 +81,23 @@ export const login = async (req: Request, res: Response) => {
 		req.session.csrfToken = Math.random().toString(36).substring(2, 15) + 
 							   Math.random().toString(36).substring(2, 15);
 		
-		// Return success
-		res.json({
-			success: true,
-			data: {
-				username,
-				csrfToken: req.session.csrfToken
+		// Make sure the session is saved before responding
+		req.session.save((err) => {
+			if (err) {
+				console.error('Session save error:', err);
+				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
 			}
+			
+			console.log('Session saved successfully:', req.session.id);
+			
+			// Return success
+			res.json({
+				success: true,
+				data: {
+					username,
+					csrfToken: req.session.csrfToken
+				}
+			});
 		});
 	});
 };

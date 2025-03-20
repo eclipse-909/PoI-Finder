@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POI Finder App</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/mobile.css" media="(max-width: 768px)">
+    <meta name="description" content="POI Finder - Find points of interest">
+</head>
+<body>
+    <div id="app">
+        <!-- App container with tabs and content -->
+        <div class="app-container">
+            <main class="main-content">
+                <!-- Home Tab Content -->
+                <section id="home-content" class="tab-content active">
+                    <h2>Find Points of Interest</h2>
+                    <div class="location-options">
+                        <button id="use-current-location" class="btn">Use Current Location</button>
+                        <div class="or-divider">OR</div>
+                        <button id="manual-location" class="btn">Enter Location Manually</button>
+                    </div>
+                    
+                    <div id="manual-location-container" class="hidden">
+                        <div class="form-group">
+                            <label for="location-input">Enter Location</label>
+                            <input type="text" id="location-input" placeholder="City, address, or place">
+                        </div>
+                        <div id="map-container">
+                            <!-- Google Maps would be loaded here -->
+                        </div>
+                        <button id="search-location" class="btn btn-primary">Find Points of Interest</button>
+                    </div>
+                    
+                    <div id="searching-container" class="hidden">
+                        <div class="loading-spinner"></div>
+                        <p>Finding points of interest...</p>
+                        <p class="small">This might take a moment</p>
+                    </div>
+                    
+                    <div id="results-container" class="hidden">
+                        <h3>Recommended Points of Interest</h3>
+                        <div id="poi-results">
+                            <!-- Results will be loaded here -->
+                        </div>
+                        <button id="save-results" class="btn btn-secondary">Save This List</button>
+                        <div id="save-status" class="hidden"></div>
+                    </div>
+                </section>
+                
+                <!-- Saved Tab Content -->
+                <section id="saved-content" class="tab-content">
+                    <h2>Your Saved Searches</h2>
+                    <div id="saved-searches">
+                        <!-- Saved searches will be loaded here -->
+                    </div>
+                </section>
+                
+                <!-- Preferences Tab Content -->
+                <section id="preferences-content" class="tab-content">
+                    <h2>Your Preferences</h2>
+                    <form id="preferences-form">
+                        <div class="form-group">
+                            <label for="mode-of-transport">Preferred Mode of Transport</label>
+                            <select id="mode-of-transport" name="mode_of_transport">
+                                <option value="car">Car</option>
+                                <option value="taxi">Taxi</option>
+                                <option value="bike">Bike</option>
+                                <option value="walk">Walk</option>
+                                <option value="bus">Bus</option>
+                                <option value="train">Train</option>
+                                <option value="subway">Subway</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="eat-out">Do You Want to Find Places to Eat?</label>
+                            <div class="toggle-container">
+                                <input type="checkbox" id="eat-out" name="eat_out">
+                                <label for="eat-out" class="toggle-label"></label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="wake-up">What Time Do You Usually Wake Up?</label>
+                            <input type="time" id="wake-up" name="wake_up">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="home-by">What Time Do You Usually Return Home?</label>
+                            <input type="time" id="home-by" name="home_by">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="start-date">Trip Start Date</label>
+                            <input type="date" id="start-date" name="start_date">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="end-date">Trip End Date</label>
+                            <input type="date" id="end-date" name="end_date">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="range">How Far Are You Willing to Travel? (minutes)</label>
+                            <input type="range" id="range" name="range" min="5" max="300" step="5">
+                            <div class="range-value">
+                                <span id="range-value">30</span> minutes
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="context">Additional Context</label>
+                            <textarea id="context" name="context" placeholder="Any additional preferences or restrictions..."></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Save Preferences</button>
+                        <div id="preferences-status" class="hidden"></div>
+                    </form>
+                </section>
+                
+                <!-- Account Tab Content -->
+                <section id="account-content" class="tab-content">
+                    <h2>Your Account</h2>
+                    <div class="account-info">
+                        <p><strong>Username:</strong> <span id="account-username"></span></p>
+                    </div>
+                    
+                    <div class="account-actions">
+                        <button id="change-password" class="btn">Change Password</button>
+                        <button id="logout" class="btn">Logout</button>
+                        <button id="delete-account" class="btn btn-danger">Delete Account</button>
+                    </div>
+                    
+                    <div id="change-password-modal" class="modal hidden">
+                        <div class="modal-content">
+                            <h3>Change Password</h3>
+                            <form id="change-password-form">
+                                <div class="form-group">
+                                    <label for="current-password">Current Password</label>
+                                    <input type="password" id="current-password" name="current_password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-password">New Password</label>
+                                    <input type="password" id="new-password" name="new_password" required>
+                                    <small>Password must be at least 8 characters and include uppercase, lowercase, and numbers</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-new-password">Confirm New Password</label>
+                                    <input type="password" id="confirm-new-password" name="confirm_new_password" required>
+                                </div>
+                                <div class="form-error" id="change-password-error"></div>
+                                <div class="modal-buttons">
+                                    <button type="button" id="cancel-password-change" class="btn">Cancel</button>
+                                    <button type="submit" class="btn btn-primary">Change Password</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div id="delete-account-modal" class="modal hidden">
+                        <div class="modal-content">
+                            <h3>Delete Account</h3>
+                            <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                            <div class="modal-buttons">
+                                <button id="cancel-delete-account" class="btn">Cancel</button>
+                                <button id="confirm-delete-account" class="btn btn-danger">Delete My Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            
+            <nav class="tab-bar">
+                <a href="#" class="tab-item active" data-tab="home">
+                    <i class="icon icon-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="tab-item" data-tab="saved">
+                    <i class="icon icon-saved"></i>
+                    <span>Saved</span>
+                </a>
+                <a href="#" class="tab-item" data-tab="preferences">
+                    <i class="icon icon-settings"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="tab-item" data-tab="account">
+                    <i class="icon icon-account"></i>
+                    <span>Account</span>
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/api.js"></script>
+    <script src="js/home.js"></script>
+    <script src="js/saved.js"></script>
+    <script src="js/preferences.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html> 

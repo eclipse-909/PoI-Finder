@@ -4,38 +4,31 @@
 class ApiClient {
 	constructor() {
 		this.baseUrl = '/api';
-		this.csrfToken = null;
 	}
 
 	/**
-	 * Get CSRF token for forms
+	 * Get CSRF token for secure requests
 	 * @returns {Promise<string>} CSRF token
 	 */
 	async getCsrfToken() {
-		if (this.csrfToken) {
-			return this.csrfToken;
+		const csrfCookie = document.cookie
+			.split('; ')
+			.find(row => row.startsWith('csrfToken='));
+		
+		if (csrfCookie) {
+			return csrfCookie.split('=')[1];
 		}
-
-		try {
-			const response = await fetch(`${this.baseUrl}/csrf-token`);
-			if (!response.ok) {
-				throw new Error('Failed to get CSRF token');
-			}
-			
-			const data = await response.json();
-			this.csrfToken = data.csrfToken;
-			return this.csrfToken;
-		} catch (error) {
-			console.error('Error getting CSRF token:', error);
-			throw error;
-		}
+		
+		const response = await fetch(`${this.baseUrl}/csrf-token`);
+		const data = await response.json();
+		return data.csrfToken;
 	}
 
 	/**
 	 * Login user
 	 * @param {string} username - Username
 	 * @param {string} password - Password
-	 * @returns {Promise<object>} Login response
+	 * @returns {Promise<object>} Response data
 	 */
 	async login(username, password) {
 		try {
@@ -44,28 +37,27 @@ class ApiClient {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ username, password }),
-				credentials: 'include'
+				credentials: 'include', // Important for cookies
+				body: JSON.stringify({ username, password })
 			});
-
-			const data = await response.json();
 			
-			if (!response.ok) {
-				throw new Error(data.error?.message || 'Login failed');
-			}
-
-			return data;
+			return await response.json();
 		} catch (error) {
 			console.error('Login error:', error);
-			throw error;
+			return {
+				success: false,
+				error: {
+					message: 'Network error during login'
+				}
+			};
 		}
 	}
 
 	/**
-	 * Sign up a new user
+	 * Sign up new user
 	 * @param {string} username - Username
 	 * @param {string} password - Password
-	 * @returns {Promise<object>} Signup response
+	 * @returns {Promise<object>} Response data
 	 */
 	async signup(username, password) {
 		try {
@@ -74,20 +66,19 @@ class ApiClient {
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ username, password }),
-				credentials: 'include'
+				credentials: 'include',
+				body: JSON.stringify({ username, password })
 			});
-
-			const data = await response.json();
 			
-			if (!response.ok) {
-				throw new Error(data.error?.message || 'Signup failed');
-			}
-
-			return data;
+			return await response.json();
 		} catch (error) {
 			console.error('Signup error:', error);
-			throw error;
+			return {
+				success: false,
+				error: {
+					message: 'Network error during signup'
+				}
+			};
 		}
 	}
 
@@ -378,8 +369,5 @@ class ApiClient {
 	}
 }
 
-// Create a singleton instance
-const api = new ApiClient();
-
-// Export the singleton
-window.api = api; 
+// Use this:
+window.ApiClient = ApiClient; 

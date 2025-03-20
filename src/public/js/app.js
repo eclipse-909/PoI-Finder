@@ -2,22 +2,37 @@
  * Main application initialization
  */
 document.addEventListener('DOMContentLoaded', () => {
-	console.log('POI Finder initialized');
+	console.log('POI Finder App initialized');
 	
-	// Set meta tag for Google Maps API key
-	addGoogleMapsApiKeyMeta();
+	// Check authentication status
+	const apiClient = new ApiClient();
 	
-	// Initialize debouncing for inputs
+	// Initialize the router (using the global router instance)
+	// router.init(); // This will be called automatically by the router
+	
+	// Add the Google Maps API key meta tag - commented out
+	// addGoogleMapsApiKeyMeta();
+	
+	// Initialize debouncing for search inputs
 	initDebouncing();
 	
-	// Add Google Maps API script
-	loadGoogleMapsApi();
+	// Load the Google Maps API - commented out
+	// loadGoogleMapsApi();
+	
+	// Set up tab functionality
+	setupTabs();
+	
+	// Initialize the home page by default
+	if (window.homePage && typeof window.homePage.init === 'function') {
+		window.homePage.init();
+	}
 });
 
 /**
- * Add meta tag for Google Maps API key
+ * Add meta tag for Google Maps API key - commented out
  * This will be set by the server before sending the page
  */
+/*
 function addGoogleMapsApiKeyMeta() {
 	const meta = document.createElement('meta');
 	meta.name = 'google-maps-api-key';
@@ -25,6 +40,7 @@ function addGoogleMapsApiKeyMeta() {
 	meta.content = '%%GOOGLE_MAPS_API_KEY%%';
 	document.head.appendChild(meta);
 }
+*/
 
 /**
  * Initialize debouncing for search inputs
@@ -40,23 +56,22 @@ function initDebouncing() {
 	};
 	
 	// Apply debounce to search input when it's available
-	window.addEventListener('DOMContentLoaded', () => {
-		const searchInput = document.getElementById('location-input');
-		
-		if (searchInput) {
-			const originalListener = searchInput.oninput;
-			searchInput.oninput = debounce((event) => {
-				if (originalListener) {
-					originalListener(event);
-				}
-			}, 300);
-		}
-	});
+	const searchInput = document.getElementById('location-input');
+	
+	if (searchInput) {
+		const originalListener = searchInput.oninput;
+		searchInput.oninput = debounce((event) => {
+			if (originalListener) {
+				originalListener(event);
+			}
+		}, 300);
+	}
 }
 
 /**
- * Load Google Maps API dynamically
+ * Load Google Maps API dynamically - commented out
  */
+/*
 function loadGoogleMapsApi() {
 	// Check if loaded from home page
 	if (window.homePage && typeof window.homePage.initMap === 'function') {
@@ -69,6 +84,66 @@ function loadGoogleMapsApi() {
 	script.async = true;
 	script.defer = true;
 	document.body.appendChild(script);
+}
+*/
+
+/**
+ * Set up tab functionality
+ */
+function setupTabs() {
+	const tabItems = document.querySelectorAll('.tab-item');
+	
+	tabItems.forEach(tab => {
+		tab.addEventListener('click', (event) => {
+			event.preventDefault();
+			const tabName = tab.getAttribute('data-tab');
+			
+			console.log(`Tab clicked: ${tabName}`); // Debug log
+			
+			// Update active tab
+			tabItems.forEach(t => {
+				if (t.getAttribute('data-tab') === tabName) {
+					t.classList.add('active');
+				} else {
+					t.classList.remove('active');
+				}
+			});
+			
+			// Update content sections
+			const contentSections = document.querySelectorAll('.tab-content');
+			contentSections.forEach(section => {
+				if (section.id === `${tabName}-content`) {
+					section.classList.add('active');
+				} else {
+					section.classList.remove('active');
+				}
+			});
+			
+			// Call the appropriate tab initialization function
+			switch(tabName) {
+				case 'home':
+					if (window.homePage && typeof window.homePage.init === 'function') {
+						window.homePage.init();
+					}
+					break;
+				case 'saved':
+					if (window.savedPage && typeof window.savedPage.init === 'function') {
+						window.savedPage.init();
+					}
+					break;
+				case 'preferences':
+					if (window.preferencesPage && typeof window.preferencesPage.init === 'function') {
+						window.preferencesPage.init();
+					}
+					break;
+				case 'account':
+					if (window.accountPage && typeof window.accountPage.init === 'function') {
+						window.accountPage.init();
+					}
+					break;
+			}
+		});
+	});
 }
 
 /**

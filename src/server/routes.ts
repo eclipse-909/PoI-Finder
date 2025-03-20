@@ -137,6 +137,15 @@ const setupAuthenticatedRoutes = (db: Database): void => {
 	router.post('/api/save_search/:id', authenticateUser, csrfProtection, (req: Request, res: Response): void => {
 		void controllers.saveSearch(req, res);
 	});
+
+	// Add this with the other routes that don't require authentication
+	router.get('/api/auth-status', (req: Request, res: Response): void => {
+		res.json({
+			authenticated: !!req.session.user,
+			session: req.session.id,
+			user: req.session.user || null
+		});
+	});
 };
 
 export const setupRoutes = (app: express.Application, db: Database): void => {
@@ -160,11 +169,12 @@ export const setupRoutes = (app: express.Application, db: Database): void => {
 	// Session middleware
 	app.use(session({
 		secret: sessionSecret,
-		resave: false,
+		resave: true,
 		saveUninitialized: false,
 		cookie: {
 			httpOnly: true,
 			secure: nodeEnv === 'production',
+			sameSite: 'lax',
 			maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 		}
 	}));

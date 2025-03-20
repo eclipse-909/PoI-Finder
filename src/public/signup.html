@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - POI Finder</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/mobile.css" media="(max-width: 768px)">
+    <meta name="description" content="Sign up for POI Finder">
+</head>
+<body>
+    <div class="auth-container signup-container">
+        <div class="auth-card">
+            <div class="logo">
+                <img src="images/logo.png" alt="POI Finder Logo">
+                <h1>POI Finder</h1>
+            </div>
+            <h2>Create an Account</h2>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" name="password" required>
+                    <small>Password must be at least 8 characters and include uppercase, lowercase, and numbers</small>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="confirmPassword" required>
+                </div>
+                <div class="form-error" id="signup-error"></div>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+            </form>
+            <p class="auth-switch">Already have an account? <a href="/login.html">Login</a></p>
+        </div>
+    </div>
+
+    <!-- JavaScript for signup page -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html> 

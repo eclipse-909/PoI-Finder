@@ -12,7 +12,7 @@ const homePage = {
 	 */
 	init() {
 		this.initLocationButtons();
-		this.initMap();
+		// this.initMap();
 	},
 	
 	/**
@@ -44,24 +44,24 @@ const homePage = {
 	/**
 	 * Initialize Google Maps
 	 */
-	initMap() {
-		// If Google Maps API is not loaded yet, wait for it
-		if (!window.google || !window.google.maps) {
-			// Load Google Maps API dynamically
-			const script = document.createElement('script');
-			script.src = `https://maps.googleapis.com/maps/api/js?key=${this.getGoogleMapsApiKey()}&libraries=places`;
-			script.async = true;
-			script.defer = true;
-			script.onload = () => this.setupMap();
-			
-			// Add script to the end of index.html
-			const scriptTags = document.getElementsByTagName('script');
-			const lastScript = scriptTags[scriptTags.length - 1];
-			lastScript.parentNode.replaceChild(script, lastScript);
-		} else {
-			this.setupMap();
-		}
-	},
+	// initMap() {
+	// 	// If Google Maps API is not loaded yet, wait for it
+	// 	if (!window.google || !window.google.maps) {
+	// 		// Load Google Maps API dynamically
+	// 		const script = document.createElement('script');
+	// 		script.src = `https://maps.googleapis.com/maps/api/js?key=${this.getGoogleMapsApiKey()}&libraries=places`;
+	// 		script.async = true;
+	// 		script.defer = true;
+	// 		script.onload = () => this.setupMap();
+	// 		
+	// 		// Add script to the end of index.html
+	// 		const scriptTags = document.getElementsByTagName('script');
+	// 		const lastScript = scriptTags[scriptTags.length - 1];
+	// 		lastScript.parentNode.replaceChild(script, lastScript);
+	// 	} else {
+	// 		this.setupMap();
+	// 	}
+	// },
 	
 	/**
 	 * Get Google Maps API key from meta tag
@@ -75,65 +75,65 @@ const homePage = {
 	/**
 	 * Setup Google Maps after API is loaded
 	 */
-	setupMap() {
-		const mapContainer = document.getElementById('map-container');
-		
-		if (!mapContainer) {
-			return;
-		}
-		
-		// Create map with default center
-		this.googleMap = new google.maps.Map(mapContainer, {
-			center: { lat: 40.7128, lng: -74.0060 }, // New York by default
-			zoom: 12,
-			mapTypeControl: false,
-			streetViewControl: false,
-			fullscreenControl: false
-		});
-		
-		// Setup autocomplete for location input
-		const input = document.getElementById('location-input');
-		
-		if (input) {
-			this.autocomplete = new google.maps.places.Autocomplete(input);
-			this.autocomplete.bindTo('bounds', this.googleMap);
-			
-			// When a place is selected from the dropdown
-			this.autocomplete.addListener('place_changed', () => {
-				const place = this.autocomplete.getPlace();
-				
-				if (!place.geometry) {
-					return;
-				}
-				
-				// Clear existing markers
-				this.clearMarkers();
-				
-				// Center map on selected place
-				if (place.geometry.viewport) {
-					this.googleMap.fitBounds(place.geometry.viewport);
-				} else {
-					this.googleMap.setCenter(place.geometry.location);
-					this.googleMap.setZoom(17);
-				}
-				
-				// Add marker for selected place
-				this.addMarker(place.geometry.location, place.name);
-			});
-		}
-		
-		// Allow clicking on map to select location
-		this.googleMap.addListener('click', (event) => {
-			// Clear existing markers
-			this.clearMarkers();
-			
-			// Add marker at clicked location
-			this.addMarker(event.latLng);
-			
-			// Get address for clicked location and update input
-			this.getAddressFromLatLng(event.latLng);
-		});
-	},
+	// setupMap() {
+	// 	const mapContainer = document.getElementById('map-container');
+	// 	
+	// 	if (!mapContainer) {
+	// 		return;
+	// 	}
+	// 	
+	// 	// Create map with default center
+	// 	this.googleMap = new google.maps.Map(mapContainer, {
+	// 		center: { lat: 40.7128, lng: -74.0060 }, // New York by default
+	// 		zoom: 12,
+	// 		mapTypeControl: false,
+	// 		streetViewControl: false,
+	// 		fullscreenControl: false
+	// 	});
+	// 	
+	// 	// Setup autocomplete for location input
+	// 	const input = document.getElementById('location-input');
+	// 	
+	// 	if (input) {
+	// 		this.autocomplete = new google.maps.places.Autocomplete(input);
+	// 		this.autocomplete.bindTo('bounds', this.googleMap);
+	// 		
+	// 		// When a place is selected from the dropdown
+	// 		this.autocomplete.addListener('place_changed', () => {
+	// 			const place = this.autocomplete.getPlace();
+	// 			
+	// 			if (!place.geometry) {
+	// 				return;
+	// 			}
+	// 			
+	// 			// Clear existing markers
+	// 			this.clearMarkers();
+	// 			
+	// 			// Center map on selected place
+	// 			if (place.geometry.viewport) {
+	// 				this.googleMap.fitBounds(place.geometry.viewport);
+	// 			} else {
+	// 				this.googleMap.setCenter(place.geometry.location);
+	// 				this.googleMap.setZoom(17);
+	// 			}
+	// 			
+	// 			// Add marker for selected place
+	// 			this.addMarker(place.geometry.location, place.name);
+	// 		});
+	// 	}
+	// 	
+	// 	// Allow clicking on map to select location
+	// 	this.googleMap.addListener('click', (event) => {
+	// 		// Clear existing markers
+	// 		this.clearMarkers();
+	// 		
+	// 		// Add marker at clicked location
+	// 		this.addMarker(event.latLng);
+	// 		
+	// 		// Get address for clicked location and update input
+	// 		this.getAddressFromLatLng(event.latLng);
+	// 	});
+	// },
 	
 	/**
 	 * Add a marker to the map
