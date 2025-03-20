@@ -62,7 +62,7 @@ tsc
 
 echo "Copying assets..."
 mkdir -p dist/public
-cp -r src/public/*.html src/public/css src/public/js src/public/images dist/public 2>/dev/null || true
+cp -r src/public/* dist/public 2>/dev/null || true
 
 echo "Starting server..."
 node dist/server/main.js
