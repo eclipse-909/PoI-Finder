@@ -3,13 +3,14 @@ import * as controllers from './controllers';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import csrf from 'csurf';
 import { Database } from 'sqlite3';
+import session from 'express-session';
+import ConnectSqlite3 from 'connect-sqlite3';
 
 const router = express.Router();
 
-// Middleware setup
-const csrfProtection = csrf({ cookie: { httpOnly: true, secure: process.env.NODE_ENV === 'production' } });
+// Create SQLite session store
+const SQLiteStore = ConnectSqlite3(session);
 
 // Rate limiting setup
 const apiLimiter = rateLimit({
@@ -42,106 +43,127 @@ const authLimiter = rateLimit({
 });
 
 // Authentication middleware
-const authenticateUser = (db: Database) => {
-	return (req: Request, res: Response, next: NextFunction) => {
-		const sessionId = req.cookies.session;
-		
-		if (!sessionId) {
-			return res.status(401).json({
-				success: false,
-				error: {
-					code: 'UNAUTHORIZED',
-					message: 'Authentication required'
-				}
-			});
-		}
-		
-		// Check session in database
-		db.get(
-			'SELECT s.id, s.username, s.expires_at FROM sessions s WHERE s.id = ?',
-			[sessionId],
-			(err, row: any) => {
-				if (err) {
-					console.error('Database error:', err);
-					return res.status(500).json({
-						success: false,
-						error: {
-							code: 'SERVER_ERROR',
-							message: 'Internal server error'
-						}
-					});
-				}
-				
-				if (!row) {
-					res.clearCookie('session');
-					return res.status(401).json({
-						success: false,
-						error: {
-							code: 'UNAUTHORIZED',
-							message: 'Invalid session'
-						}
-					});
-				}
-				
-				// Check if session is expired
-				const now = new Date();
-				const expires = new Date(row.expires_at);
-				
-				if (now > expires) {
-					// Delete expired session
-					db.run('DELETE FROM sessions WHERE id = ?', [sessionId]);
-					res.clearCookie('session');
-					
-					return res.status(401).json({
-						success: false,
-						error: {
-							code: 'SESSION_EXPIRED',
-							message: 'Session expired'
-						}
-					});
-				}
-				
-				// Add user info to request
-				req.user = { username: row.username };
-				next();
+const authenticateUser = (req: Request, res: Response, next: NextFunction): void => {
+	if (!req.session.user) {
+		res.status(401).json({
+			success: false,
+			error: {
+				code: 'UNAUTHORIZED',
+				message: 'Authentication required'
 			}
-		);
-	};
+		});
+		return;
+	}
+	next();
+};
+
+// CSRF protection middleware
+const csrfProtection = (req: Request, res: Response, next: NextFunction): void => {
+	// Get CSRF token from request header
+	const csrfToken = req.headers['x-csrf-token'] || req.body?._csrf;
+	
+	// Check if token matches session token
+	if (csrfToken !== req.session.csrfToken) {
+		res.status(403).json({
+			success: false,
+			error: {
+				code: 'INVALID_CSRF_TOKEN',
+				message: 'Invalid CSRF token'
+			}
+		});
+		return;
+	}
+	
+	next();
 };
 
 // CSRF token middleware for forms
-router.get('/api/csrf-token', (req, res) => {
-	res.json({ csrfToken: req.csrfToken() });
+router.get('/api/csrf-token', (req: Request, res: Response): void => {
+	// Generate a new token if none exists
+	if (!req.session.csrfToken) {
+		req.session.csrfToken = Math.random().toString(36).substring(2, 15) + 
+							   Math.random().toString(36).substring(2, 15);
+	}
+	
+	res.json({ csrfToken: req.session.csrfToken });
 });
 
+// Helper function to wrap controllers for Express routes
+function createHandler(
+	handler: (req: Request, res: Response) => any
+): (req: Request, res: Response) => void {
+	return (req, res) => {
+		void handler(req, res);
+	};
+}
+
 // Routes that don't require authentication
-router.post('/api/login', authLimiter, controllers.login);
-router.post('/api/signup', authLimiter, controllers.signup);
+router.post('/api/login', authLimiter, createHandler(controllers.login));
+router.post('/api/signup', authLimiter, createHandler(controllers.signup));
 
 // Authentication required for all routes below
-const setupAuthenticatedRoutes = (db: Database) => {
-	const auth = authenticateUser(db);
-	
+const setupAuthenticatedRoutes = (db: Database): void => {
 	// User routes
-	router.get('/api/logout', auth, controllers.logout);
-	router.delete('/api/delete_account', auth, csrfProtection, controllers.deleteAccount);
+	router.get('/api/logout', authenticateUser, (req: Request, res: Response): void => {
+		void controllers.logout(req, res);
+	});
+	
+	router.delete('/api/delete_account', authenticateUser, csrfProtection, (req: Request, res: Response): void => {
+		void controllers.deleteAccount(req, res);
+	});
 	
 	// Preferences routes
-	router.get('/api/preferences', auth, controllers.getPreferences);
-	router.patch('/api/preferences', auth, csrfProtection, controllers.updatePreferences);
+	router.get('/api/preferences', authenticateUser, (req: Request, res: Response): void => {
+		void controllers.getPreferences(req, res);
+	});
+	
+	router.patch('/api/preferences', authenticateUser, csrfProtection, (req: Request, res: Response): void => {
+		void controllers.updatePreferences(req, res);
+	});
 	
 	// Search routes
-	router.post('/api/search', auth, apiLimiter, controllers.search);
-	router.get('/api/saved_searches', auth, controllers.getSavedSearches);
-	router.get('/api/saved_search/:id', auth, controllers.getSavedSearch);
-	router.delete('/api/delete_search/:id', auth, csrfProtection, controllers.deleteSearch);
-	router.post('/api/save_search/:id', auth, csrfProtection, controllers.saveSearch);
+	router.post('/api/search', authenticateUser, apiLimiter, (req: Request, res: Response): void => {
+		void controllers.search(req, res);
+	});
+	
+	router.get('/api/saved_searches', authenticateUser, (req: Request, res: Response): void => {
+		void controllers.getSavedSearches(req, res);
+	});
+	
+	router.get('/api/saved_search/:id', authenticateUser, (req: Request, res: Response): void => {
+		void controllers.getSavedSearch(req, res);
+	});
+	
+	router.delete('/api/delete_search/:id', authenticateUser, csrfProtection, (req: Request, res: Response): void => {
+		void controllers.deleteSearch(req, res);
+	});
+	
+	router.post('/api/save_search/:id', authenticateUser, csrfProtection, (req: Request, res: Response): void => {
+		void controllers.saveSearch(req, res);
+	});
 };
 
-export const setupRoutes = (app: express.Application, db: Database) => {
+export const setupRoutes = (app: express.Application, db: Database): void => {
 	// Security middleware
 	app.use(helmet());
 	app.use(cookieParser());
+	
+	// Session middleware
+	app.use(session({
+		store: new SQLiteStore({
+			db: process.env.DB_PATH?.split('/').pop() || 'database.sqlite',
+			dir: process.env.DB_PATH?.split('/').slice(0, -1).join('/') || '.',
+			table: 'sessions'
+		}) as any, // Type assertion to fix SQLiteStore compatibility issue
+		secret: process.env.SESSION_SECRET || 'your-secret-key',
+		resave: false,
+		saveUninitialized: false,
+		cookie: {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === 'production',
+			maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+		}
+	}));
 	
 	// Body parsing
 	app.use(express.json({ limit: '1mb' }));
@@ -154,17 +176,7 @@ export const setupRoutes = (app: express.Application, db: Database) => {
 	app.use(router);
 	
 	// Error handling middleware
-	app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-		if (err.code === 'EBADCSRFTOKEN') {
-			return res.status(403).json({
-				success: false,
-				error: {
-					code: 'INVALID_CSRF_TOKEN',
-					message: 'Invalid CSRF token'
-				}
-			});
-		}
-		
+	app.use((err: any, req: Request, res: Response, next: NextFunction): void => {
 		console.error('Server error:', err);
 		res.status(500).json({
 			success: false,

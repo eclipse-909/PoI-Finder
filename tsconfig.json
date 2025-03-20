@@ -1,8 +1,8 @@
 {
 	"compilerOptions": {
-		"target": "ES2024",
+		"target": "ES2022",
 		"module": "CommonJS",
-		"lib": ["ES2024", "DOM"],
+		"lib": ["ES2022", "DOM"],
 		"rootDir": "src",
 		"outDir": "dist",
 		"sourceMap": true,
@@ -15,9 +15,9 @@
 		"resolveJsonModule": true
 	},
 	"include": [
-			"src/**/*"
+		"src/**/*"
 	],
 	"exclude": [
-			"node_modules"
+		"node_modules"
 	]
 }

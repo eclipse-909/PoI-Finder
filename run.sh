@@ -44,10 +44,6 @@ if [ ! -d "node_modules" ]; then
 	npm install
 fi
 
-# Build TypeScript code
-echo "Building TypeScript code..."
-npm run build
-
 # Start the server
-echo "Starting the server..."
+echo "Building TypeScript code and starting the server..."
 npm start

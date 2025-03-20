@@ -66,16 +66,17 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 setupRoutes(app, db);
 
 // SPA fallback for client-side routing
-app.get('*', (req: Request, res: Response) => {
+app.get('*', (req: Request, res: Response): void => {
 	// Check if the request is for an API endpoint
 	if (req.url.startsWith('/api/')) {
-		return res.status(404).json({
+		res.status(404).json({
 			success: false,
 			error: {
 				code: 'NOT_FOUND',
 				message: 'API endpoint not found'
 			}
 		});
+		return;
 	}
 	
 	// For all other routes, serve the index.html

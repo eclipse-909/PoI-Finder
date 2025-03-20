@@ -50,65 +50,46 @@ const createResponse = <T>(success: boolean, data?: T, errorCode?: string, error
 
 // Authentication controllers
 export const login = async (req: Request, res: Response) => {
-	try {
-		const { username, password }: LoginRequest = req.body;
-		
-		if (!username || !password) {
-			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Username and password are required'));
+	const { username, password } = req.body;
+	
+	if (!username || !password) {
+		return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Username and password are required'));
+	}
+	
+	// Get user from database
+	db.get('SELECT * FROM users WHERE username = ?', [username], async (err, row: any) => {
+		if (err) {
+			console.error('Database error:', err);
+			return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
 		}
 		
-		// Get user from database
-		db.get('SELECT * FROM users WHERE username = ?', [username], async (err, row: any) => {
-			if (err) {
-				console.error('Database error:', err);
-				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
+		if (!row) {
+			return res.status(401).json(createResponse(false, undefined, 'AUTH_FAILED', 'Invalid username or password'));
+		}
+		
+		// Check password
+		const match = await bcrypt.compare(password, row.password_hash);
+		
+		if (!match) {
+			return res.status(401).json(createResponse(false, undefined, 'AUTH_FAILED', 'Invalid username or password'));
+		}
+		
+		// Set the user in the session
+		req.session.user = { username: username };
+		
+		// Generate CSRF token for this session
+		req.session.csrfToken = Math.random().toString(36).substring(2, 15) + 
+							   Math.random().toString(36).substring(2, 15);
+		
+		// Return success
+		res.json({
+			success: true,
+			data: {
+				username,
+				csrfToken: req.session.csrfToken
 			}
-			
-			if (!row) {
-				return res.status(401).json(createResponse(false, undefined, 'AUTH_FAILED', 'Invalid username or password'));
-			}
-			
-			// Check password
-			const match = await bcrypt.compare(password, row.password_hash);
-			
-			if (!match) {
-				return res.status(401).json(createResponse(false, undefined, 'AUTH_FAILED', 'Invalid username or password'));
-			}
-			
-			// Create session
-			const sessionId = crypto.randomBytes(64).toString('hex');
-			const now = new Date();
-			const expires = new Date(now);
-			expires.setDate(expires.getDate() + 7); // 7 days session
-			
-			const ip = req.ip || req.socket.remoteAddress || '';
-			const userAgent = req.headers['user-agent'] || '';
-			
-			db.run(
-				'INSERT INTO sessions (id, username, created_at, expires_at, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)',
-				[sessionId, username, now.toISOString(), expires.toISOString(), ip, userAgent],
-				(err) => {
-					if (err) {
-						console.error('Database error:', err);
-						return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
-					}
-					
-					// Set session cookie
-					res.cookie('session', sessionId, {
-						httpOnly: true,
-						secure: process.env.NODE_ENV === 'production',
-						sameSite: 'strict',
-						expires
-					});
-					
-					return res.status(200).json(createResponse(true, { username }));
-				}
-			);
 		});
-	} catch (error) {
-		console.error('Login error:', error);
-		return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
-	}
+	});
 };
 
 export const signup = async (req: Request, res: Response) => {
@@ -227,28 +208,21 @@ export const signup = async (req: Request, res: Response) => {
 };
 
 export const logout = (req: Request, res: Response) => {
-	try {
-		const sessionId = req.cookies.session;
-		
-		if (!sessionId) {
-			return res.status(200).json(createResponse(true));
+	// Destroy the session
+	req.session.destroy((err) => {
+		if (err) {
+			console.error('Logout error:', err);
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 'SERVER_ERROR',
+					message: 'Internal server error'
+				}
+			});
 		}
 		
-		// Delete session from database
-		db.run('DELETE FROM sessions WHERE id = ?', [sessionId], (err) => {
-			if (err) {
-				console.error('Database error:', err);
-				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
-			}
-			
-			// Clear session cookie
-			res.clearCookie('session');
-			return res.status(200).json(createResponse(true));
-		});
-	} catch (error) {
-		console.error('Logout error:', error);
-		return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
-	}
+		res.json({ success: true });
+	});
 };
 
 export const deleteAccount = (req: Request, res: Response) => {
