@@ -2,15 +2,13 @@
  * API Client for interacting with the backend services
  */
 class ApiClient {
-	constructor() {
-		this.baseUrl = '/api';
-	}
+	static BASE_URL = '/api';
 
 	/**
 	 * Get CSRF token for secure requests
 	 * @returns {Promise<string>} CSRF token
 	 */
-	async getCsrfToken() {
+	static async getCsrfToken() {
 		const csrfCookie = document.cookie
 			.split('; ')
 			.find(row => row.startsWith('csrfToken='));
@@ -19,7 +17,7 @@ class ApiClient {
 			return csrfCookie.split('=')[1];
 		}
 		
-		const response = await fetch(`${this.baseUrl}/csrf-token`);
+		const response = await fetch(`${ApiClient.BASE_URL}/csrf-token`);
 		const data = await response.json();
 		return data.csrfToken;
 	}
@@ -30,9 +28,9 @@ class ApiClient {
 	 * @param {string} password - Password
 	 * @returns {Promise<object>} Response data
 	 */
-	async login(username, password) {
+	static async login(username, password) {
 		try {
-			const response = await fetch(`${this.baseUrl}/login`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/login`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -59,9 +57,9 @@ class ApiClient {
 	 * @param {string} password - Password
 	 * @returns {Promise<object>} Response data
 	 */
-	async signup(username, password) {
+	static async signup(username, password) {
 		try {
-			const response = await fetch(`${this.baseUrl}/signup`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/signup`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -86,9 +84,9 @@ class ApiClient {
 	 * Logout user
 	 * @returns {Promise<object>} Logout response
 	 */
-	async logout() {
+	static async logout() {
 		try {
-			const response = await fetch(`${this.baseUrl}/logout`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/logout`, {
 				method: 'GET',
 				credentials: 'include'
 			});
@@ -110,11 +108,11 @@ class ApiClient {
 	 * Delete user account
 	 * @returns {Promise<object>} Delete account response
 	 */
-	async deleteAccount() {
+	static async deleteAccount() {
 		try {
 			const csrfToken = await this.getCsrfToken();
 			
-			const response = await fetch(`${this.baseUrl}/delete_account`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/delete_account`, {
 				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json',
@@ -141,9 +139,9 @@ class ApiClient {
 	 * @param {object} searchData - Search data
 	 * @returns {Promise<object>} Search response
 	 */
-	async search(searchData) {
+	static async search(searchData) {
 		try {
-			const response = await fetch(`${this.baseUrl}/search`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/search`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -169,9 +167,9 @@ class ApiClient {
 	 * Get user preferences
 	 * @returns {Promise<object>} User preferences
 	 */
-	async getPreferences() {
+	static async getPreferences() {
 		try {
-			const response = await fetch(`${this.baseUrl}/preferences`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/preferences`, {
 				method: 'GET',
 				credentials: 'include'
 			});
@@ -194,11 +192,11 @@ class ApiClient {
 	 * @param {object} preferences - User preferences
 	 * @returns {Promise<object>} Update response
 	 */
-	async updatePreferences(preferences) {
+	static async updatePreferences(preferences) {
 		try {
 			const csrfToken = await this.getCsrfToken();
 			
-			const response = await fetch(`${this.baseUrl}/preferences`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/preferences`, {
 				method: 'PATCH',
 				headers: {
 					'Content-Type': 'application/json',
@@ -225,9 +223,9 @@ class ApiClient {
 	 * Get user's saved searches
 	 * @returns {Promise<object>} Saved searches
 	 */
-	async getSavedSearches() {
+	static async getSavedSearches() {
 		try {
-			const response = await fetch(`${this.baseUrl}/saved_searches`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/saved_searches`, {
 				method: 'GET',
 				credentials: 'include'
 			});
@@ -250,9 +248,9 @@ class ApiClient {
 	 * @param {number} id - Search ID
 	 * @returns {Promise<object>} Saved search details
 	 */
-	async getSavedSearch(id) {
+	static async getSavedSearch(id) {
 		try {
-			const response = await fetch(`${this.baseUrl}/saved_search/${id}`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/saved_search/${id}`, {
 				method: 'GET',
 				credentials: 'include'
 			});
@@ -275,11 +273,11 @@ class ApiClient {
 	 * @param {number} id - Search ID
 	 * @returns {Promise<object>} Delete response
 	 */
-	async deleteSearch(id) {
+	static async deleteSearch(id) {
 		try {
 			const csrfToken = await this.getCsrfToken();
 			
-			const response = await fetch(`${this.baseUrl}/delete_search/${id}`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/delete_search/${id}`, {
 				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json',
@@ -306,11 +304,11 @@ class ApiClient {
 	 * @param {number} id - Search ID
 	 * @returns {Promise<object>} Save response
 	 */
-	async saveSearch(id) {
+	static async saveSearch(id) {
 		try {
 			const csrfToken = await this.getCsrfToken();
 			
-			const response = await fetch(`${this.baseUrl}/save_search/${id}`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/save_search/${id}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -338,11 +336,11 @@ class ApiClient {
 	 * @param {string} newPassword - New password
 	 * @returns {Promise<object>} Change password response
 	 */
-	async changePassword(currentPassword, newPassword) {
+	static async changePassword(currentPassword, newPassword) {
 		try {
 			const csrfToken = await this.getCsrfToken();
 			
-			const response = await fetch(`${this.baseUrl}/change_password`, {
+			const response = await fetch(`${ApiClient.BASE_URL}/change_password`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',

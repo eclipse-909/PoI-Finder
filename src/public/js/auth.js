@@ -1,7 +1,6 @@
 /**
  * Authentication functionality for login and signup
  */
-const apiClient = new ApiClient();
 
 // Define the authPage object first before using it
 const authPage = {
@@ -31,7 +30,7 @@ const authPage = {
 				errorElement.textContent = '';
 				errorElement.classList.add('hidden');
 				
-				const response = await apiClient.login(username, password);
+				const response = await ApiClient.login(username, password);
 				console.log("Login response:", response);
 				
 				if (response.success) {
@@ -103,7 +102,7 @@ const authPage = {
 				errorElement.textContent = '';
 				errorElement.classList.add('hidden');
 				
-				const response = await apiClient.signup(username, password);
+				const response = await ApiClient.signup(username, password);
 				
 				if (response.success) {
 					// Redirect to login page

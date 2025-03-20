@@ -177,7 +177,7 @@ const accountPage = {
 			submitButton.textContent = 'Changing...';
 			
 			// Call API to change password
-			const response = await window.api.changePassword(currentPassword, newPassword);
+			const response = await window.ApiClient.changePassword(currentPassword, newPassword);
 			
 			if (response.success) {
 				// Hide modal and show success message
@@ -211,7 +211,7 @@ const accountPage = {
 			}
 			
 			// Call API to logout
-			const response = await window.api.logout();
+			const response = await window.ApiClient.logout();
 			
 			if (response.success) {
 				// Update authentication status and navigate to index
@@ -249,7 +249,7 @@ const accountPage = {
 			}
 			
 			// Call API to delete account
-			const response = await window.api.deleteAccount();
+			const response = await window.ApiClient.deleteAccount();
 			
 			if (response.success) {
 				// Update authentication status and navigate to index

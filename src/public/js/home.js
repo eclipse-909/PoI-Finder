@@ -251,7 +251,7 @@ const homePage = {
 	async performSearch(searchData) {
 		try {
 			// Call API to search for points of interest
-			const response = await window.api.search(searchData);
+			const response = await window.ApiClient.search(searchData);
 			
 			if (response.success) {
 				this.searchResults = response.data;
@@ -399,7 +399,7 @@ const homePage = {
 			saveButton.textContent = 'Saving...';
 			
 			// Call API to save search
-			const response = await window.api.saveSearch(this.searchResults.searchId);
+			const response = await window.ApiClient.saveSearch(this.searchResults.searchId);
 			
 			if (response.success) {
 				saveStatus.textContent = 'Search saved successfully';

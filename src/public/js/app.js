@@ -4,12 +4,6 @@
 document.addEventListener('DOMContentLoaded', () => {
 	console.log('POI Finder App initialized');
 	
-	// Check authentication status
-	const apiClient = new ApiClient();
-	
-	// Initialize the router (using the global router instance)
-	// router.init(); // This will be called automatically by the router
-	
 	// Add the Google Maps API key meta tag - commented out
 	// addGoogleMapsApiKeyMeta();
 	

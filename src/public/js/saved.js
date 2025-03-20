@@ -50,7 +50,7 @@ const savedPage = {
 			savedSearchesContainer.innerHTML = '<div class="loading-spinner"></div>';
 			
 			// Call API to get saved searches
-			const response = await window.api.getSavedSearches();
+			const response = await window.ApiClient.getSavedSearches();
 			
 			if (response.success && response.data) {
 				this.savedSearches = response.data;
@@ -136,7 +136,7 @@ const savedPage = {
 			poiListContainer.innerHTML = '<div class="loading-spinner"></div>';
 			
 			// Call API to get saved search
-			const response = await window.api.getSavedSearch(id);
+			const response = await window.ApiClient.getSavedSearch(id);
 			
 			if (response.success && response.data) {
 				const searchData = response.data;
@@ -265,7 +265,7 @@ const savedPage = {
 		
 		try {
 			// Call API to delete search
-			const response = await window.api.deleteSearch(this.currentSearchId);
+			const response = await window.ApiClient.deleteSearch(this.currentSearchId);
 			
 			if (response.success) {
 				// Navigate back to saved searches list

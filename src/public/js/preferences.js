@@ -48,7 +48,7 @@ const preferencesPage = {
 			}
 			
 			// Call API to get preferences
-			const response = await window.api.getPreferences();
+			const response = await window.ApiClient.getPreferences();
 			
 			// Hide loading
 			form.classList.remove('loading');
@@ -145,7 +145,7 @@ const preferencesPage = {
 			}
 			
 			// Call API to update preferences
-			const response = await window.api.updatePreferences(preferences);
+			const response = await window.ApiClient.updatePreferences(preferences);
 			
 			// Hide loading
 			if (submitButton) {
