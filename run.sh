@@ -2,20 +2,20 @@
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
-    echo "Error: Node.js is not installed. Please install Node.js to run this application."
-    exit 1
+	echo "Error: Node.js is not installed. Please install Node.js to run this application."
+	exit 1
 fi
 
 # Check if npm is installed
 if ! command -v npm &> /dev/null; then
-    echo "Error: npm is not installed. Please install npm to run this application."
-    exit 1
+	echo "Error: npm is not installed. Please install npm to run this application."
+	exit 1
 fi
 
 # Check if the .env file exists
 if [ ! -f .env ]; then
-    echo "Warning: .env file not found. Creating a template .env file."
-    cat > .env << 'EOF'
+	echo "Warning: .env file not found. Creating a template .env file."
+	cat > .env << 'EOF'
 GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 GOOGLE_PLACES_API_KEY=your_google_places_api_key
 OPENWEATHER_API_KEY=your_openweather_api_key
@@ -27,21 +27,21 @@ DB_PATH=./database.sqlite
 TLS_CERT_PATH=./cert.pem
 TLS_KEY_PATH=./key.pem
 EOF
-    echo "Please update the .env file with your API keys before proceeding."
-    exit 1
+	echo "Please update the .env file with your API keys before proceeding."
+	exit 1
 fi
 
 # Check if TLS certificates exist
 if [ ! -f cert.pem ] || [ ! -f key.pem ]; then
-    echo "Warning: TLS certificates not found. Creating self-signed certificates for development."
-    openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost"
-    echo "Self-signed certificates created for development purposes."
+	echo "Warning: TLS certificates not found. Creating self-signed certificates for development."
+	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost"
+	echo "Self-signed certificates created for development purposes."
 fi
 
 # Install dependencies if node_modules doesn't exist
 if [ ! -d "node_modules" ]; then
-    echo "Installing dependencies..."
-    npm install
+	echo "Installing dependencies..."
+	npm install
 fi
 
 # Build TypeScript code

@@ -1,0 +1,375 @@
+After running the run.sh script, I get the following errors:
+
+$ ./run.sh 
+Installing dependencies...
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.  
+npm warn deprecated npmlog@5.0.1: This package is no longer supported.
+npm warn deprecated @npmcli/move-file@1.1.2: This functionality has been moved to @npmcli/fs
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+npm warn deprecated are-we-there-yet@2.0.0: This package is no longer supported.
+npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+npm warn deprecated csurf@1.11.0: Please use another csrf package
+npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+npm warn deprecated npmlog@6.0.2: This package is no longer supported.
+npm warn deprecated gauge@3.0.2: This package is no longer supported.
+npm warn deprecated are-we-there-yet@3.0.1: This package is no longer supported.
+npm warn deprecated gauge@4.0.4: This package is no longer supported.
+npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+
+added 668 packages, and audited 669 packages in 43s
+
+94 packages are looking for funding
+  run `npm fund` for details
+
+2 low severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+Building TypeScript code...
+
+> poi-finder@1.0.0 build
+> tsc && npm run copy-assets
+
+node_modules/@types/babel__core/index.d.ts:2:31 - error TS2792: Cannot find module '@babel/parser'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+2 import { ParserOptions } from "@babel/parser";
+                                ~~~~~~~~~~~~~~~
+
+node_modules/@types/babel__core/index.d.ts:5:20 - error TS2792: Cannot find module '@babel/types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+5 import * as t from "@babel/types";
+                     ~~~~~~~~~~~~~~
+
+node_modules/@types/babel__core/index.d.ts:10:52 - error TS2792: Cannot find module '@babel/parser'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+10 export type ParseResult = ReturnType<typeof import("@babel/parser").parse>;
+                                                      ~~~~~~~~~~~~~~~
+
+node_modules/@types/babel__generator/index.d.ts:1:20 - error TS2792: Cannot find module '@babel/types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+1 import * as t from "@babel/types";
+                     ~~~~~~~~~~~~~~
+
+node_modules/@types/babel__template/index.d.ts:1:31 - error TS2792: Cannot find module '@babel/parser'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+1 import { ParserOptions } from "@babel/parser";
+                                ~~~~~~~~~~~~~~~
+
+node_modules/@types/babel__template/index.d.ts:2:48 - error TS2792: Cannot find module '@babel/types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+2 import { Expression, Program, Statement } from "@babel/types";
+                                                 ~~~~~~~~~~~~~~
+
+node_modules/@types/babel__traverse/index.d.ts:1:20 - error TS2792: Cannot find module '@babel/types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+1 import * as t from "@babel/types";
+                     ~~~~~~~~~~~~~~
+
+node_modules/@types/babel__traverse/index.d.ts:361:28 - error TS2536: Type '"type"' cannot be used to index type 'T'.
+
+361     type: T extends Node ? T["type"] : T extends null | undefined ? undefined : Node["type"] | undefined;
+                               ~~~~~~~~~
+
+node_modules/@types/jest/index.d.ts:622:32 - error TS2792: Cannot find module 'expect'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+622     type MatcherUtils = import("expect").MatcherUtils & { [other: string]: any };
+                                   ~~~~~~~~
+
+node_modules/@types/jest/index.d.ts:640:44 - error TS2792: Cannot find module 'pretty-format'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+640     type SnapshotSerializerPlugin = import("pretty-format").Plugin;
+                                               ~~~~~~~~~~~~~~~
+
+node_modules/@types/jest/index.d.ts:678:32 - error TS2792: Cannot find module 'expect'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+678     type MatcherState = import("expect").MatcherState;
+                                   ~~~~~~~~
+
+node_modules/@types/node-fetch/index.d.ts:3:27 - error TS2792: Cannot find module 'form-data'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+3 import FormData = require("form-data");
+                            ~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:6:76 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+6 type _Request = typeof globalThis extends { onmessage: any } ? {} : import("undici-types").Request;
+                                                                             ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:7:77 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+7 type _Response = typeof globalThis extends { onmessage: any } ? {} : import("undici-types").Response;
+                                                                              ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:8:77 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+8 type _FormData = typeof globalThis extends { onmessage: any } ? {} : import("undici-types").FormData;
+                                                                              ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:9:76 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+9 type _Headers = typeof globalThis extends { onmessage: any } ? {} : import("undici-types").Headers;
+                                                                             ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:10:81 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+10 type _MessageEvent = typeof globalThis extends { onmessage: any } ? {} : import("undici-types").MessageEvent;
+                                                                                   ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:12:14 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+12     : import("undici-types").RequestInit;
+                ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:14:14 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+14     : import("undici-types").ResponseInit;
+                ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:377:25 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+377         : typeof import("undici-types").Request;
+                            ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:386:25 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+386         : typeof import("undici-types").Response;
+                            ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:393:25 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+393         : typeof import("undici-types").FormData;
+                            ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:400:25 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+400         : typeof import("undici-types").Headers;
+                            ~~~~~~~~~~~~~~
+
+node_modules/@types/node/globals.d.ts:410:25 - error TS2792: Cannot find module 'undici-types'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+410         : typeof import("undici-types").MessageEvent;
+                            ~~~~~~~~~~~~~~
+
+src/server/controllers.ts:2:26 - error TS2792: Cannot find module 'sqlite3'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+2 import { Database } from 'sqlite3';
+                           ~~~~~~~~~
+
+src/server/controllers.ts:3:8 - error TS1192: Module '"C:/Users/ethie/OneDrive/Documents/Marist_Work/Junior/Semester 2/AI/lab2/node_modules/@types/bcrypt/index"' has no default export.
+
+3 import bcrypt from 'bcrypt';
+         ~~~~~~
+
+src/server/controllers.ts:4:8 - error TS1192: Module '"crypto"' has no default export.
+
+4 import crypto from 'crypto';
+         ~~~~~~
+
+src/server/controllers.ts:5:19 - error TS2792: Cannot find module 'axios'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+5 import axios from 'axios';
+                    ~~~~~~~
+
+src/server/controllers.ts:247:30 - error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+247     const { username } = req.user as { username: string };
+                                 ~~~~
+
+src/server/controllers.ts:269:30 - error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+269     const { username } = req.user as { username: string };
+                                 ~~~~
+
+src/server/controllers.ts:303:30 - error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+303     const { username } = req.user as { username: string };
+                                 ~~~~
+
+src/server/controllers.ts:353:30 - error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+353     const { username } = req.user as { username: string };
+                                 ~~~~
+
+src/server/controllers.ts:615:30 - error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+615     const { username } = req.user as { username: string };
+                                 ~~~~
+
+src/server/controllers.ts:658:30 - error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+658     const { username } = req.user as { username: string };
+                                 ~~~~
+
+src/server/controllers.ts:709:30 - error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+709     const { username } = req.user as { username: string };
+                                 ~~~~
+
+src/server/controllers.ts:739:30 - error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+739     const { username } = req.user as { username: string };
+                                 ~~~~
+
+src/server/main.ts:1:8 - error TS1259: Module '"C:/Users/ethie/OneDrive/Documents/Marist_Work/Junior/Semester 2/AI/lab2/node_modules/@types/express/index"' can only be default-imported using the 'allowSyntheticDefaultImports' flag
+
+1 import express from 'express';
+         ~~~~~~~
+
+  node_modules/@types/express/index.d.ts:128:1
+    128 export = e;
+        ~~~~~~~~~~~
+    This module is declared with 'export =', and can only be used with a default import when using the 'allowSyntheticDefaultImports' flag.
+
+src/server/main.ts:2:8 - error TS1192: Module '"https"' has no default export.
+
+2 import https from 'https';
+         ~~~~~
+
+src/server/main.ts:3:8 - error TS1192: Module '"fs"' has no default export.
+
+3 import fs from 'fs';
+         ~~
+
+src/server/main.ts:4:8 - error TS1259: Module '"path"' can only be default-imported using the 'allowSyntheticDefaultImports' flag
+
+4 import path from 'path';
+         ~~~~
+
+  node_modules/@types/node/path.d.ts:187:5
+    187     export = path;
+            ~~~~~~~~~~~~~~
+    This module is declared with 'export =', and can only be used with a default import when using the 'allowSyntheticDefaultImports' flag.
+
+src/server/main.ts:5:26 - error TS2792: Cannot find module 'sqlite3'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+5 import { Database } from 'sqlite3';
+                           ~~~~~~~~~
+
+src/server/main.ts:8:20 - error TS2792: Cannot find module 'dotenv'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+8 import dotenv from 'dotenv';
+                     ~~~~~~~~
+
+src/server/routes.ts:1:8 - error TS1259: Module '"C:/Users/ethie/OneDrive/Documents/Marist_Work/Junior/Semester 2/AI/lab2/node_modules/@types/express/index"' can only be default-imported using the 'allowSyntheticDefaultImports' flag
+
+1 import express, { Request, Response, NextFunction } from 'express';
+         ~~~~~~~
+
+  node_modules/@types/express/index.d.ts:128:1
+    128 export = e;
+        ~~~~~~~~~~~
+    This module is declared with 'export =', and can only be used with a default import when using the 'allowSyntheticDefaultImports' flag.
+
+src/server/routes.ts:3:23 - error TS2792: Cannot find module 'express-rate-limit'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+3 import rateLimit from 'express-rate-limit';
+                        ~~~~~~~~~~~~~~~~~~~~
+
+src/server/routes.ts:4:20 - error TS2792: Cannot find module 'helmet'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+4 import helmet from 'helmet';
+                     ~~~~~~~~
+
+src/server/routes.ts:5:8 - error TS1259: Module '"C:/Users/ethie/OneDrive/Documents/Marist_Work/Junior/Semester 2/AI/lab2/node_modules/@types/cookie-parser/index"' can only be default-imported using the 'allowSyntheticDefaultImports' flag      
+
+5 import cookieParser from 'cookie-parser';
+         ~~~~~~~~~~~~
+
+  node_modules/@types/cookie-parser/index.d.ts:41:1
+    41 export = cookieParser;
+       ~~~~~~~~~~~~~~~~~~~~~~
+    This module is declared with 'export =', and can only be used with a default import when using the 'allowSyntheticDefaultImports' flag.
+
+src/server/routes.ts:6:8 - error TS1259: Module '"C:/Users/ethie/OneDrive/Documents/Marist_Work/Junior/Semester 2/AI/lab2/node_modules/@types/csurf/index"' can only be default-imported using the 'allowSyntheticDefaultImports' flag
+
+6 import csrf from 'csurf';
+         ~~~~
+
+  node_modules/@types/csurf/index.d.ts:30:1
+    30 export = csurf;
+       ~~~~~~~~~~~~~~~
+    This module is declared with 'export =', and can only be used with a default import when using the 'allowSyntheticDefaultImports' flag.
+
+src/server/routes.ts:7:26 - error TS2792: Cannot find module 'sqlite3'. Did you mean to set the 'moduleResolution' option to 'nodenext', or to add aliases to the 'paths' option?
+
+7 import { Database } from 'sqlite3';
+                           ~~~~~~~~~
+
+src/server/routes.ts:105:13 - error TS2339: Property 'user' does not exist on type 'Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>'.
+
+105         req.user = { username: row.username };
+                ~~~~
+
+
+Found 49 errors in 10 files.
+
+Errors  Files
+     3  node_modules/@types/babel__core/index.d.ts:2
+     1  node_modules/@types/babel__generator/index.d.ts:1
+     2  node_modules/@types/babel__template/index.d.ts:1
+     2  node_modules/@types/babel__traverse/index.d.ts:1
+     3  node_modules/@types/jest/index.d.ts:622
+     1  node_modules/@types/node-fetch/index.d.ts:3
+    12  node_modules/@types/node/globals.d.ts:6
+    12  src/server/controllers.ts:2
+     6  src/server/main.ts:1
+     7  src/server/routes.ts:1
+Files:                         198
+Lines of Library:            41317
+Lines of Definitions:        61095
+Lines of TypeScript:          1174
+Lines of JavaScript:             0
+Lines of JSON:                   0
+Lines of Other:                  0
+Identifiers:                 95918
+Symbols:                    128468
+Types:                       51408
+Instantiations:              64539
+Memory used:               215116K
+Assignability cache size:    19490
+Identity cache size:           119
+Subtype cache size:             10
+Strict subtype cache size:       5
+I/O Read time:               0.04s
+Parse time:                  0.36s
+ResolveModule time:          0.18s
+ResolveTypeReference time:   0.02s
+ResolveLibrary time:         0.03s
+Program time:                0.69s
+Bind time:                   0.20s
+Check time:                  1.81s
+transformTime time:          0.01s
+Source Map time:             0.00s
+commentTime time:            0.00s
+I/O Write time:              0.01s
+printTime time:              0.08s
+Emit time:                   0.08s
+Total time:                  2.78s
+Starting the server...
+
+> poi-finder@1.0.0 start
+> node dist/server/main.js
+
+node:internal/modules/esm/resolve:275
+    throw new ERR_MODULE_NOT_FOUND(
+          ^
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find module 'C:\Users\ethie\OneDrive\Documents\Marist_Work\Junior\Semester 2\AI\lab2\dist\server\routes' imported from C:\Users\ethie\OneDrive\Documents\Marist_Work\Junior\Semester 2\AI\lab2\dist\server\main.js
+    at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+    at moduleResolve (node:internal/modules/esm/resolve:860:10)
+    at defaultResolve (node:internal/modules/esm/resolve:984:11)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:780:12)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:704:25)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:687:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:305:38)
+    at ModuleJob._link (node:internal/modules/esm/module_job:137:49) {
+  code: 'ERR_MODULE_NOT_FOUND',
+  url: 'file:///C:/Users/ethie/OneDrive/Documents/Marist_Work/Junior/Semester%202/AI/lab2/dist/server/routes'
+}
+
+Node.js v23.10.0
+
+Go through the @Codebase and fix the errors. Also, I would like to have as few npm packages as possible. Remove any packages that are not necessary.

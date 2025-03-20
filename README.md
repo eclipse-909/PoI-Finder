@@ -37,47 +37,16 @@ This web application allows users to discover points of interest in any location
 
 ### Installation
 
-1. Clone this repository:
+1. Clone this repository and execute the run script:
    ```
    git clone https://github.com/eclipse-909/e_morton-394-lab2.git
    cd e_morton-394-lab2
+   ./run.sh
    ```
 
-2. Install dependencies:
-   ```
-   npm install
-   ```
+2. Follow the instructions of the run script when you inevitably get errors.
 
-3. Create a `.env` file in the root directory with the following variables:
-   ```
-   GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-   GOOGLE_PLACES_API_KEY=your_google_places_api_key
-   OPENWEATHER_API_KEY=your_openweather_api_key
-   OPENAI_API_KEY=your_openai_api_key
-   SESSION_SECRET=your_session_secret
-   NODE_ENV=development
-   PORT=3000
-   DB_PATH=./database.sqlite
-   TLS_CERT_PATH=./cert.pem
-   TLS_KEY_PATH=./key.pem
-   ```
-
-4. Generate self-signed TLS certificates for development:
-   ```
-   openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
-   ```
-
-5. Build the TypeScript code:
-   ```
-   npm run build
-   ```
-
-6. Start the server:
-   ```
-   npm start
-   ```
-
-7. Visit `https://localhost:3000` in your browser
+3. Visit `https://localhost:3000` in your browser once the server starts.
 
 ### Development
 
