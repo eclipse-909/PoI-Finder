@@ -15,6 +15,7 @@ Additional UI Notes:
 * It's important that the UI and UX be good for users accessing the web app through mobile devices. For example, it would be better if the tab bar was on the bottom of the screen for mobile devices. Please try to make the UI mobile-friendly. It might be better to make different styles for desktop and mobile.
 * Use the low-fidelity wireframe images in the @wireframes folder to help guide the design of the UI.
 * Apply a consistent and visually appealing style and theme to the UI across all pages.
+* Look at the wireframes made in the wireframes folder to make the UI look like the wireframes. The wireframes are very low fidelity so make sure to add styling to make the UI look good.
 * Please let me know what images and other assets I need to provide to make the UI work.
 
 Technical Requirements:

@@ -2,30 +2,34 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build and Copy",
-            "dependsOrder": "sequence",
-            "dependsOn": [
-                "TypeScript Compile",
-                "Copy Public Files"
-            ],
+            "type": "npm",
+            "script": "build",
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": ["$tsc"],
+            "label": "npm: build",
+            "detail": "Build the TypeScript code"
         },
         {
-            "label": "TypeScript Compile",
-            "type": "typescript",
-            "tsconfig": "tsconfig.json",
-            "problemMatcher": ["$tsc"]
+            "type": "npm",
+            "script": "dev",
+            "problemMatcher": ["$tsc-watch"],
+            "label": "npm: dev",
+            "detail": "Run development mode with watch",
+            "isBackground": true
         },
         {
-            "label": "Copy Public Files",
-            "type": "shell",
-            "command": "mkdir -p dist/public && cp -r src/public/*.{html,css} dist/public/",
-            "windows": {
-                "command": "if not exist dist\\public mkdir dist\\public && copy src\\public\\*.html dist\\public\\ && copy src\\public\\*.css dist\\public\\"
-            }
+            "type": "npm",
+            "script": "test",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "label": "npm: test",
+            "detail": "Run tests"
         }
     ]
 } 

@@ -1,0 +1,96 @@
+/* Mobile-specific styles */
+
+/* Index page adjustments */
+.hero {
+  flex-direction: column;
+}
+
+.hero-content {
+  padding-right: 0;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.features {
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.auth-buttons {
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-buttons button {
+  width: 100px;
+}
+
+/* Tab bar improvements for mobile */
+.tab-bar {
+  height: 60px;
+  padding-bottom: 5px; /* For iOS home button area */
+}
+
+.icon {
+  font-size: 20px;
+}
+
+.tab-item span {
+  font-size: 0.8rem;
+}
+
+/* Form adjustments */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+label {
+  font-size: 0.9rem;
+}
+
+input, select, textarea {
+  padding: 8px;
+  font-size: 0.9rem;
+}
+
+/* Modal adjustments */
+.modal-content {
+  padding: 1.5rem;
+  width: 95%;
+}
+
+/* Home page adjustments */
+.location-options {
+  flex-direction: column;
+  gap: 15px;
+}
+
+.or-divider {
+  margin: 10px 0;
+}
+
+#map-container {
+  height: 250px;
+}
+
+/* POI card adjustments */
+.poi-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.poi-image {
+  height: 150px;
+}
+
+/* Saved searches adjustments */
+.saved-search-card {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+/* Account page */
+.account-actions button {
+  padding: 12px;
+} 
