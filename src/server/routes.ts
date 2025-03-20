@@ -147,20 +147,33 @@ export const setupRoutes = (app: express.Application, db: Database): void => {
 	// Security middleware
 	app.use(helmet());
 	app.use(cookieParser());
+
+	const dbPath = process.env.DB_PATH
+	const sessionSecret = process.env.SESSION_SECRET
+	const nodeEnv = process.env.NODE_ENV
+	if (!dbPath) {
+		throw new Error('DB_PATH is not set');
+	}
+	if (!sessionSecret) {
+		throw new Error('SESSION_SECRET is not set');
+	}
+	if (!nodeEnv) {
+		throw new Error('NODE_ENV is not set');
+	}
 	
 	// Session middleware
 	app.use(session({
 		store: new SQLiteStore({
-			db: process.env.DB_PATH?.split('/').pop() || 'database.sqlite',
-			dir: process.env.DB_PATH?.split('/').slice(0, -1).join('/') || '.',
+			db: dbPath.split('/').pop(),
+			dir: dbPath.split('/').slice(0, -1).join('/') || '.',
 			table: 'sessions'
 		}) as any, // Type assertion to fix SQLiteStore compatibility issue
-		secret: process.env.SESSION_SECRET || 'your-secret-key',
+		secret: sessionSecret,
 		resave: false,
 		saveUninitialized: false,
 		cookie: {
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
+			secure: nodeEnv === 'production',
 			maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 		}
 	}));

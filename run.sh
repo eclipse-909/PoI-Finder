@@ -12,6 +12,19 @@ if ! command -v npm &> /dev/null; then
 	exit 1
 fi
 
+# Check if TypeScript is installed globally
+if ! command -v tsc &> /dev/null; then
+	echo "TypeScript is not installed globally. Installing TypeScript..."
+	npm install -g typescript
+	
+	# Verify installation was successful
+	if ! command -v tsc &> /dev/null; then
+		echo "Error: Failed to install TypeScript. Please try installing it manually with 'npm install -g typescript'."
+		exit 1
+	fi
+	echo "TypeScript has been installed successfully."
+fi
+
 # Check if the .env file exists
 if [ ! -f .env ]; then
 	echo "Warning: .env file not found. Creating a template .env file."

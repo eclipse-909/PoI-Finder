@@ -34,7 +34,10 @@ if (missingEnvVars.length > 0) {
 
 // Setup server
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
+if (!port) {
+	throw new Error('PORT is not set');
+}
 
 // Connect to database
 const dbPath = process.env.DB_PATH as string;

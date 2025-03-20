@@ -174,8 +174,8 @@ export const signup = async (req: Request, res: Response) => {
 						const expires = new Date(now);
 						expires.setDate(expires.getDate() + 7); // 7 days session
 						
-						const ip = req.ip || req.socket.remoteAddress || '';
-						const userAgent = req.headers['user-agent'] || '';
+						// const ip = req.ip || req.socket.remoteAddress || '';
+						// const userAgent = req.headers['user-agent'] || '';
 						
 						// db.run(
 						// 	'INSERT INTO sessions (id, username, created_at, expires_at, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)',
