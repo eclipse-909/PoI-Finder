@@ -15,6 +15,6 @@ The main usage of this app is to find out points of interest in a given area, an
 We will likely use GPT-4o Mini to generate the list of PoIs.
 
 ## Technology Stack
-We will be using TypeScript. The backend will be run with Node.js and Express for the server. We will not use a frontend framework. We will just use classic TypeScript, HTML, and CSS.
+We will be using TypeScript. The backend will be run with Node.js and Express for the server. We will not use a frontend framework. We will just use classic JavaScript, HTML, and CSS.
 
-We will need some APIs for things like map and transportation data. We will likely use Google Maps APIs.
+We will be using GPT-4o Mini for our AI model, and we will use Google Maps API for Places, Routes, and a map integration.

@@ -70,21 +70,13 @@ npm run dev
 │   └── public/             # Frontend code
 │       ├── css/            # Stylesheets
 │       ├── js/             # JavaScript files
+│       ├── images/         # Image files
 │       └── index.html      # Main HTML file
 ├── dist/                   # Compiled code
 ├── .env                    # Environment variables
 ├── tsconfig.json           # TypeScript configuration
 └── package.json            # Project dependencies
 ```
-
-## Required Assets
-
-For the UI to look complete, you'll need to provide the following image assets in the `dist/public/images` directory:
-- logo.png - Application logo (recommended size: 50x50px)
-- hero.jpg - Hero image for the landing page (recommended size: 800x450px)
-- feature-location.jpg - Feature image for location feature (recommended size: 400x200px)
-- feature-ai.jpg - Feature image for AI feature (recommended size: 400x200px)
-- feature-save.jpg - Feature image for save feature (recommended size: 400x200px)
 
 ## API Endpoints
 
