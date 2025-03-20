@@ -1,0 +1,32 @@
+When I login, it shows this in the console:
+app.js:5 POI Finder App initialized
+app.js:11 Uncaught ReferenceError: initializeRouter is not defined
+    at HTMLDocument.<anonymous> (app.js:11:2)
+(anonymous) @ app.js:11
+router.js:127 Template "index-template" not found
+loadRoute @ router.js:127
+navigate @ router.js:110
+init @ router.js:51
+
+
+
+When I submit the login credentials, nothing happens. It just brings me back to the login page
+
+
+
+Logging in successfully authenticated me, but it doesn't bring me to the app page. When I log in, it should automatically bring me to the app page.
+
+
+
+I am now able to get to the app page again. Can you comment out the parts that call the google maps api? Also, the tabs aren't working anymore
+
+
+
+The tab buttons don't do anything when I click on them
+
+
+
+I've copied the code back in since it was working before. Can you just clean it up for me and make sure it's working correctly, calling the right functions, and styled correctly?
+
+
+
