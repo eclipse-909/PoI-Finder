@@ -8,11 +8,27 @@
 			"problemMatcher": [
 				"$tsc-watch"
 			],
+			"group": "build",
+			"label": "tsc: watch - tsconfig.json"
+		},
+		{
+			"label": "build_tsc",
+			"type": "shell",
+			"command": "tsc && mkdir -p dist/public && cp -r src/public/* dist/public 2>/dev/null || true",
+			"group": "build"
+		},
+		{
+			"label": "build-then-watch",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"build_tsc",
+				"tsc: watch - tsconfig.json"
+			],
+			"problemMatcher": ["$tsc-watch"],
 			"group": {
 				"kind": "build",
 				"isDefault": true
-			},
-			"label": "tsc: watch - tsconfig.json"
+			}
 		}
 	]
 }

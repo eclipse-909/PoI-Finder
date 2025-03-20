@@ -12,7 +12,7 @@
 				"<node_internals>/**"
 			],
 			"program": "${workspaceFolder}/dist/server/main.js",
-			"preLaunchTask": "tsc: watch - tsconfig.json",
+			"preLaunchTask": "build-then-watch",
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
