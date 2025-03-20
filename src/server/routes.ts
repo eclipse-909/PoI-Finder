@@ -5,12 +5,8 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { Database } from 'sqlite3';
 import session from 'express-session';
-import ConnectSqlite3 from 'connect-sqlite3';
 
 const router = express.Router();
-
-// Create SQLite session store
-const SQLiteStore = ConnectSqlite3(session);
 
 // Rate limiting setup
 const apiLimiter = rateLimit({
@@ -163,11 +159,6 @@ export const setupRoutes = (app: express.Application, db: Database): void => {
 	
 	// Session middleware
 	app.use(session({
-		store: new SQLiteStore({
-			db: dbPath.split('/').pop(),
-			dir: dbPath.split('/').slice(0, -1).join('/') || '.',
-			table: 'sessions'
-		}) as any, // Type assertion to fix SQLiteStore compatibility issue
 		secret: sessionSecret,
 		resave: false,
 		saveUninitialized: false,
