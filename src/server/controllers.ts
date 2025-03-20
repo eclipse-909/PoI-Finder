@@ -247,7 +247,7 @@ export const logout = (req: Request, res: Response) => {
 
 export const deleteAccount = (req: Request, res: Response) => {
 	try {
-		const { username } = req.user as { username: string };
+		const { username } = req.session.user as { username: string };
 		
 		// Delete user from database (cascade will delete preferences, searches, points of interest, and sessions)
 		db.run('DELETE FROM users WHERE username = ?', [username], (err) => {
@@ -269,7 +269,18 @@ export const deleteAccount = (req: Request, res: Response) => {
 // Preferences controllers
 export const getPreferences = (req: Request, res: Response) => {
 	try {
-		const { username } = req.user as { username: string };
+		const username: string = req.session.user?.username ?? '';
+		
+		// Then check if it's empty
+		if (!username) {
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 'SESSION_ERROR',
+					message: 'User session is invalid or missing username'
+				}
+			});
+		}
 		
 		db.get('SELECT * FROM preferences WHERE username = ?', [username], (err, row: any) => {
 			if (err) {
@@ -303,7 +314,19 @@ export const getPreferences = (req: Request, res: Response) => {
 
 export const updatePreferences = (req: Request, res: Response) => {
 	try {
-		const { username } = req.user as { username: string };
+		const username: string = req.session.user?.username ?? '';
+		
+		// Then check if it's empty
+		if (!username) {
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 'SESSION_ERROR',
+					message: 'User session is invalid or missing username'
+				}
+			});
+		}
+		
 		const preferences: UserPreferences = req.body;
 		
 		if (!preferences) {
@@ -353,7 +376,19 @@ export const updatePreferences = (req: Request, res: Response) => {
 // Search controllers
 export const search = async (req: Request, res: Response) => {
 	try {
-		const { username } = req.user as { username: string };
+		const username: string = req.session.user?.username ?? '';
+		
+		// Then check if it's empty
+		if (!username) {
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 'SESSION_ERROR',
+					message: 'User session is invalid or missing username'
+				}
+			});
+		}
+		
 		const searchData: SearchRequest = req.body;
 		
 		if (!searchData || (!searchData.location && !searchData.useCurrentLocation)) {
@@ -615,7 +650,18 @@ export const search = async (req: Request, res: Response) => {
 
 export const getSavedSearches = (req: Request, res: Response) => {
 	try {
-		const { username } = req.user as { username: string };
+		const username: string = req.session.user?.username ?? '';
+		
+		// Then check if it's empty
+		if (!username) {
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 'SESSION_ERROR',
+					message: 'User session is invalid or missing username'
+				}
+			});
+		}
 		
 		const query = `
 			SELECT 
@@ -658,7 +704,19 @@ export const getSavedSearches = (req: Request, res: Response) => {
 
 export const getSavedSearch = (req: Request, res: Response) => {
 	try {
-		const { username } = req.user as { username: string };
+		const username: string = req.session.user?.username ?? '';
+		
+		// Then check if it's empty
+		if (!username) {
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 'SESSION_ERROR',
+					message: 'User session is invalid or missing username'
+				}
+			});
+		}
+		
 		const { id } = req.params;
 		
 		// Get search data
@@ -709,7 +767,19 @@ export const getSavedSearch = (req: Request, res: Response) => {
 
 export const deleteSearch = (req: Request, res: Response) => {
 	try {
-		const { username } = req.user as { username: string };
+		const username: string = req.session.user?.username ?? '';
+		
+		// Then check if it's empty
+		if (!username) {
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 'SESSION_ERROR',
+					message: 'User session is invalid or missing username'
+				}
+			});
+		}
+		
 		const { id } = req.params;
 		
 		db.get('SELECT id FROM searches WHERE id = ? AND username = ?', [id, username], (err, row) => {
@@ -739,7 +809,19 @@ export const deleteSearch = (req: Request, res: Response) => {
 
 export const saveSearch = (req: Request, res: Response) => {
 	try {
-		const { username } = req.user as { username: string };
+		const username: string = req.session.user?.username ?? '';
+		
+		// Then check if it's empty
+		if (!username) {
+			return res.status(500).json({
+				success: false,
+				error: {
+					code: 'SESSION_ERROR',
+					message: 'User session is invalid or missing username'
+				}
+			});
+		}
+		
 		const { id } = req.params;
 		
 		db.get('SELECT id FROM searches WHERE id = ? AND username = ?', [id, username], (err, row) => {
