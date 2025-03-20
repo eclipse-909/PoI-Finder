@@ -42,19 +42,19 @@ CREATE TABLE IF NOT EXISTS points_of_interest (
 	FOREIGN KEY (search_id) REFERENCES searches(id) ON DELETE CASCADE
 );
 
--- Create sessions table
-CREATE TABLE IF NOT EXISTS sessions (
-	id TEXT PRIMARY KEY,
-	username TEXT NOT NULL,
-	created_at TEXT NOT NULL,
-	expires_at TEXT NOT NULL,
-	ip_address TEXT,
-	user_agent TEXT,
-	FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
-);
+-- -- Create sessions table
+-- CREATE TABLE IF NOT EXISTS sessions (
+-- 	id TEXT PRIMARY KEY,
+-- 	username TEXT NOT NULL,
+-- 	created_at TEXT NOT NULL,
+-- 	expires_at TEXT NOT NULL,
+-- 	ip_address TEXT,
+-- 	user_agent TEXT,
+-- 	FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
+-- );
 
 -- Create indexes for frequently queried fields
 CREATE INDEX IF NOT EXISTS idx_searches_username ON searches(username);
-CREATE INDEX IF NOT EXISTS idx_poi_search_id ON points_of_interest(search_id);
-CREATE INDEX IF NOT EXISTS idx_sessions_username ON sessions(username);
-CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at); 
+-- CREATE INDEX IF NOT EXISTS idx_poi_search_id ON points_of_interest(search_id);
+-- CREATE INDEX IF NOT EXISTS idx_sessions_username ON sessions(username);
+-- CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at); 

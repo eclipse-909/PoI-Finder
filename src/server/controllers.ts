@@ -177,26 +177,36 @@ export const signup = async (req: Request, res: Response) => {
 						const ip = req.ip || req.socket.remoteAddress || '';
 						const userAgent = req.headers['user-agent'] || '';
 						
-						db.run(
-							'INSERT INTO sessions (id, username, created_at, expires_at, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)',
-							[sessionId, username, now.toISOString(), expires.toISOString(), ip, userAgent],
-							(err) => {
-								if (err) {
-									console.error('Database error:', err);
-									return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
-								}
+						// db.run(
+						// 	'INSERT INTO sessions (id, username, created_at, expires_at, ip_address, user_agent) VALUES (?, ?, ?, ?, ?, ?)',
+						// 	[sessionId, username, now.toISOString(), expires.toISOString(), ip, userAgent],
+						// 	(err) => {
+						// 		if (err) {
+						// 			console.error('Database error:', err);
+						// 			return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
+						// 		}
 								
-								// Set session cookie
-								res.cookie('session', sessionId, {
-									httpOnly: true,
-									secure: process.env.NODE_ENV === 'production',
-									sameSite: 'strict',
-									expires
-								});
+						// 		// Set session cookie
+						// 		res.cookie('session', sessionId, {
+						// 			httpOnly: true,
+						// 			secure: process.env.NODE_ENV === 'production',
+						// 			sameSite: 'strict',
+						// 			expires
+						// 		});
 								
-								return res.status(201).json(createResponse(true, { username }));
-							}
-						);
+						// 		return res.status(201).json(createResponse(true, { username }));
+						// 	}
+						// );
+
+						// Set session cookie
+						res.cookie('session', sessionId, {
+							httpOnly: true,
+							secure: process.env.NODE_ENV === 'production',
+							sameSite: 'strict',
+							expires
+						});
+						
+						return res.status(201).json(createResponse(true, { username }));
 					}
 				);
 			});

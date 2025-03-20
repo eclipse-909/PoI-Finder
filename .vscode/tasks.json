@@ -1,35 +1,18 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "type": "npm",
-            "script": "build",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": ["$tsc"],
-            "label": "npm: build",
-            "detail": "Build the TypeScript code"
-        },
-        {
-            "type": "npm",
-            "script": "dev",
-            "problemMatcher": ["$tsc-watch"],
-            "label": "npm: dev",
-            "detail": "Run development mode with watch",
-            "isBackground": true
-        },
-        {
-            "type": "npm",
-            "script": "test",
-            "group": {
-                "kind": "test",
-                "isDefault": true
-            },
-            "problemMatcher": [],
-            "label": "npm: test",
-            "detail": "Run tests"
-        }
-    ]
-} 
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "typescript",
+			"tsconfig": "tsconfig.json",
+			"option": "watch",
+			"problemMatcher": [
+				"$tsc-watch"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "tsc: watch - tsconfig.json"
+		}
+	]
+}

@@ -14,7 +14,7 @@
   "type": "commonjs",
   "main": "dist/server/main.js",
   "scripts": {
-    "start": "npm run build && node dist/server/main.js",
+    "start": "./run.sh",
     "dev": "npm run build && concurrently \"tsc --watch\" \"nodemon dist/server/main.js\"",
     "build": "tsc && npm run copy-assets",
     "copy-assets": "mkdir -p dist/public && cp -r src/public/*.html src/public/css src/public/js dist/public 2>/dev/null || true",

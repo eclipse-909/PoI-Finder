@@ -44,6 +44,11 @@ if [ ! -d "node_modules" ]; then
 	npm install
 fi
 
-# Start the server
-echo "Building TypeScript code and starting the server..."
-npm start
+echo "Building TypeScript code..."
+tsc
+
+echo "Copying assets..."
+mkdir -p dist/public && cp -r src/public/*.html src/public/css src/public/js dist/public 2>/dev/null || true
+
+echo "Starting server..."
+node dist/server/main.js
