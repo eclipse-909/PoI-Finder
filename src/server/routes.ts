@@ -100,6 +100,10 @@ router.post('/api/signup', authLimiter, createHandler(controllers.signup));
 // Authentication required for all routes below
 const setupAuthenticatedRoutes = (db: Database): void => {
 	// User routes
+	router.post('/api/change_password', authenticateUser, csrfProtection, (req: Request, res: Response): void => {
+		void controllers.changePassword(req, res);
+	});
+
 	router.get('/api/logout', authenticateUser, (req: Request, res: Response): void => {
 		void controllers.logout(req, res);
 	});

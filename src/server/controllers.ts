@@ -227,6 +227,49 @@ export const signup = async (req: Request, res: Response) => {
 	}
 };
 
+export const changePassword = async (req: Request, res: Response) => {
+	try {
+		const { current_password, new_password } = req.body;
+		const username = req.session.user?.username;
+
+		if (!username || !current_password || !new_password) {
+			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Missing required fields'));
+		}
+
+		// Check current password
+		db.get('SELECT * FROM users WHERE username = ?', [username], async (err, row: any) => {
+			if (err) {
+				console.error('Database error:', err);
+				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
+			}
+
+			if (!row) {
+				return res.status(401).json(createResponse(false, undefined, 'AUTH_FAILED', 'Invalid username or password'));
+			}
+
+			const passwordMatch = await bcrypt.compare(current_password, row.password_hash);
+			if (!passwordMatch) {
+				return res.status(401).json(createResponse(false, undefined, 'AUTH_FAILED', 'Invalid current password'));
+			}
+
+			const saltRounds = 10;
+			const newPasswordHash = await bcrypt.hash(new_password, saltRounds);
+
+			db.run('UPDATE users SET password_hash = ? WHERE username = ?', [newPasswordHash, username], (err) => {
+				if (err) {
+					console.error('Database error:', err);
+					return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
+				}
+
+				return res.status(200).json(createResponse(true, { message: 'Password updated successfully' }));
+			});
+		});
+	} catch (error) {
+		console.error('Change password error:', error);
+		return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
+	}
+};
+
 export const logout = (req: Request, res: Response) => {
 	// Destroy the session
 	req.session.destroy((err) => {
