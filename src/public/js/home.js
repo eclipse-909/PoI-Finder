@@ -257,15 +257,29 @@ const homePage = {
 				this.searchResults = response.data;
 				this.displayResults(response.data);
 			} else {
-				alert(response.error?.message || 'Search failed');
+				// Hide loading UI
 				document.getElementById('searching-container').classList.add('hidden');
 				document.getElementById('manual-location-container').classList.remove('hidden');
+				
+				// Show appropriate error
+				if (response.error?.code === 'API_KEYS_MISSING') {
+					alert('This application is running in debug mode without required API keys (Google Maps, Places, OpenWeather, OpenAI). Search functionality is disabled.');
+				} else {
+					alert(response.error?.message || 'Search failed');
+				}
 			}
 		} catch (error) {
 			console.error('Search error:', error);
-			alert(error.message || 'Search failed');
+			
+			// Show appropriate error and UI
 			document.getElementById('searching-container').classList.add('hidden');
 			document.getElementById('manual-location-container').classList.remove('hidden');
+			
+			if (error.message.includes('debug mode') || error.message.includes('API keys')) {
+				alert('Debug mode: API keys missing. Search functionality is disabled.');
+			} else {
+				alert(error.message || 'Search failed');
+			}
 		}
 	},
 	

@@ -59,3 +59,11 @@ Can you make it so the save preferences button is disabled, but it becomes enabl
 
 
 When the button is disabled, it should be gray and non-interactable.
+
+
+
+Can you make it so if an API key was not provided in the .env, you can still use the website. However, instead of attempting to call the API, it just responds with an error that the API key was not provided? On the frontend, it should just make an alert that the server is a debug build and doesn't have API keys set.
+
+
+
+When the API key environemtn variable is set to "placeholder", that should also be considered missing.

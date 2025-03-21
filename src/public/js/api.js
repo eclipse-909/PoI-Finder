@@ -153,6 +153,10 @@ class ApiClient {
 			const data = await response.json();
 			
 			if (!response.ok) {
+				// Special handling for missing API keys
+				if (data.error?.code === 'API_KEYS_MISSING') {
+					alert('This server is running in debug mode without required API keys. Some features are disabled.');
+				}
 				throw new Error(data.error?.message || 'Search failed');
 			}
 
@@ -320,6 +324,10 @@ class ApiClient {
 			const data = await response.json();
 			
 			if (!response.ok) {
+				// Special handling for missing API keys
+				if (data.error?.code === 'API_KEYS_MISSING') {
+					alert('This server is running in debug mode without required API keys. Some features are disabled.');
+				}
 				throw new Error(data.error?.message || 'Failed to save search');
 			}
 

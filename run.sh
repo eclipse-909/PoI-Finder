@@ -29,10 +29,10 @@ fi
 if [ ! -f .env ]; then
 	echo "Warning: .env file not found. Creating a template .env file."
 	cat > .env << 'EOF'
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-GOOGLE_PLACES_API_KEY=your_google_places_api_key
-OPENWEATHER_API_KEY=your_openweather_api_key
-OPENAI_API_KEY=your_openai_api_key
+GOOGLE_MAPS_API_KEY=placeholder
+GOOGLE_PLACES_API_KEY=placeholder
+OPENWEATHER_API_KEY=placeholder
+OPENAI_API_KEY=placeholder
 SESSION_SECRET=your_session_secret
 NODE_ENV=development
 PORT=3000

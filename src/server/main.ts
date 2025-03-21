@@ -11,12 +11,8 @@ import { Request, Response } from 'express';
 // Load environment variables
 dotenv.config();
 
-// Validate required environment variables
-const requiredEnvVars = [
-	'GOOGLE_MAPS_API_KEY',
-	'GOOGLE_PLACES_API_KEY',
-	'OPENWEATHER_API_KEY',
-	'OPENAI_API_KEY',
+// Separate critical vs API key environment variables
+const criticalEnvVars = [
 	'SESSION_SECRET',
 	'NODE_ENV',
 	'PORT',
@@ -25,11 +21,29 @@ const requiredEnvVars = [
 	'TLS_KEY_PATH'
 ];
 
-const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+const apiKeyEnvVars = [
+	'GOOGLE_MAPS_API_KEY',
+	'GOOGLE_PLACES_API_KEY',
+	'OPENWEATHER_API_KEY',
+	'OPENAI_API_KEY'
+];
 
-if (missingEnvVars.length > 0) {
-	console.error('Missing required environment variables:', missingEnvVars.join(', '));
+// Check for missing critical variables
+const missingCriticalVars = criticalEnvVars.filter(envVar => !process.env[envVar]);
+if (missingCriticalVars.length > 0) {
+	console.error('Missing critical environment variables:', missingCriticalVars.join(', '));
 	process.exit(1);
+}
+
+// Check for missing API keys (but don't exit)
+const missingApiKeys = apiKeyEnvVars.filter(envVar => 
+	!process.env[envVar] || process.env[envVar] === 'placeholder'
+);
+
+if (missingApiKeys.length > 0) {
+	console.warn('Running in limited mode - missing API keys:', missingApiKeys.join(', '));
+	// Set a global flag indicating missing API keys
+	global.missingApiKeys = missingApiKeys;
 }
 
 // Setup server
@@ -138,6 +152,9 @@ const server = https.createServer(httpsOptions, app);
 
 server.listen(port, () => {
 	console.log(`Server running on https://localhost:${port}`);
+	if (global.missingApiKeys?.length > 0) {
+		console.log(`Note: Running in debug mode without some API keys. Some features will not work.`);
+	}
 });
 
 // Handle shutdown

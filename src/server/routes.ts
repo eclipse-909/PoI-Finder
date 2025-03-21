@@ -148,6 +148,47 @@ const setupAuthenticatedRoutes = (db: Database): void => {
 	});
 };
 
+// Add this with other middleware
+const checkApiKeys = (req: Request, res: Response, next: NextFunction): void => {
+	// Check if we're missing API keys for this endpoint
+	const endpoint = req.path;
+	let requiredKeys: string[] = [];
+	
+	// Determine which API keys are needed for this endpoint
+	if (endpoint === '/api/search') {
+		requiredKeys = ['GOOGLE_MAPS_API_KEY', 'GOOGLE_PLACES_API_KEY', 'OPENWEATHER_API_KEY', 'OPENAI_API_KEY'];
+	} else if (endpoint.includes('/save_search')) {
+		requiredKeys = ['GOOGLE_MAPS_API_KEY', 'GOOGLE_PLACES_API_KEY'];
+	}
+	
+	// Check if any required keys are missing
+	if (global.missingApiKeys && requiredKeys.some(key => global.missingApiKeys.includes(key))) {
+		const missingKeys = requiredKeys.filter(key => global.missingApiKeys.includes(key));
+		res.status(503).json({
+			success: false,
+			error: {
+				code: 'API_KEYS_MISSING',
+				message: 'This server is running in debug mode without required API keys',
+				missingKeys
+			}
+		});
+		return;
+	}
+	
+	next();
+};
+
+// Then add this middleware to relevant routes
+router.post('/api/search', authenticateUser, apiLimiter, checkApiKeys, (req: Request, res: Response): void => {
+	void controllers.search(req, res);
+});
+
+router.post('/api/save_search/:id', authenticateUser, csrfProtection, checkApiKeys, (req: Request, res: Response): void => {
+	void controllers.saveSearch(req, res);
+});
+
+// Also add to other routes that require API keys as appropriate
+
 export const setupRoutes = (app: express.Application, db: Database): void => {
 	// Security middleware
 	app.use(helmet());

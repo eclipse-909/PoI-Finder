@@ -44,16 +44,15 @@ This web application allows users to discover points of interest in any location
    ./run.sh
    ```
 
-2. Follow the instructions of the run script when you inevitably get errors.
+2. Follow the instructions of the run script when you inevitably get errors. If you do not have API keys, most features will not work, but you can at least look at the website.
 
 3. Visit `https://localhost:3000` in your browser once the server starts.
 
 ### Development
 
-For development with automatic recompilation:
-```
-npm run dev
-```
+## Debugging
+
+For VS Code-based editors, a .vscode directory is provided with a debug configuration.
 
 ## Project Structure
 
