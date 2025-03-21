@@ -215,7 +215,8 @@ const accountPage = {
 			
 			if (response.success) {
 				// Update authentication status and navigate to index
-				window.router.setAuthentication(false);
+				//window.router.setAuthentication(false); //Where is the setAuthentication function?
+				window.location.href = '/index.html';
 			} else {
 				alert(response.error?.message || 'Logout failed');
 				
@@ -253,7 +254,8 @@ const accountPage = {
 			
 			if (response.success) {
 				// Update authentication status and navigate to index
-				window.router.setAuthentication(false);
+				//window.router.setAuthentication(false); //Where is the setAuthentication function?
+				window.location.href = '/index.html';
 			} else {
 				alert(response.error?.message || 'Failed to delete account');
 				
