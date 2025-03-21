@@ -39,7 +39,7 @@ class ApiClient {
 				body: JSON.stringify({ username, password })
 			});
 			
-			return await response.json();
+			return await this.handleResponse(response);
 		} catch (error) {
 			console.error('Login error:', error);
 			return {
@@ -68,7 +68,7 @@ class ApiClient {
 				body: JSON.stringify({ username, password })
 			});
 			
-			return await response.json();
+			return await this.handleResponse(response);
 		} catch (error) {
 			console.error('Signup error:', error);
 			return {
@@ -91,7 +91,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				throw new Error(data.error?.message || 'Logout failed');
@@ -121,7 +121,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				throw new Error(data.error?.message || 'Account deletion failed');
@@ -132,6 +132,23 @@ class ApiClient {
 			console.error('Delete account error:', error);
 			throw error;
 		}
+	}
+
+	/**
+	 * Generic method to handle API responses
+	 * @param {Response} response - Fetch response object
+	 * @returns {Promise<object>} - Parsed response data
+	 */
+	static async handleResponse(response) {
+		const data = await response.json();
+		
+		if (response.status === 401) {
+			console.log('Authentication required, redirecting to login');
+			window.location.href = '/login.html';
+			throw new Error('Authentication required');
+		}
+		
+		return data;
 	}
 
 	/**
@@ -150,7 +167,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				// Special handling for missing API keys
@@ -178,7 +195,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				throw new Error(data.error?.message || 'Failed to get preferences');
@@ -210,7 +227,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				throw new Error(data.error?.message || 'Failed to update preferences');
@@ -234,7 +251,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				throw new Error(data.error?.message || 'Failed to get saved searches');
@@ -259,7 +276,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				throw new Error(data.error?.message || 'Failed to get saved search');
@@ -290,7 +307,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				throw new Error(data.error?.message || 'Failed to delete search');
@@ -321,7 +338,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				// Special handling for missing API keys
@@ -361,7 +378,7 @@ class ApiClient {
 				credentials: 'include'
 			});
 
-			const data = await response.json();
+			const data = await this.handleResponse(response);
 			
 			if (!response.ok) {
 				throw new Error(data.error?.message || 'Failed to change password');

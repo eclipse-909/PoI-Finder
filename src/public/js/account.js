@@ -6,37 +6,17 @@ const accountPage = {
 	 * Initialize account page
 	 */
 	init() {
-		this.displayUsername();
-		this.setupEventListeners();
-	},
-	
-	/**
-	 * Display the user's username
-	 */
-	displayUsername() {
-		// Get username from cookie or previous API responses
-		const usernameElement = document.getElementById('account-username');
-		
-		if (usernameElement) {
-			// Try to get username from cookie
-			const cookies = document.cookie.split(';');
-			let username = '';
-			
-			for (const cookie of cookies) {
-				const [name, value] = cookie.trim().split('=');
-				if (name === 'username') {
-					username = decodeURIComponent(value);
-					break;
+		// Fetch user info to display username
+		fetch('/api/auth-status', { credentials: 'include' })
+			.then(response => response.json())
+			.then(data => {
+				if (data.authenticated) {
+					document.getElementById('account-username').textContent = data.user.username;
 				}
-			}
+			})
+			.catch(error => console.error('Error fetching user info:', error));
 			
-			if (username) {
-				usernameElement.textContent = username;
-			} else {
-				// If username not found in cookie, show placeholder
-				usernameElement.textContent = 'User';
-			}
-		}
+		this.setupEventListeners();
 	},
 	
 	/**

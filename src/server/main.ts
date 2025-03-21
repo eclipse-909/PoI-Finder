@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction } from 'express';
 import https from 'https';
 import fs from 'fs';
 import path from 'path';
@@ -77,70 +77,38 @@ fs.readdirSync(migrationsDir)
 	});
 
 // Static files
-app.use(express.static(path.join(__dirname, '..', 'public')));
+// app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // Setup routes
 setupRoutes(app, db);
 
-// Modify the SPA fallback to handle multiple HTML files
-app.get('*', (req: Request, res: Response): void => {
-	// Check if the request is for an API endpoint
-	if (req.url.startsWith('/api/')) {
-		res.status(404).json({
-			success: false,
-			error: {
-				code: 'NOT_FOUND',
-				message: 'API endpoint not found'
-			}
-		});
+// Authentication middleware
+const authenticateUser = (req: Request, res: Response, next: NextFunction): void => {
+	if (!req.session.user) {
+		res.redirect('/login.html');
 		return;
 	}
-	
-	// Check for specific HTML page requests
-	const url = req.url.split('?')[0]; // Remove query parameters
-	
-	if (url === '/login.html') {
-		res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
-		return;
-	}
-	
-	if (url === '/signup.html') {
-		res.sendFile(path.join(__dirname, '..', 'public', 'signup.html'));
-		return;
-	}
-	
-	if (url === '/app.html') {
-		// Check if user is authenticated
-		console.log('App page requested, auth status:', !!req.session.user);
-		console.log('Session data:', req.session);
-		
-		if (!req.session.user) {
-			console.log('User not authenticated, redirecting to login');
-			res.redirect('/login.html');
-			return;
-		}
-		
-		console.log('User authenticated, serving app page');
-		res.sendFile(path.join(__dirname, '..', 'public', 'app.html'));
-		return;
-	}
-	
-	// For root or other routes, serve index.html
-	if (url === '/' || url === '/index.html') {
-		res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
-		return;
-	}
-	
-	// For other routes, check if file exists
-	const filePath = path.join(__dirname, '..', 'public', url);
-	if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-		res.sendFile(filePath);
-		return;
-	}
-	
-	// Default fallback to index.html
-	res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+	next();
+};
+
+// Serve HTML files
+
+const PUBLIC_DIR = path.join(__dirname, '..', 'public');
+app.get('/', (_req: Request, res: Response): void => {
+	res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
+app.get('/login.html', (_req: Request, res: Response): void => {
+	res.sendFile(path.join(PUBLIC_DIR, 'login.html'));
+});
+app.get('/signup.html', (_req: Request, res: Response): void => {
+	res.sendFile(path.join(PUBLIC_DIR, 'signup.html'));
+});
+app.get('/app.html', authenticateUser, (_req: Request, res: Response): void => {
+	res.sendFile(path.join(PUBLIC_DIR, 'app.html'));
+});
+app.use('/js', express.static(path.join(PUBLIC_DIR, 'js')));
+app.use('/css', express.static(path.join(PUBLIC_DIR, 'css')));
+app.use('/images', express.static(path.join(PUBLIC_DIR, 'images')));
 
 // Start HTTPS server
 const httpsOptions = {

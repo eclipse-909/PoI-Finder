@@ -1,0 +1,5 @@
+When a user tries to access the app page or any api protected by session middleware, it should only allow them if they have a session, If they don't they should be redirected to the login page. Right now it doesn't do that. Can you fix this?
+
+
+
+Now that the server redirects to login if the user is not authenticated, is the /api/auth-status route still needed?

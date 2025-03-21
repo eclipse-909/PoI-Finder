@@ -117,8 +117,8 @@ const setupAuthenticatedRoutes = (db: Database): void => {
 		void controllers.updatePreferences(req, res);
 	});
 	
-	// Search routes
-	router.post('/api/search', authenticateUser, apiLimiter, (req: Request, res: Response): void => {
+	// Search routes - Add checkApiKeys middleware here
+	router.post('/api/search', authenticateUser, apiLimiter, checkApiKeys, (req: Request, res: Response): void => {
 		void controllers.search(req, res);
 	});
 	
@@ -134,7 +134,7 @@ const setupAuthenticatedRoutes = (db: Database): void => {
 		void controllers.deleteSearch(req, res);
 	});
 	
-	router.post('/api/save_search/:id', authenticateUser, csrfProtection, (req: Request, res: Response): void => {
+	router.post('/api/save_search/:id', authenticateUser, csrfProtection, checkApiKeys, (req: Request, res: Response): void => {
 		void controllers.saveSearch(req, res);
 	});
 
