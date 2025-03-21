@@ -48,13 +48,13 @@ This web application allows users to discover points of interest in any location
 
 3. Visit `https://localhost:3000` in your browser once the server starts.
 
-### Development
+## Development
 
-## Debugging
+### Debugging
 
 For VS Code-based editors, a .vscode directory is provided with a debug configuration.
 
-## Project Structure
+### Project Structure
 
 ```
 .
