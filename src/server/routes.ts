@@ -214,7 +214,7 @@ export const setupRoutes = (app: express.Application, db: Database): void => {
 		saveUninitialized: false,
 		cookie: {
 			httpOnly: true,
-			secure: nodeEnv === 'production',
+			secure: true,
 			sameSite: 'lax',
 			maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 		}
