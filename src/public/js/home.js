@@ -208,7 +208,6 @@ const homePage = {
 				
 				// Hide searching container and show manual input
 				document.getElementById('searching-container').classList.add('hidden');
-				this.handleManualLocation();
 			}
 		);
 	},
@@ -259,7 +258,6 @@ const homePage = {
 			} else {
 				// Hide loading UI
 				document.getElementById('searching-container').classList.add('hidden');
-				document.getElementById('manual-location-container').classList.remove('hidden');
 				
 				// Show appropriate error
 				if (response.error?.code === 'API_KEYS_MISSING') {
@@ -273,13 +271,7 @@ const homePage = {
 			
 			// Show appropriate error and UI
 			document.getElementById('searching-container').classList.add('hidden');
-			document.getElementById('manual-location-container').classList.remove('hidden');
-			
-			if (error.message.includes('debug mode') || error.message.includes('API keys')) {
-				alert('Debug mode: API keys missing. Search functionality is disabled.');
-			} else {
-				alert(error.message || 'Search failed');
-			}
+			alert(error.message || 'Search failed');
 		}
 	},
 	

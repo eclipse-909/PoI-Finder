@@ -155,7 +155,7 @@ class ApiClient {
 			if (!response.ok) {
 				// Special handling for missing API keys
 				if (data.error?.code === 'API_KEYS_MISSING') {
-					alert('This server is running in debug mode without required API keys. Some features are disabled.');
+					return data;
 				}
 				throw new Error(data.error?.message || 'Search failed');
 			}

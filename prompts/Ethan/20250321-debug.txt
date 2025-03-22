@@ -3,3 +3,7 @@ When a user tries to access the app page or any api protected by session middlew
 
 
 Now that the server redirects to login if the user is not authenticated, is the /api/auth-status route still needed?
+
+
+
+In the home page, is the google maps API key sent to the client? If so, couldn't the client easily steal the API key?
