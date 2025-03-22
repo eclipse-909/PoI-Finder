@@ -4,8 +4,8 @@
 document.addEventListener('DOMContentLoaded', () => {
 	console.log('POI Finder App initialized');
 	
-	// Add the Google Maps API key meta tag - commented out
-	// addGoogleMapsApiKeyMeta();
+	// Add the Google Maps API key meta tag
+	addGoogleMapsApiKeyMeta();
 	
 	// Initialize debouncing for search inputs
 	initDebouncing();
@@ -23,18 +23,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Add meta tag for Google Maps API key - commented out
+ * Add meta tag for Google Maps API key
  * This will be set by the server before sending the page
  */
-/*
 function addGoogleMapsApiKeyMeta() {
 	const meta = document.createElement('meta');
 	meta.name = 'google-maps-api-key';
+	
 	// This value will be replaced by the server with the actual API key
-	meta.content = '%%GOOGLE_MAPS_API_KEY%%';
+	// For development/test purposes, you can use a placeholder or restricted key
+	meta.content = 'google-maps-api-key-placeholder';
+	
 	document.head.appendChild(meta);
 }
-*/
 
 /**
  * Initialize debouncing for search inputs

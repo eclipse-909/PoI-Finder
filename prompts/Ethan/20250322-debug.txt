@@ -1,0 +1,21 @@
+I was looking on the google maps API website and I cam across two different types of maps APIs: embedded map and javascript map. What is the difference between them and which one do I need to use for my website? Here is the link to the embedded map docs: @https://developers.google.com/maps/documentation/embed/get-started and here is a link to the javascript map docs: @https://developers.google.com/maps/documentation/javascript . You can browse around other pages on the respective websites to get more information.
+
+
+
+The most important feature in the map that I need is to be able to place a marker on the map and get the location from it. If the embed map can do that, then that sounds great. If it can't, would I have to use the javascript map?
+
+
+
+Previously, you generated some code for the javascript map. Then I asked you to comment it out since I don't have the API key and wanted to focus on other parts of the website. Can you uncomment the code and make it work? The website should display the map. When I click on the map, it should place a marker on the map and get the location from it. We also need to get the address from the location, and display it in the address input field. Additionally, if you haven't already, the address input field should autocomplete addresses when you start typing. There should be a dropdown below the address input field that displays the possible and most relevant autocomplete options.
+
+
+
+I liked your idea of replacing the key when the server serves the file. The only file that should use the key is app.html and it is only used in the app.js file. I don't need it to check on every request.
+
+
+
+I understand serving the app.js file specifically, but why did you modify the app.html file? Also, since I'm serving static files from the js folder, will the specific handler for app.js work correctly?
+
+
+
+I'm suddenly getting an error when I try to login. I don't think I've changed anything, but it's not working anymore all of a sudden. When I login, it sends the /api/login request, and it successfully logs in. Then it redirects to /app.html as it should. When the server receives the app.html request, it calls the authenticateUser middleware. In the middleware, the req.session is undefined. I'm not sure why. It was working before. Why is it undefined now?
