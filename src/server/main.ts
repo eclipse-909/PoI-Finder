@@ -76,23 +76,50 @@ fs.readdirSync(migrationsDir)
 		});
 	});
 
-// Static files
-// app.use(express.static(path.join(__dirname, '..', 'public')));
-
-// Setup routes
-setupRoutes(app, db);
-
 // Authentication middleware
 const authenticateUser = (req: Request, res: Response, next: NextFunction): void => {
-	if (!req.session.user) {
+	if (!req.session || !req.session.user) {
 		res.redirect('/login.html');
 		return;
 	}
 	next();
 };
 
-// Serve HTML files
+// IMPORTANT: Initialize session middleware FIRST
+setupRoutes(app, db);  // This sets up session middleware
 
+// THEN define your routes
+// Custom route for app.js with API key replacement
+app.get('/js/app.js', (req: Request, res: Response, next: NextFunction): void => {
+	const filePath = path.join(PUBLIC_DIR, 'js/app.js');
+	fs.readFile(filePath, 'utf8', (err, data) => {
+		if (err) {
+			return next(err);
+		}
+		
+		// Get the API key from environment variables
+		const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+		
+		// Replace the placeholder with the actual API key
+		if (apiKey) {
+			data = data.replace(
+				"meta.content = 'google-maps-api-key-placeholder';",
+				`meta.content = '${apiKey}';`
+			);
+
+			// Set cache control headers to prevent caching of this file
+			res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+			res.setHeader('Pragma', 'no-cache');
+			res.setHeader('Expires', '0');
+		}
+		
+		// Send the modified JavaScript
+		res.setHeader('Content-Type', 'application/javascript');
+		res.send(data);
+	});
+});
+
+// Serve HTML files
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 app.get('/', (_req: Request, res: Response): void => {
 	res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
@@ -106,6 +133,8 @@ app.get('/signup.html', (_req: Request, res: Response): void => {
 app.get('/app.html', authenticateUser, (_req: Request, res: Response): void => {
 	res.sendFile(path.join(PUBLIC_DIR, 'app.html'));
 });
+
+// Then serve static files for everything else
 app.use('/js', express.static(path.join(PUBLIC_DIR, 'js')));
 app.use('/css', express.static(path.join(PUBLIC_DIR, 'css')));
 app.use('/images', express.static(path.join(PUBLIC_DIR, 'images')));
