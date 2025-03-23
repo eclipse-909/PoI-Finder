@@ -25,10 +25,8 @@
 	width: 100px;
 }
 
-/* Tab bar improvements for mobile */
-.tab-bar {
-	height: 60px;
-	padding-bottom: 5px; /* For iOS home button area */
+.tab-item {
+	padding: 12px 0;
 }
 
 .icon {
