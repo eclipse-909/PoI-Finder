@@ -12,9 +12,9 @@ The main usage of this app is to find out points of interest in a given area, an
 - Use weather data to find the best times to visit the PoI
 - Use transportation data to find the best route to the PoI
 ## AI Integration
-We will likely use GPT-4o Mini to generate the list of PoIs.
+We will use the free tier of Google Gemini to generate the PoI recommendations.
 
 ## Technology Stack
-We will be using TypeScript. The backend will be run with Node.js and Express for the server. We will not use a frontend framework. We will just use classic JavaScript, HTML, and CSS.
+We will be using TypeScript. The backend will be run with Node.js and Express for the server. We will not use a frontend framework. We will just use classic JavaScript, HTML, and CSS. We are also using SQLite for our database.
 
-We will be using GPT-4o Mini for our AI model, and we will use Google Maps API for Places, Routes, and a map integration.
+We will be using Google Gemini for our AI model, Google Maps API for Places, Routes, and a map integration, and OpenWeather API for weather data.

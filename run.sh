@@ -30,9 +30,8 @@ if [ ! -f .env ]; then
 	echo "Warning: .env file not found. Creating a template .env file."
 	cat > .env << 'EOF'
 GOOGLE_MAPS_API_KEY=placeholder
-GOOGLE_PLACES_API_KEY=placeholder
 OPENWEATHER_API_KEY=placeholder
-OPENAI_API_KEY=placeholder
+GOOGLE_GEMINI_API_KEY=placeholder
 SESSION_SECRET=your_session_secret
 NODE_ENV=development
 PORT=3000
@@ -47,7 +46,15 @@ fi
 # Check if TLS certificates exist
 if [ ! -f cert.pem ] || [ ! -f key.pem ]; then
 	echo "Warning: TLS certificates not found. Creating self-signed certificates for development."
-	openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes -subj "/CN=localhost"
+
+	# Create the self-signed certificate
+	openssl req -x509 -newkey rsa:4096 \
+		-keyout key.pem \
+		-out cert.pem \
+		-days 70 \
+		-nodes \
+		-subj "/C=US/ST=NY/L=Poughkeepsie/O=Marist University/OU=CMPT_394L_111/CN=localhost" \
+		-addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
 	echo "Self-signed certificates created for development purposes."
 fi
 

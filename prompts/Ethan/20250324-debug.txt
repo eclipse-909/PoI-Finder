@@ -1,0 +1,5 @@
+Is geocoding included with the google maps api, or do I need a separate key for that?
+
+
+
+Can you change the code so it uses google gemini instead of openai? Here is the documentation: @https://ai.google.dev/gemini-api/docs#node.js . Can you also go through the @Codebase and make sure we are referencing gemini and not openai or gpt anymore?

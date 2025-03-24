@@ -160,9 +160,7 @@ const checkApiKeys = (req: Request, res: Response, next: NextFunction): void => 
 	
 	// Determine which API keys are needed for this endpoint
 	if (endpoint === '/api/search') {
-		requiredKeys = ['GOOGLE_MAPS_API_KEY', 'GOOGLE_PLACES_API_KEY', 'OPENWEATHER_API_KEY', 'OPENAI_API_KEY'];
-	} else if (endpoint.includes('/save_search')) {
-		requiredKeys = ['GOOGLE_MAPS_API_KEY', 'GOOGLE_PLACES_API_KEY'];
+		requiredKeys = ['GOOGLE_MAPS_API_KEY', 'OPENWEATHER_API_KEY', 'GOOGLE_GEMINI_API_KEY'];
 	}
 	
 	// Check if any required keys are missing

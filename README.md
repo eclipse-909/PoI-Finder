@@ -28,25 +28,25 @@ This web application allows users to discover points of interest in any location
 
 ### Prerequisites
 
-- Node.js (v12 or higher)
-- npm (v6 or higher)
+- Node.js
+- npm
 - API keys for:
   - Google Maps Platform (with Places, Geocoding, and Routes APIs enabled)
   - OpenWeather API
-  - OpenAI API
+  - Google Gemini AI
 
 ### Installation
 
 1. Clone this repository and execute the run script:
-   ```
+   ```bash
    git clone https://github.com/eclipse-909/e_morton-394-lab2.git
    cd e_morton-394-lab2
    ./run.sh
    ```
 
-2. Follow the instructions of the run script when you inevitably get errors. If you do not have API keys, most features will not work, but you can at least look at the website.
+2. Follow the instructions of the run script if you get errors. If you do not have API keys, most features will not work, but you can at least look at the website.
 
-3. Visit `https://localhost:3000` in your browser once the server starts.
+3. Visit https://127.0.0.1:3000 in your browser once the server starts.
 
 ## Development
 
@@ -73,6 +73,8 @@ For VS Code-based editors, a .vscode directory is provided with a debug configur
 │       └── index.html      # Main HTML file
 ├── dist/                   # Compiled code
 ├── .env                    # Environment variables
+├── cert.pem                # Certificate for TLS encryption
+├── key.pem                 # Key for TLS encryption
 ├── tsconfig.json           # TypeScript configuration
 └── package.json            # Project dependencies
 ```
