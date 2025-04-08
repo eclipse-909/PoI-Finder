@@ -3,16 +3,7 @@
  */
 document.addEventListener('DOMContentLoaded', () => {
 	console.log('POI Finder App initialized');
-	
-	// Add the Google Maps API key meta tag
-	addGoogleMapsApiKeyMeta();
-	
-	// Initialize debouncing for search inputs
-	initDebouncing();
-	
-	// Load the Google Maps API - commented out
-	// loadGoogleMapsApi();
-	
+
 	// Set up tab functionality
 	setupTabs();
 	
@@ -21,66 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		window.homePage.init();
 	}
 });
-
-/**
- * Add meta tag for Google Maps API key
- * This will be set by the server before sending the page
- */
-function addGoogleMapsApiKeyMeta() {
-	const meta = document.createElement('meta');
-	meta.name = 'google-maps-api-key';
-	
-	// This value will be replaced by the server with the actual API key
-	// For development/test purposes, you can use a placeholder or restricted key
-	meta.content = 'google-maps-api-key-placeholder';
-	
-	document.head.appendChild(meta);
-}
-
-/**
- * Initialize debouncing for search inputs
- */
-function initDebouncing() {
-	// Utility function to create a debounced version of a function
-	const debounce = (func, delay) => {
-		let timeout;
-		return (...args) => {
-			clearTimeout(timeout);
-			timeout = setTimeout(() => func(...args), delay);
-		};
-	};
-	
-	// Apply debounce to search input when it's available
-	const searchInput = document.getElementById('location-input');
-	
-	if (searchInput) {
-		const originalListener = searchInput.oninput;
-		searchInput.oninput = debounce((event) => {
-			if (originalListener) {
-				originalListener(event);
-			}
-		}, 300);
-	}
-}
-
-/**
- * Load Google Maps API dynamically - commented out
- */
-/*
-function loadGoogleMapsApi() {
-	// Check if loaded from home page
-	if (window.homePage && typeof window.homePage.initMap === 'function') {
-		return;
-	}
-	
-	// Add script to the end of index.html
-	const script = document.createElement('script');
-	script.src = `https://maps.googleapis.com/maps/api/js?key=%%GOOGLE_MAPS_API_KEY%%&libraries=places`;
-	script.async = true;
-	script.defer = true;
-	document.body.appendChild(script);
-}
-*/
 
 /**
  * Set up tab functionality

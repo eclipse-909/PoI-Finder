@@ -451,7 +451,7 @@ export const search = async (req: Request, res: Response) => {
 			try {
 				// Use Google Geocoding API to get location name from coordinates
 				const geocodeResult = await axios.get(
-					`https://maps.googleapis.com/maps/api/geocode/json?latlng=${searchData.latitude},${searchData.longitude}&key=${process.env.GOOGLE_MAPS_API_KEY}`
+					`https://maps.googleapis.com/maps/api/geocode/json?latlng=${searchData.latitude},${searchData.longitude}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
 				);
 				
 				if (geocodeResult.data.results && geocodeResult.data.results.length > 0) {
@@ -500,7 +500,7 @@ export const search = async (req: Request, res: Response) => {
 					try {
 						// Get nearby places using Google Places API
 						const placesResult = await axios.get(
-							`https://maps.googleapis.com/maps/api/place/textsearch/json?query=tourist+attractions+in+${encodeURIComponent(location)}&key=${process.env.GOOGLE_MAPS_API_KEY}`
+							`https://maps.googleapis.com/maps/api/place/textsearch/json?query=tourist+attractions+in+${encodeURIComponent(location)}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
 						);
 						
 						// Get weather data
@@ -554,10 +554,7 @@ export const search = async (req: Request, res: Response) => {
 						const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || '');
 						const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-						const prompt = `You are a travel assistant that recommends points of interest for tourists. Based on the provided location, places data, user preferences, and weather forecast, recommend the best places to visit. For each recommendation, provide a brief description, why it's worth visiting, and the best time to visit based on the weather and user preferences.
-
-Data:
-${JSON.stringify(aiRequestData, null, 2)}`;
+						const prompt = `You are a travel assistant that recommends points of interest for tourists. Based on the provided location, places data, user preferences, and weather forecast, recommend the best places to visit. For each recommendation, provide a brief description, why it's worth visiting, and the best time to visit based on the weather and user preferences.\nData:\n${JSON.stringify(aiRequestData, null, 2)}`;
 
 						const result = await model.generateContent(prompt);
 						const aiSuggestions = result.response.text();
@@ -576,14 +573,14 @@ ${JSON.stringify(aiRequestData, null, 2)}`;
 							let photoUrl = '';
 							try {
 								const placeDetailsResult = await axios.get(
-									`https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=photos&key=${process.env.GOOGLE_MAPS_API_KEY}`
+									`https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=photos&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
 								);
 								
 								if (placeDetailsResult.data.result && 
 										placeDetailsResult.data.result.photos && 
 										placeDetailsResult.data.result.photos.length > 0) {
 									const photoRef = placeDetailsResult.data.result.photos[0].photo_reference;
-									photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${process.env.GOOGLE_MAPS_API_KEY}`;
+									photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`;
 								}
 							} catch (error) {
 								console.error('Place details error:', error);
@@ -601,7 +598,7 @@ ${JSON.stringify(aiRequestData, null, 2)}`;
 								const transportMode = preferences?.mode_of_transport || 'driving';
 								
 								const routeResult = await axios.get(
-									`https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${transportMode}&key=${process.env.GOOGLE_MAPS_API_KEY}`
+									`https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${transportMode}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
 								);
 								
 								if (routeResult.data.routes && routeResult.data.routes.length > 0) {

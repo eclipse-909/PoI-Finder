@@ -12,7 +12,6 @@ const homePage = {
 	 */
 	init() {
 		this.initLocationButtons();
-		this.initMap();
 	},
 	
 	/**
@@ -40,161 +39,29 @@ const homePage = {
 			saveResultsBtn.addEventListener('click', this.handleSaveResults.bind(this));
 		}
 	},
-	
-	/**
-	 * Initialize Google Maps
-	 */
-	initMap() {
-		// Get the API key
-		const apiKey = this.getGoogleMapsApiKey();
-		
-		// Check if we have a valid API key
-		if (!apiKey || apiKey === 'google-maps-api-key-placeholder') {
-			console.warn('No valid Google Maps API key available');
-			const mapContainer = document.getElementById('map-container');
-			if (mapContainer) {
-				mapContainer.innerHTML = '<div class="map-error">Google Maps is disabled in debug mode. API key not configured.</div>';
-			}
-			return;
-		}
-		
-		// If Google Maps API is not loaded yet, wait for it
-		if (!window.google || !window.google.maps) {
-			// Load Google Maps API dynamically
-			const script = document.createElement('script');
-			script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-			script.async = true;
-			script.defer = true;
-			script.onload = () => this.setupMap();
-			
-			// Add script to the end of body
-			document.body.appendChild(script);
-			
-			// Handle API loading errors
-			script.onerror = () => {
-				console.error('Failed to load Google Maps API. Check your API key.');
-				const mapContainer = document.getElementById('map-container');
-				if (mapContainer) {
-					mapContainer.innerHTML = '<div class="map-error">Failed to load Google Maps. Please check your API key.</div>';
-				}
-			};
-		} else {
-			this.setupMap();
-		}
-	},
-	
-	/**
-	 * Get Google Maps API key from meta tag
-	 * The actual key would be set in the server before sending the page
-	 */
-	getGoogleMapsApiKey() {
-		const metaTag = document.querySelector('meta[name="google-maps-api-key"]');
-		return metaTag ? metaTag.content : '';
-	},
-	
-	/**
-	 * Setup Google Maps after API is loaded
-	 */
-	setupMap() {
-		const mapContainer = document.getElementById('map-container');
-		
-		if (!mapContainer) {
-			console.error('Map container not found');
-			return;
-		}
-		
-		// Create map with default center
-		this.googleMap = new google.maps.Map(mapContainer, {
-			center: { lat: 40.7128, lng: -74.0060 }, // New York by default
-			zoom: 12,
-			mapTypeControl: false,
-			streetViewControl: false,
-			fullscreenControl: false
-		});
-		
-		// Setup autocomplete for location input
-		const input = document.getElementById('location-input');
-		
-		if (input) {
-			this.autocomplete = new google.maps.places.Autocomplete(input);
-			this.autocomplete.bindTo('bounds', this.googleMap);
-			
-			// When a place is selected from the dropdown
-			this.autocomplete.addListener('place_changed', () => {
-				const place = this.autocomplete.getPlace();
-				
-				if (!place.geometry) {
-					return;
-				}
-				
-				// Clear existing markers
-				this.clearMarkers();
-				
-				// Center map on selected place
-				if (place.geometry.viewport) {
-					this.googleMap.fitBounds(place.geometry.viewport);
-				} else {
-					this.googleMap.setCenter(place.geometry.location);
-					this.googleMap.setZoom(17);
-				}
-				
-				// Add marker for selected place
-				this.addMarker(place.geometry.location, place.name);
-			});
-		}
-		
-		// Allow clicking on map to select location
-		this.googleMap.addListener('click', (event) => {
-			// Clear existing markers
-			this.clearMarkers();
-			
-			// Add marker at clicked location
-			this.addMarker(event.latLng);
-			
-			// Get address for clicked location and update input
-			this.getAddressFromLatLng(event.latLng);
-		});
-	},
-	
-	/**
-	 * Add a marker to the map
-	 * @param {google.maps.LatLng} position - Marker position
-	 * @param {string} title - Marker title
-	 */
-	addMarker(position, title = 'Selected Location') {
-		const marker = new google.maps.Marker({
-			position,
-			map: this.googleMap,
-			title,
-			animation: google.maps.Animation.DROP
-		});
-		
-		this.markers.push(marker);
-		return marker;
-	},
-	
-	/**
-	 * Clear all markers from the map
-	 */
-	clearMarkers() {
-		this.markers.forEach(marker => marker.setMap(null));
-		this.markers = [];
-	},
-	
-	/**
-	 * Get address from latitude and longitude
-	 * @param {google.maps.LatLng} latLng - Location coordinates
-	 */
-	getAddressFromLatLng(latLng) {
-		const geocoder = new google.maps.Geocoder();
-		
-		geocoder.geocode({ location: latLng }, (results, status) => {
-			if (status === 'OK' && results[0]) {
-				const input = document.getElementById('location-input');
-				if (input) {
-					input.value = results[0].formatted_address;
-				}
-			}
+
+	async initMap() {
+		// Request needed libraries.
+		await google.maps.importLibrary("places");
+		// Create the input HTML element, and append it.
+		//@ts-ignore
+		const placeAutocomplete = new google.maps.places.PlaceAutocompleteElement();
+		//@ts-ignore
+		document.body.appendChild(placeAutocomplete);
+		// Inject HTML UI.
+		const selectedPlaceTitle = document.createElement('p');
+		selectedPlaceTitle.textContent = '';
+		document.body.appendChild(selectedPlaceTitle);
+		const selectedPlaceInfo = document.createElement('pre');
+		selectedPlaceInfo.textContent = '';
+		document.body.appendChild(selectedPlaceInfo);
+		// Add the gmp-placeselect listener, and display the results.
+		//@ts-ignore
+		placeAutocomplete.addEventListener('gmp-select', async ({ placePrediction }) => {
+			const place = placePrediction.toPlace();
+			await place.fetchFields({ fields: ['displayName', 'formattedAddress', 'location'] });
+			selectedPlaceTitle.textContent = 'Selected Place:';
+			selectedPlaceInfo.textContent = JSON.stringify(place.toJSON(), /* replacer */ null, /* space */ 2);
 		});
 	},
 	

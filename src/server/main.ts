@@ -7,6 +7,7 @@ import { setupRoutes } from './routes';
 import { initializeDatabase } from './controllers';
 import dotenv from 'dotenv';
 import { Request, Response } from 'express';
+import cors from 'cors';
 
 // Load environment variables
 dotenv.config();
@@ -22,7 +23,8 @@ const criticalEnvVars = [
 ];
 
 const apiKeyEnvVars = [
-	'GOOGLE_MAPS_API_KEY',
+	'GOOGLE_MAP_API_KEY',
+	'GOOGLE_MAPS_PLATFORM_API_KEY',
 	'OPENWEATHER_API_KEY',
 	'GOOGLE_GEMINI_API_KEY'
 ];
@@ -47,6 +49,15 @@ if (missingApiKeys.length > 0) {
 
 // Setup server
 const app = express();
+
+// Add CORS middleware
+app.use(cors({
+	origin: ['https://localhost:3000', 'https://www.google.com'],
+	credentials: true,
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 const port = process.env.PORT;
 if (!port) {
 	throw new Error('PORT is not set');
@@ -86,57 +97,12 @@ const authenticateUser = (req: Request, res: Response, next: NextFunction): void
 
 // IMPORTANT: Initialize session middleware FIRST
 setupRoutes(app, db);  // This sets up session middleware
-
 // THEN define your routes
-// Custom route for app.js with API key replacement
-app.get('/js/app.js', (req: Request, res: Response, next: NextFunction): void => {
-	const filePath = path.join(PUBLIC_DIR, 'js/app.js');
-	fs.readFile(filePath, 'utf8', (err, data) => {
-		if (err) {
-			return next(err);
-		}
-		
-		// Get the API key from environment variables
-		const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-		
-		// Replace the placeholder with the actual API key
-		if (apiKey) {
-			data = data.replace(
-				"meta.content = 'google-maps-api-key-placeholder';",
-				`meta.content = '${apiKey}';`
-			);
-
-			// Set cache control headers to prevent caching of this file
-			res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-			res.setHeader('Pragma', 'no-cache');
-			res.setHeader('Expires', '0');
-		}
-		
-		// Send the modified JavaScript
-		res.setHeader('Content-Type', 'application/javascript');
-		res.send(data);
-	});
-});
 
 // Serve HTML files
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
-app.get('/', (_req: Request, res: Response): void => {
-	res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
-});
-app.get('/login.html', (_req: Request, res: Response): void => {
-	res.sendFile(path.join(PUBLIC_DIR, 'login.html'));
-});
-app.get('/signup.html', (_req: Request, res: Response): void => {
-	res.sendFile(path.join(PUBLIC_DIR, 'signup.html'));
-});
-app.get('/app.html', authenticateUser, (_req: Request, res: Response): void => {
-	res.sendFile(path.join(PUBLIC_DIR, 'app.html'));
-});
-
-// Then serve static files for everything else
-app.use('/js', express.static(path.join(PUBLIC_DIR, 'js')));
-app.use('/css', express.static(path.join(PUBLIC_DIR, 'css')));
-app.use('/images', express.static(path.join(PUBLIC_DIR, 'images')));
+app.use('/app.html', authenticateUser, express.static(path.join(PUBLIC_DIR, 'app.html')));
+app.use('/', express.static(PUBLIC_DIR));
 
 // Start HTTPS server
 const httpsOptions = {

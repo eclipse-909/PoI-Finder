@@ -90,6 +90,7 @@
     "cookie": "^0.7.2",
     "cookie-parser": "^1.4.7",
     "cookie-signature": "^1.0.6",
+    "cors": "^2.8.5",
     "create-jest": "^29.7.0",
     "cross-spawn": "^7.0.6",
     "date-fns": "^2.30.0",
@@ -423,8 +424,10 @@
     "@types/bcrypt": "^5.0.2",
     "@types/connect-sqlite3": "^0.9.5",
     "@types/cookie-parser": "^1.4.8",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.1",
     "@types/express-session": "^1.18.1",
+    "@types/google.maps": "^3.58.1",
     "@types/node": "^22.13.10",
     "typescript": "^5.8.2"
   }

@@ -1,0 +1,220 @@
+Can you add CORS support?
+
+
+
+Can you allow it to use www.google.com?
+
+
+
+I get the following error when I try to load the iframe google map:
+Refused to frame 'https://www.google.com/' because it violates the following Content Security Policy directive: "default-src 'self'". Note that 'frame-src' was not explicitly set, so 'default-src' is used as a fallback.
+
+
+
+Refused to load the script 'https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyA6myHzS10YXdcazAFalmXvDkrYCp5cLc8&v=weekly&callback=google.maps.__ib__' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+
+
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+app.html:40 Refused to load the script 'https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyA6myHzS10YXdcazAFalmXvDkrYCp5cLc8&v=weekly&callback=google.maps.__ib__' because it violates the following Content Security Policy directive: "script-src 'self' 'unsafe-inline' 'unsafe-eval'". Note that 'script-src-elem' was not explicitly set, so 'script-src' is used as a fallback.
+
+(anonymous) @ app.html:40
+await in (anonymous)
+u @ app.html:40
+d.<computed>.d.<computed> @ app.html:40
+initMap @ autocomplete_widget.ts:3
+(anonymous) @ autocomplete_widget.ts:30
+app.js:5 POI Finder App initialized
+app.html:40 Uncaught (in promise) Error: The Google Maps JavaScript API could not load.
+    at a.onerror (app.html:40:495)
+a.onerror @ app.html:40
+script
+(anonymous) @ app.html:40
+u @ app.html:40
+d.<computed>.d.<computed> @ app.html:40
+initMap @ autocomplete_widget.ts:3
+(anonymous) @ autocomplete_widget.ts:30
+
+
+
+
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+app.js:5 POI Finder App initialized
+main.js:279 
+            
+            
+           GET https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true net::ERR_BLOCKED_BY_CLIENT
+_.E.send @ main.js:279
+Mea @ main.js:263
+Pea @ main.js:255
+await in Pea
+google.maps.Load @ js?libraries=places&key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&v=weekly&callback=google.maps.__ib__:38
+(anonymous) @ main.js:488
+(anonymous) @ main.js:488
+maps.googleapis.com/maps/gen_204?target=api&ev=api_mapft&cad=host:148.100.132.110%3A3000,v:60,fv:3.60.7b,r:100,key:AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c,Ct4g:1,hybrid:0,src:apiv3,token:2x4q0bnrn5,ts:8wjcxn:1 
+            
+            
+           GET https://maps.googleapis.com/maps/gen_204?target=api&ev=api_mapft&cad=host:148.100.132.110%3A3000,v:60,fv:3.60.7b,r:100,key:AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c,Ct4g:1,hybrid:0,src:apiv3,token:2x4q0bnrn5,ts:8wjcxn net::ERR_BLOCKED_BY_CLIENT
+Image
+G0a @ stats.js:4
+Fg @ stats.js:7
+(anonymous) @ util.js:75
+setTimeout
+_.XF @ util.js:75
+Hg @ stats.js:7
+(anonymous) @ main.js:167
+Promise.then
+_.Xl @ main.js:167
+(anonymous) @ main.js:257
+Promise.then
+(anonymous) @ main.js:256
+setTimeout
+Pea @ main.js:256
+await in Pea
+google.maps.Load @ js?libraries=places&key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&v=weekly&callback=google.maps.__ib__:38
+(anonymous) @ main.js:488
+(anonymous) @ main.js:488
+
+
+
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+app.js:5 POI Finder App initialized
+main.js:279 
+            
+            
+           GET https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true net::ERR_BLOCKED_BY_CLIENT
+_.E.send @ main.js:279
+Mea @ main.js:263
+Pea @ main.js:255
+await in Pea
+google.maps.Load @ js?libraries=places&key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&v=weekly&callback=google.maps.__ib__:38
+(anonymous) @ main.js:488
+(anonymous) @ main.js:488
+
+
+
+I am doing exactly what the documentation says to put in an autocomplete widget, but it keeps giving me errors. Here is the documentation: @https://developers.google.com/maps/documentation/javascript/place-autocomplete-new . Can you figure out what to do?
+
+
+
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+autocomplete_widget.ts:56 Error initializing map: TypeError: google.maps.Map is not a constructor
+    at initMap (autocomplete_widget.ts:4:21)
+    at autocomplete_widget.ts:61:1
+initMap @ autocomplete_widget.ts:56
+(anonymous) @ autocomplete_widget.ts:61
+app.js:5 POI Finder App initialized
+
+
+
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+app.js:5 POI Finder App initialized
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1242 Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading
+Pea @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1242
+google.maps.Load @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:14
+(anonymous) @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1476
+(anonymous) @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1476
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1267 
+            
+            
+           GET https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true net::ERR_BLOCKED_BY_CLIENT
+_.E.send @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1267
+Mea @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1251
+Pea @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1243
+google.maps.Load @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:14
+(anonymous) @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1476
+(anonymous) @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1476
+autocomplete_widget.ts:63 Error initializing map: InvalidValueError: Map: Expected mapDiv of type HTMLElement but was passed null.
+    at _.rk (js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1133:123)
+    at new _.mp (js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=Function.prototype:1219:278)
+    at initMap (autocomplete_widget.ts:11:21)
+initMap @ autocomplete_widget.ts:63
+
+
+
+The map is loading, but autocomplete is not working. It's particularly giving me deprecation errors. There are also some warnings saying that the API project is not authorized to use this API; this is because I have the Places (New) API enabled and not the legacy Places API. I would like to use the new API. Here are the errors:
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+app.js:5 POI Finder App initialized
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1242 Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading
+Pea @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1242
+google.maps.Load @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:14
+(anonymous) @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1476
+(anonymous) @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1476
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1267 
+            
+            
+           GET https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true net::ERR_BLOCKED_BY_CLIENT
+_.E.send @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1267
+Mea @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1251
+Pea @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1243
+google.maps.Load @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:14
+(anonymous) @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1476
+(anonymous) @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1476
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:68 As of March 1st, 2025, google.maps.places.Autocomplete is not available to new customers. Please use google.maps.places.PlaceAutocompleteElement instead. At this time, google.maps.places.Autocomplete is not scheduled to be discontinued, but google.maps.places.PlaceAutocompleteElement is recommended over google.maps.places.Autocomplete. While google.maps.places.Autocomplete will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.Autocomplete will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide.
+MB @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:68
+initAutocomplete @ autocomplete_widget.ts:35
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131 This API project is not authorized to use this API. Places API error: ApiNotActivatedMapError
+https://developers.google.com/maps/documentation/javascript/error-messages#api-not-activated-map-error
+_.lk @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131
+(anonymous) @ places_impl.js:58
+(anonymous) @ places_impl.js:16
+e @ places_impl.js:14
+c @ common.js:102
+(anonymous) @ VM143 AutocompletionService.GetPredictions:1
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131 This API project is not authorized to use this API. Places API error: ApiNotActivatedMapError
+https://developers.google.com/maps/documentation/javascript/error-messages#api-not-activated-map-error
+_.lk @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131
+(anonymous) @ places_impl.js:58
+(anonymous) @ places_impl.js:16
+e @ places_impl.js:14
+c @ common.js:102
+(anonymous) @ VM146 AutocompletionService.GetPredictions:1
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131 This API project is not authorized to use this API. Places API error: ApiNotActivatedMapError
+https://developers.google.com/maps/documentation/javascript/error-messages#api-not-activated-map-error
+_.lk @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131
+(anonymous) @ places_impl.js:58
+(anonymous) @ places_impl.js:16
+e @ places_impl.js:14
+c @ common.js:102
+(anonymous) @ AutocompletionService.GetPredictions?1s3399&4sen-US&7scountry%3Aus&9sestablishment&15e3&20sF7250B07C87B454C82C46F225FC14F33ex1f&21m1&2e1&r_url=https%3A%2F%2F148.100.132.110%3A3000%2Fapp.html&callback=_xdc_._k8xz8n&key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&token=116928:1
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131 This API project is not authorized to use this API. Places API error: ApiNotActivatedMapError
+https://developers.google.com/maps/documentation/javascript/error-messages#api-not-activated-map-error
+_.lk @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131
+(anonymous) @ places_impl.js:58
+(anonymous) @ places_impl.js:16
+e @ places_impl.js:14
+c @ common.js:102
+(anonymous) @ AutocompletionService.GetPredictions?1s339&4sen-US&7scountry%3Aus&9sestablishment&15e3&20sF7250B07C87B454C82C46F225FC14F33ex1f&21m1&2e1&r_url=https%3A%2F%2F148.100.132.110%3A3000%2Fapp.html&callback=_xdc_._7o6bti&key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&token=29319:1
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131 This API project is not authorized to use this API. Places API error: ApiNotActivatedMapError
+https://developers.google.com/maps/documentation/javascript/error-messages#api-not-activated-map-error
+_.lk @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131
+(anonymous) @ places_impl.js:58
+(anonymous) @ places_impl.js:16
+e @ places_impl.js:14
+c @ common.js:102
+(anonymous) @ AutocompletionService.GetPredictions?1s33&4sen-US&7scountry%3Aus&9sestablishment&15e3&20sF7250B07C87B454C82C46F225FC14F33ex1f&21m1&2e1&r_url=https%3A%2F%2F148.100.132.110%3A3000%2Fapp.html&callback=_xdc_._sb36vs&key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&token=46688:1
+js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131 This API project is not authorized to use this API. Places API error: ApiNotActivatedMapError
+https://developers.google.com/maps/documentation/javascript/error-messages#api-not-activated-map-error
+_.lk @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&libraries=places&callback=initMap:1131
+(anonymous) @ places_impl.js:58
+(anonymous) @ places_impl.js:16
+e @ places_impl.js:14
+c @ common.js:102
+(anonymous) @ AutocompletionService.GetPredictions?1s3&4sen-US&7scountry%3Aus&9sestablishment&15e3&20sF7250B07C87B454C82C46F225FC14F33ex1f&21m1&2e1&r_url=https%3A%2F%2F148.100.132.110%3A3000%2Fapp.html&callback=_xdc_._cp6bys&key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&token=114945:1
+
+
+
+The map loads and the autocomplete works, but when I select the full address from the dropdown, nothing happens. I would like it to place a marker on the map and move the map to that location.
+
+
+
+The map loads, autocomplete works, and it places a marker on the map when I select an address from the dropdown. However, I get this error right when the page loads:
+app.html:145 Error initializing map: ReferenceError: google is not defined
+    at initMap (app.html:100:21)
+    at app.html:163:9
+initMap @ app.html:145
+(anonymous) @ app.html:163
+app.js:5 POI Finder App initialized
+
+And it gives an alert:
+Error loading map. Please try refreshing the page.

@@ -160,7 +160,7 @@ const checkApiKeys = (req: Request, res: Response, next: NextFunction): void => 
 	
 	// Determine which API keys are needed for this endpoint
 	if (endpoint === '/api/search') {
-		requiredKeys = ['GOOGLE_MAPS_API_KEY', 'OPENWEATHER_API_KEY', 'GOOGLE_GEMINI_API_KEY'];
+		requiredKeys = ['GOOGLE_MAPS_PLATFORM_API_KEY', 'OPENWEATHER_API_KEY', 'GOOGLE_GEMINI_API_KEY'];
 	}
 	
 	// Check if any required keys are missing
@@ -193,7 +193,35 @@ router.post('/api/save_search/:id', authenticateUser, csrfProtection, checkApiKe
 
 export const setupRoutes = (app: express.Application, db: Database): void => {
 	// Security middleware
-	app.use(helmet());
+	app.use(helmet({
+		contentSecurityPolicy: {
+			directives: {
+				defaultSrc: ["'self'"],
+				scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://maps.googleapis.com", "https://maps.gstatic.com"],
+				scriptSrcElem: ["'self'", "'unsafe-inline'", "https://maps.googleapis.com", "https://maps.gstatic.com"],
+				styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+				imgSrc: ["'self'", "data:", "https:", "https://maps.gstatic.com", "https://maps.googleapis.com", "https://*.googleapis.com", "https://*.google.com"],
+				connectSrc: ["'self'", "https://maps.googleapis.com", "https://maps.gstatic.com", "https://*.googleapis.com", "https://*.google.com"],
+				fontSrc: ["'self'", "https://fonts.gstatic.com"],
+				objectSrc: ["'none'"],
+				mediaSrc: ["'self'"],
+				frameSrc: ["'self'", "https://www.google.com", "https://maps.googleapis.com"],
+				childSrc: ["'self'", "https://www.google.com", "https://maps.googleapis.com"],
+				workerSrc: ["'self'", "blob:"],
+				manifestSrc: ["'self'"]
+			}
+		},
+		crossOriginEmbedderPolicy: false,
+		crossOriginOpenerPolicy: false,
+		crossOriginResourcePolicy: { policy: "cross-origin" }
+	}));
+
+	// Set Permissions-Policy header separately
+	app.use((req, res, next) => {
+		res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(), microphone=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), picture-in-picture=(), sync-xhr=()');
+		next();
+	});
+
 	app.use(cookieParser());
 
 	const dbPath = process.env.DB_PATH
