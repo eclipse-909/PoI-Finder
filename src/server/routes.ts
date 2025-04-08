@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction, Application } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import * as controllers from './controllers';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
@@ -11,7 +11,7 @@ const router = express.Router();
 // Rate limiting setup
 const apiLimiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 100, // limit each IP to 100 requests per windowMs
+	max: 50, // limit each IP to 100 requests per windowMs
 	standardHeaders: true,
 	legacyHeaders: false,
 	message: {
@@ -26,7 +26,7 @@ const apiLimiter = rateLimit({
 // Stricter rate limits for login/signup
 const authLimiter = rateLimit({
 	windowMs: 60 * 60 * 1000, // 1 hour
-	max: 10, // limit each IP to 10 login attempts per hour
+	max: 5, // limit each IP to 10 login attempts per hour
 	standardHeaders: true,
 	legacyHeaders: false,
 	message: {

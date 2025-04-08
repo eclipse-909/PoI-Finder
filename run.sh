@@ -31,9 +31,8 @@ if [ ! -f .env ]; then
 	cat > .env << 'EOF'
 GOOGLE_MAP_API_KEY=placeholder
 GOOGLE_MAPS_PLATFORM_API_KEY=placeholder
-OPENWEATHER_API_KEY=placeholder
 GOOGLE_GEMINI_API_KEY=placeholder
-SESSION_SECRET=your_session_secret
+SESSION_SECRET=placeholder
 NODE_ENV=development
 PORT=3000
 DB_PATH=./database.sqlite

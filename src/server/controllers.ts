@@ -4,8 +4,7 @@ import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import axios from 'axios';
 import { 
-	ApiResponse, 
-	LoginRequest, 
+	ApiResponse,
 	PointOfInterestResponse, 
 	SearchRequest, 
 	SignupRequest, 

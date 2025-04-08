@@ -1,3 +1,5 @@
+*Disclaimer: Outdated*
+
 # Travel Planner App
 ## Problem Being Solved
 Sometimes you want to find things to do in an area that you are either visiting, or live in. We want to help guide potential tourists or sightseers to local points of interests without having to ask around or blindly search the internet. This will be done by having an application that allows users to use their current location or a location that they specify to get the general points of interest in the area, alongside an AI summary of what those places are that they can visit.

@@ -18,11 +18,11 @@ This web application allows users to discover points of interest in any location
 - **Database**: SQLite
 - **APIs**:
   - Google Maps JavaScript API
-  - Google Places API
+  - Google Places (New) API
   - Google Geocoding API
   - Google Routes API
-  - OpenWeather API
-  - OpenAI GPT-4o Mini API
+  - Google Weather API
+  - Google Gemini API
 
 ## Getting Started
 
@@ -31,8 +31,7 @@ This web application allows users to discover points of interest in any location
 - Node.js
 - npm
 - API keys for:
-  - Google Maps Platform (with Places, Geocoding, and Routes APIs enabled)
-  - OpenWeather API
+  - Google Maps Platform (with JavaScript Map, Places (New), Geocoding, Routes, and Weather APIs enabled)
   - Google Gemini AI
 
 ### Installation
