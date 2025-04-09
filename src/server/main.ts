@@ -112,6 +112,19 @@ const httpsOptions = {
 
 const server = https.createServer(httpsOptions, app);
 
+// Handle server errors
+server.on('error', (error: NodeJS.ErrnoException) => {
+	console.error('Server error:', error);
+	if (error.code === 'EADDRINUSE') {
+		console.error(`Port ${port} is already in use. Please choose a different port.`);
+	} else if (error.code === 'EACCES') {
+		console.error(`Permission denied. Try running with sudo or use a port above 1024.`);
+	} else if (error.code === 'EADDRNOTAVAIL') {
+		console.error(`Address not available. Check your network configuration.`);
+	}
+	process.exit(1);
+});
+
 server.listen(port, () => {
 	console.log(`Server running on https://localhost:${port}`);
 	if (global.missingApiKeys?.length > 0) {

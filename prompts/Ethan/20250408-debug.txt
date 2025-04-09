@@ -252,3 +252,33 @@ Setting the value of the address input field to the address of the marker does n
 
 
 It appears that the value of the address input field is on an input element inside a shadow root. How do I get and set the value of an input element inside a shadow root?
+
+
+
+I used to be able to access the website from the browser on my phone. Now I can't. What's wrong? Both devices are connected to the same public network.
+
+
+
+Even when I remove the CORS stuff, it doesn't work.
+
+
+
+My phone and laptop are on the same public network with public IP addresses. My phone says the URL is unreachable ERR_ADDRESS_UNREACHABLE
+
+
+
+What's the bash command to see what IP address interface the process is listening on?
+
+
+
+netstat -a | grep :3000
+  TCP    0.0.0.0:3000           top-of-the-lap:0       LISTENING
+  TCP    [::]:3000              top-of-the-lap:0       LISTENING
+
+
+
+I've been able to access the website from my phone before, but now I can't. Doesn't that seem like a problem with the server?
+
+
+
+Logs are not produced when you attempt to connect to the server, only when it is already connected.

@@ -160,7 +160,7 @@ const checkApiKeys = (req: Request, res: Response, next: NextFunction): void => 
 	
 	// Determine which API keys are needed for this endpoint
 	if (endpoint === '/api/search') {
-		requiredKeys = ['GOOGLE_MAPS_PLATFORM_API_KEY', 'OPENWEATHER_API_KEY', 'GOOGLE_GEMINI_API_KEY'];
+		requiredKeys = ['GOOGLE_MAPS_PLATFORM_API_KEY', 'GOOGLE_GEMINI_API_KEY'];
 	}
 	
 	// Check if any required keys are missing
@@ -221,7 +221,7 @@ export const setupRoutes = (app: express.Application, db: Database): void => {
 		res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(), microphone=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), picture-in-picture=(self), sync-xhr=()');
 		next();
 	});
-
+	
 	app.use(cookieParser());
 
 	const dbPath = process.env.DB_PATH
