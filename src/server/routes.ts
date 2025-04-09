@@ -218,7 +218,7 @@ export const setupRoutes = (app: express.Application, db: Database): void => {
 
 	// Set Permissions-Policy header separately
 	app.use((req, res, next) => {
-		res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(), microphone=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), picture-in-picture=(), sync-xhr=()');
+		res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(), microphone=(), payment=(), usb=(), accelerometer=(), gyroscope=(), magnetometer=(), midi=(), picture-in-picture=(self), sync-xhr=()');
 		next();
 	});
 

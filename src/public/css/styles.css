@@ -441,7 +441,9 @@ footer {
 }
 
 #map {
-	height: 100%;
+	height: 400px;
+	width: 100%;
+	margin: 20px 0;
 }
 
 #location-input {

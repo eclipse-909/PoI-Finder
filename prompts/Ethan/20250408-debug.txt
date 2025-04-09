@@ -218,3 +218,37 @@ app.js:5 POI Finder App initialized
 
 And it gives an alert:
 Error loading map. Please try refreshing the page.
+
+
+
+I would like it make it so you can place a marker on the map by clicking on the map. When you place a marker, it should use reverse geocoding to get the address of the marker and display it in an infowindow. It should also set the address in the address input field to that address.
+
+
+
+app.html:107 Uncaught TypeError: marker.setPosition is not a function
+    at app.html:107:32
+    at geocoder.js:9:120
+    at geocoder.js:4:298
+    at GOa (geocoder.js:3:59)
+    at Gma.f [as Hg] (geocoder.js:4:186)
+    at Object.c [as _j49kjh] (common.js:102:81)
+    at GeocodeService.Search?5m2&1d41.72042878294487&2d-73.93393863389163&9sen-US&r_url=https%3A%2F%2F148.100.132.110%3A3000%2Fapp.html&callback=_xdc_._j49kjh&key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&token=51195:1:28
+(anonymous) @ app.html:107
+(anonymous) @ geocoder.js:9
+(anonymous) @ geocoder.js:4
+GOa @ geocoder.js:3
+f @ geocoder.js:4
+c @ common.js:102
+(anonymous) @ GeocodeService.Search?5m2&1d41.72042878294487&2d-73.93393863389163&9sen-US&r_url=https%3A%2F%2F148.100.132.110%3A3000%2Fapp.html&callback=_xdc_._j49kjh&key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&token=51195:1
+
+
+
+Can you move the javascript code from app.html into a separate file?
+
+
+
+Setting the value of the address input field to the address of the marker does not update the display of the input field. Is there another value you're supposed to set or a function you're supposed to call?
+
+
+
+It appears that the value of the address input field is on an input element inside a shadow root. How do I get and set the value of an input element inside a shadow root?
