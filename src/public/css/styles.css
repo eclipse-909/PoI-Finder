@@ -720,4 +720,19 @@ button:disabled:hover,
 
 .pac-item-selected {
 	background-color: #f0f0f0;
+}
+
+.attribution {
+	margin-top: 1rem;
+	font-size: 0.8rem;
+	color: #666;
+}
+
+.attribution a {
+	color: #2196f3;
+	text-decoration: none;
+}
+
+.attribution a:hover {
+	text-decoration: underline;
 } 

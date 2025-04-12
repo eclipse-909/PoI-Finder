@@ -47,3 +47,7 @@ google.maps.Load @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&loading=async&
 
 
 It still doesn't work, it didn't catch and print the error.
+
+
+
+I am using an image from the internet in my website. I filtered for creative commons images. When I clicked on the license info, it took me to this link: https://creativecommons.org/licenses/by/4.0/ . I want to make sure I follow the license. It says I have to give appropriate credit. How do I do that?
