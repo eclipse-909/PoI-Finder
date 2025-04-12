@@ -7,11 +7,6 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/mobile.css" media="(max-width: 768px)">
     <meta name="description" content="POI Finder - Find points of interest">
-    <!-- Load Google Maps API -->
-    <script src="js/map.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&loading=async&libraries=places&callback=initMap" async defer></script>
-</head>
-<body>
     <!-- JavaScript -->
     <script src="js/api.js"></script>
     <script src="js/home.js"></script>
@@ -19,7 +14,15 @@
     <script src="js/preferences.js"></script>
     <script src="js/account.js"></script>
     <script src="js/app.js"></script>
-
+    <!-- Load Google Maps API -->
+    <script src="js/map.js"></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&loading=async&libraries=places&callback=initMap"
+        async
+        defer
+    ></script>
+</head>
+<body>
     <div id="app">
         <!-- App container with tabs and content -->
         <div class="app-container">

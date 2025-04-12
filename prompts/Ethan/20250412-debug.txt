@@ -1,0 +1,49 @@
+When my ad blocker is enabled, I get the error below. Is there a way to listen for errors and handle this one specifically by making an alert to tell the user to disable their ad blocker?
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+app.js:5 POI Finder App initialized
+main.js:276 
+            
+            
+           GET https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true net::ERR_BLOCKED_BY_CLIENT
+_.F.send @ main.js:276
+Efa @ main.js:260
+Hfa @ main.js:252
+await in Hfa
+google.maps.Load @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&loading=async&libraries=places&callback=initMap:38
+(anonymous) @ main.js:485
+(anonymous) @ main.js:485
+
+
+
+What I meant was, is there a way to listen for errors and handle this one specifically by making an alert to tell the user to disable their ad blocker? This error won't happen in the initMap function because the error is an error with getting the google maps api.
+
+
+
+When errors are caught, are they still logged to the console as they normally would? If not, I would like that to happen. I only want to catch this specific error relating to the google maps api with the ad blocker.
+
+
+
+I'm setting a breakpoint in the browser at the onerror callback, and it's not breaking when the error occurs. The onerror callback is not being called.
+
+
+
+It still doesn't work. Here is the console log:
+Error with Permissions-Policy header: Unrecognized feature: 'browsing-topics'.
+map.js:1 Setting error handler
+map.js:14 Error handler set
+app.js:5 POI Finder App initialized
+main.js:276 
+            
+            
+           GET https://maps.googleapis.com/maps/api/mapsjs/gen_204?csp_test=true net::ERR_BLOCKED_BY_CLIENT
+_.F.send @ main.js:276
+Efa @ main.js:260
+Hfa @ main.js:252
+await in Hfa
+google.maps.Load @ js?key=AIzaSyCcZY-glz8B48HCyhstm7JZsxnPyrzu34c&loading=async&libraries=places&callback=initMap:38
+(anonymous) @ main.js:485
+(anonymous) @ main.js:485
+
+
+
+It still doesn't work, it didn't catch and print the error.
