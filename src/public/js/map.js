@@ -97,14 +97,12 @@ function geocodeLatLng(latLng) {
                 infoWindow.setContent(address);
                 infoWindow.open(map, marker);
 
-				// TODO:
-				// If the address is invalid (points to an uninhabited area),
-				// then we should not set the address input field.
-				// How do we check if the address is invalid?
-				// Google has an Address Validation API that we could use.
-
-                // Update the address input field
-                document.getElementById('place-autocomplete-input').Eg.value = address;
+				// If address is valid, then update the address input field.
+                // I noticed that uninhabited areas have a + in the address.
+                // We can just check if the address doesn't contain a +.
+                if (!address.includes('+')) {
+                    document.getElementById('place-autocomplete-input').Eg.value = address;
+                }
             } else {
                 window.alert('No results found');
             }
