@@ -1,24 +1,16 @@
-## How AI assisted development
-AI assisted in our development of this application through developing the foundation of the application(20250316-init.txt & 20250317-meta_init.txt) initially.
+## How AI-assisted development
+AI-assisted us in developing this application by developing the foundation ([20250316-init.txt](./prompts/Ethan/20250316-init.txt) & [20250317-meta_init.txt](./prompts/Ethan/20250317-meta_init.txt)) initially. The initial prompt was further refined through the use of meta-prompting to explore potential ways to plan out certain parts of the application that we haven't looked into yet.
 
-The initial prompt was further refined through use of meta-prompting in order to explore potential ways to plan out certain parts of the application that we haven't looked into yet.
-
-After the initial prompts generated the baseline of the application, we started to use the prompts to help debug some problematic issues(20250320-debug.txt).
-
-Although initially, AI could help smooth out some hindering bugs that we first encountered, it became evident that there were some issues that were better resolved without the use of AI.
+After the initial prompts generated the baseline of the application, we started to use the prompts to help debug some problems ([20250320-debug.txt](./prompts/Ethan/20250320-debug.txt)). Although initially, AI could help smooth out some hindering bugs that we first encountered, it became evident that some issues were better resolved without the use of AI. Setting up a Google Map on the home page had to be done without AI code generation because it either didn't understand what we wanted, or it used the wrong API after providing it the link to the correct API. It was easier to read the documentation and examples to create a Google Map for our app.
 
 ## Challenges faced & solutions
-During the debugging phase of our lab(after initial generation and ironing out bugs that prevented the application from starting up), we agreed that debugging manually was more efficient than having to write another prompt again and again in order to fix the issues, since the AI could change some code but potentially stil not fix the issue that was present.
+During the debugging phase of our lab, we agreed that debugging manually was more efficient than having to write another prompt again and again to fix the issues. The AI could change some code but potentially still not fix the issue that was present. Although debugging manually was used, usage of AI prompts to help debug (notably troubleshooting issues on subjects we might not understand) was generally more helpful further down the line when the codebase became larger.
 
-Although debugging manually was used, usage of AI prompts to help debug(notably troubleshooting issues on subjects we might not thoroughly understand such as how an API works exactly or specifying what was needed to make the application work) was generally more helpful further down the line when the codebase became larger.
+We only used AI for small fixes during debugging after most of the logic was written. Prompts were only a couple sentences, and they focused on a small portion of a single file. Some prompts did not even result in code generation. They were sometimes used to clarify code it generated, understand a concept, or learn API usage.
 
-There were other issues such as having to clean up places where the AI had an idea going, but did not end up finishing it(anticipating that it would have been implemented in the future). Due to this issue, human review of the code would have been more appropriate, as having the AI scan for issues such as this would be harder(and could have tried to fix the code instead, such that it incorporated its feature, which could potentially make the code more messy to read if it failed to finish its code).
-
-Keeping track of the issues themselves were a problem at the beginning, but through the use of Github, we were able to effectively track what problems needed to be addressed, and which to leave for later. (P.S: This sentence might not need to be part of the reflection.)
+There were other issues such as having to clean up places where the AI had an idea going but did not end up finishing it. Due to this issue, a human review of the code would have been more appropriate, as having the AI scan for issues such as this would be harder.
 
 ## AI's impact on team collaboration
-AI impacted team collaboration by allowing the other team member to view the prompts that one another has made, which allows seeing the ideas they were going for when making a prompt. In our scenario however, only one person has made prompts(which even though means that one person is generating, it allows the other one to critque the prompts and more easily keep track of the progress of the application, while fixing potential problems that arise from the result).
+AI impacted team collaboration by allowing the other team members to view the prompts that one another has made, which allows seeing the ideas they were going for when making a prompt. In our scenario, however, only one person has made significant prompts. Documenting prompts is still beneficial for all team members because everyone can read them and understand the main idea of what they want the AI to generate.
 
-AI's effectiveness however, dwindles the more the project is being developed, due to ideas being brought into fruition, which leads to AI usage dropping, and being more limited towards just debugging issues that come up every now and then.
-
-Note: Add more to the reflection. There are some parts that I think can be more better explained. Its spaced out to make each sentence more clearer(some might seem be run-on sentences.)
+AI's effectiveness however, dwindles the more the project is being developed, due to ideas being brought to fruition, which leads to AI usage dropping, and being more limited to just debugging issues that come up now and then. We used GitHub to manage issues, bugs, and features for the app. Smaller issues could sometimes benefit from AI help. It was nice to restrict the AI to only look at certain files. If multiple team members tried to work in the same files, or if multiple team members used AI to generate code in the same files, you would have to deal with merge conflicts. We did not have any merge conflicts. If the AI always had the context for the entire project, it would probably want to edit more files, and merge conflicts might arise.
