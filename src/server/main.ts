@@ -116,7 +116,6 @@ app.get('/app.html', (req, res) => {
 	}
 });
 
-
 app.use('/', express.static(PUBLIC_DIR));
 
 // Start HTTPS server
