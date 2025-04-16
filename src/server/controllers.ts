@@ -16,7 +16,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import fs from 'fs';
 
 // Prompt string for Gemini
-const prompt = fs.readFileSync('gemini_prompt.txt', 'utf8');
+const prompt = fs.readFileSync('./src/server/gemini_prompt.txt', 'utf8');
 
 // Add custom type to extend Express Request
 declare global {
