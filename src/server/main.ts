@@ -101,7 +101,22 @@ setupRoutes(app, db);  // This sets up session middleware
 
 // Serve HTML files
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
-app.use('/app.html', authenticateUser, express.static(path.join(PUBLIC_DIR, 'app.html')));
+
+//dynamically serve app.html and inject the google maps api key by replacing GOOGLE_MAP_API_KEY with the actual key
+app.get('/app.html', (req, res) => {
+	const googleMapsApiKey = process.env.GOOGLE_MAP_API_KEY;
+	if (!googleMapsApiKey || googleMapsApiKey == 'placeholder') {
+		app.use('/app.html', authenticateUser, express.static(path.join(PUBLIC_DIR, 'app.html')));
+	} else {
+		authenticateUser(req, res, () => {
+			const html = fs.readFileSync(path.join(PUBLIC_DIR, 'app.html'), 'utf8');
+			const updatedHtml = html.replace('GOOGLE_MAP_API_KEY_PLACEHOLDER', googleMapsApiKey);
+			res.send(updatedHtml);
+		});
+	}
+});
+
+
 app.use('/', express.static(PUBLIC_DIR));
 
 // Start HTTPS server
