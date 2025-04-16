@@ -13,6 +13,10 @@ import {
 	SavedSearchSummary
 } from './models';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import fs from 'fs';
+
+// Prompt string for Gemini
+const prompt = fs.readFileSync('gemini_prompt.txt', 'utf8');
 
 // Add custom type to extend Express Request
 declare global {
@@ -552,8 +556,6 @@ export const search = async (req: Request, res: Response) => {
 						
 						const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || '');
 						const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-						const prompt = `You are a travel assistant that recommends points of interest for tourists. Based on the provided location, places data, user preferences, and weather forecast, recommend the best places to visit. For each recommendation, provide a brief description, why it's worth visiting, and the best time to visit based on the weather and user preferences.\nData:\n${JSON.stringify(aiRequestData, null, 2)}`;
 
 						const result = await model.generateContent(prompt);
 						const aiSuggestions = result.response.text();
