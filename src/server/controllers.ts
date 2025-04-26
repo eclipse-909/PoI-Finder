@@ -488,6 +488,7 @@ export const search = async (req: Request, res: Response) => {
 				return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Preferences are required'));
 			}
 			const preferencesContext: string = JSON.stringify(preferences, null, 2);
+			console.log(preferencesContext);
 			
 			// Save search to database
 			const date = new Date().toISOString();
@@ -556,7 +557,11 @@ export const search = async (req: Request, res: Response) => {
 					};
 					//@ts-ignore
 					const { places } = await Place.searchNearby(request);
+					if (!places || places.length === 0) {
+						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No places found'));
+					}
 					const placesContext: string = JSON.stringify(places, null, 2);
+					console.log(placesContext);
 
 					// Get weather data (if applicable)
 					const end_date = new Date(preferences.end_date);
@@ -565,15 +570,75 @@ export const search = async (req: Request, res: Response) => {
 					let weatherContext: string | undefined = undefined;
 					if (daysDifference <= 1 && daysDifference >= 0) {
 						// end_date is within 24 hours
-						weatherContext = JSON.stringify(await axios.get(
+						const weatherData = await axios.get(
 							`https://weather.googleapis.com/v1/forecast/hours:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&hours=24&pageSize=24`
-						), null, 2);
+						);
+						if (weatherData.data.error) {
+							return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No weather data found'));
+						}
+						weatherContext = JSON.stringify(weatherData.data, null, 2);
 					} else if (daysDifference <= 10 && daysDifference >= 0) {
 						// The end_date is within the next 10 days
-						weatherContext = JSON.stringify(await axios.get(
+						const weatherData = await axios.get(
 							`https://weather.googleapis.com/v1/forecast/days:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&days=${daysDifference}&pageSize=${daysDifference}`
-						), null, 2);
+						);
+						if (weatherData.data.error) {
+							return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No weather data found'));
+						}
+						weatherContext = JSON.stringify(weatherData.data, null, 2);
 					}
+					if (weatherContext) {
+						console.log(weatherContext);
+					}
+
+					// TODO make gemini call to get recommendations
+					// gemnini should give a list of JSON objects with a departure time and arrival time
+					// which we can use to get the route matrix
+
+					// Get Route Matrix
+					let destinations: any[] = [];
+					places.forEach((place: any) => {
+						destinations.push({
+							"waypoint": {
+								"via": false,
+								"vehicleStopover": false,
+								"sideOfRoad": false,
+								"placeId": place.id
+							  }
+						});
+					})
+
+					const routeResponse = await axios.post(
+						"https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix",
+						{
+							"origins": [
+								{
+									"waypoint": {
+										"via": false,
+										"vehicleStopover": false,
+										"sideOfRoad": false,
+										"location": {
+											"latLng": {
+												"latitude": searchData.latitude,
+												"longitude": searchData.longitude
+											}
+										}
+									}
+								}
+							],
+							"destinations": destinations,
+							"travelMode": preferences.mode_of_transport.toUpperCase(),
+							"routingPreference": "TRAFFIC_AWARE_OPTIMAL",
+							// "departureTime": string,
+							// "arrivalTime": string,
+							"languageCode": "en-US"
+						  }
+					);
+
+					if (routeResponse.data.error) {
+						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No route data found'));
+					}
+					const routeMatrix = routeResponse.data;
 					
 					// try {
 					// 	// Make API call to OpenAI for AI-based recommendations
