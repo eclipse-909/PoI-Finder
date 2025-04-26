@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Create preferences table
 CREATE TABLE IF NOT EXISTS preferences (
 	username TEXT PRIMARY KEY,
-	mode_of_transport TEXT CHECK(mode_of_transport IN ('car', 'taxi', 'bike', 'walk', 'bus', 'train', 'subway')),
+	mode_of_transport TEXT CHECK(mode_of_transport IN ('Transit', 'Bicycle', 'Walk', 'Drive')),
 	eat_out BOOLEAN DEFAULT FALSE,
 	wake_up TEXT,
 	home_by TEXT,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS points_of_interest (
 	description TEXT,
 	image_url TEXT,
 	location TEXT NOT NULL,
-	mode_of_transport TEXT CHECK(mode_of_transport IN ('car', 'taxi', 'bike', 'walk', 'bus', 'train', 'subway')),
+	mode_of_transport TEXT CHECK(mode_of_transport IN ('Transit', 'Bicycle', 'Walk', 'Drive')),
 	arrival_time TEXT,
 	departure_time TEXT,
 	FOREIGN KEY (search_id) REFERENCES searches(id) ON DELETE CASCADE
