@@ -1,0 +1,1 @@
+Can you write this conditional statement to check if the end_date is within 10 days from the current date?

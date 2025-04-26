@@ -12,7 +12,7 @@ import {
 	UserPreferences,
 	SavedSearchSummary
 } from './models';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import fs from 'fs';
 
 // Prompt string for Gemini
@@ -423,7 +423,16 @@ export const updatePreferences = (req: Request, res: Response) => {
 // Search controllers
 export const search = async (req: Request, res: Response) => {
 	try {
-		const username: string = req.session.user?.username ?? '';
+		const gemini_key = process.env.GOOGLE_GEMINI_API_KEY;
+		if (!gemini_key) {
+			throw new Error('GOOGLE_GEMINI_API_KEY is not set');
+		}
+		const maps_platform_key = process.env.GOOGLE_MAPS_PLATFORM_API_KEY;
+		if (!maps_platform_key) {
+			throw new Error('GOOGLE_MAPS_PLATFORM_API_KEY is not set');
+		}
+
+		const username: string | undefined = req.session.user?.username;
 		
 		// Then check if it's empty
 		if (!username) {
@@ -438,35 +447,24 @@ export const search = async (req: Request, res: Response) => {
 		
 		const searchData: SearchRequest = req.body;
 		
-		if (!searchData || (!searchData.location && !searchData.useCurrentLocation)) {
-			return res.status(400).json(createResponse(
-				false, 
-				undefined, 
-				'INVALID_INPUT', 
-				'Location information is required'
-			));
-		}
-		
-		let location = searchData.location;
-		
 		// Get current location name if using coordinates
-		if (searchData.useCurrentLocation && searchData.latitude && searchData.longitude) {
-			try {
-				// Use Google Geocoding API to get location name from coordinates
-				const geocodeResult = await axios.get(
-					`https://maps.googleapis.com/maps/api/geocode/json?latlng=${searchData.latitude},${searchData.longitude}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
-				);
+		// if (searchData.useCurrentLocation && searchData.latitude && searchData.longitude) {
+		// 	try {
+		// 		// Use Google Geocoding API to get location name from coordinates
+		// 		const geocodeResult = await axios.get(
+		// 			`https://maps.googleapis.com/maps/api/geocode/json?latlng=${searchData.latitude},${searchData.longitude}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
+		// 		);
 				
-				if (geocodeResult.data.results && geocodeResult.data.results.length > 0) {
-					location = geocodeResult.data.results[0].formatted_address;
-				} else {
-					location = `${searchData.latitude},${searchData.longitude}`;
-				}
-			} catch (error) {
-				console.error('Geocoding error:', error);
-				location = `${searchData.latitude},${searchData.longitude}`;
-			}
-		}
+		// 		if (geocodeResult.data.results && geocodeResult.data.results.length > 0) {
+		// 			location = geocodeResult.data.results[0].formatted_address;
+		// 		} else {
+		// 			location = `${searchData.latitude},${searchData.longitude}`;
+		// 		}
+		// 	} catch (error) {
+		// 		console.error('Geocoding error:', error);
+		// 		location = `${searchData.latitude},${searchData.longitude}`;
+		// 	}
+		// }
 		
 		// Get user preferences
 		db.get('SELECT * FROM preferences WHERE username = ?', [username], async (err, prefsRow: any) => {
@@ -475,9 +473,10 @@ export const search = async (req: Request, res: Response) => {
 				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
 			}
 			
-			const preferences = prefsRow ? {
+			const preferences: UserPreferences | null = prefsRow ? {
+				username: prefsRow.username,
 				mode_of_transport: prefsRow.mode_of_transport as TransportMode,
-				eat_out: !!prefsRow.eat_out,
+				eat_out: prefsRow.eat_out,
 				wake_up: prefsRow.wake_up,
 				home_by: prefsRow.home_by,
 				start_date: prefsRow.start_date,
@@ -485,6 +484,10 @@ export const search = async (req: Request, res: Response) => {
 				range: prefsRow.range,
 				context: prefsRow.context
 			} : null;
+			if (!preferences) {
+				return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Preferences are required'));
+			}
+			const preferencesContext: string = JSON.stringify(preferences, null, 2);
 			
 			// Save search to database
 			const date = new Date().toISOString();
@@ -499,172 +502,213 @@ export const search = async (req: Request, res: Response) => {
 					}
 					
 					const searchId = this.lastID;
-					
-					try {
-						// Get nearby places using Google Places API
-						const placesResult = await axios.get(
-							`https://maps.googleapis.com/maps/api/place/textsearch/json?query=tourist+attractions+in+${encodeURIComponent(location)}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
-						);
-						
-						// Get weather data
-						let weatherData = [];
-						try {
-							// Extract lat,lng for weather API call
-							let lat, lng;
-							
-							if (searchData.latitude && searchData.longitude) {
-								lat = searchData.latitude;
-								lng = searchData.longitude;
-							} else if (placesResult.data.results && placesResult.data.results.length > 0) {
-								const firstPlace = placesResult.data.results[0];
-								lat = firstPlace.geometry.location.lat;
-								lng = firstPlace.geometry.location.lng;
-							}
-							
-							if (lat && lng) {
-								const weatherResult = await axios.get(
-									`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lng}&units=metric&appid=${process.env.OPENWEATHER_API_KEY}`
-								);
-								weatherData = weatherResult.data.list || [];
-							}
-						} catch (error) {
-							console.error('Weather API error:', error);
-							// Continue without weather data
-						}
-						
-						// Make API call to OpenAI for AI-based recommendations
-						const places = placesResult.data.results || [];
-						
-						// Prepare data for AI
-						const aiRequestData = {
-							location,
-							preferences,
-							places: places.map((place: any) => ({
-								name: place.name,
-								address: place.formatted_address,
-								types: place.types,
-								rating: place.rating
-							})),
-							weather: weatherData.map((item: any) => ({
-								date: item.dt_txt,
-								temperature: item.main.temp,
-								condition: item.weather[0].main,
-								description: item.weather[0].description,
-								icon: item.weather[0].icon
-							}))
-						};
-						
-						const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_API_KEY || '');
-						const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-						const result = await model.generateContent(prompt);
-						const aiSuggestions = result.response.text();
+					// Get nearby places using Google Places API
+					//@ts-ignore
+					const { Place, SearchNearbyRankPreference } = await google.maps.importLibrary(
+						"places",
+					);
+					//Most of these fields use Places Pro or Enterprise, so we don't get as many free requests.
+					//https://developers.google.com/maps/documentation/javascript/place-class-data-fields
+					const placesFields: string[] = [
+						"displayName",
+						"editorialSummary",
+						"location",
+						"openingHours",
+						"photos",
+						"id",
+						"websiteURI"
+					];
+					const foodPlacesFields: string[] = [
+						"hasDineIn",
+						"servesBreakfast",
+						"servesBrunch",
+						"servesDessert",
+						"servesDinner",
+						"servesLunch",
+						"hasTakeout"
+					];
+					//I'm using types from Table B because I don't want to spend a long time going through Table A.
+					//https://developers.google.com/maps/documentation/places/web-service/place-types
+					const placesTypes: string[] = [
+						"establishment",
+						"landmark",
+						"natural_feature",
+						"point_of_interest",
+						"town_square"
+					];
+					const foodPlacesTypes: string[] = [
+						"food"
+					];
+					const request = {
+						// required parameters
+						fields: preferences.eat_out ? placesFields.concat(foodPlacesFields) : placesFields,
+						locationRestriction: {
+							center: new google.maps.LatLng(searchData.latitude, searchData.longitude),
+							radius: 500,
+						},
+						// optional parameters
+						includedTypes: preferences.eat_out ? placesTypes.concat(foodPlacesTypes) : placesTypes,
+						maxResultCount: 20,
+						rankPreference: SearchNearbyRankPreference.POPULARITY,
+						language: "en-US",
+						region: "us",
+					};
+					//@ts-ignore
+					const { places } = await Place.searchNearby(request);
+					const placesContext: string = JSON.stringify(places, null, 2);
 
-						// Parse AI suggestions
-						const suggestions = JSON.parse(aiSuggestions);
-						
-						// Get route information for each POI
-						const pointsOfInterest: PointOfInterestResponse[] = [];
-						
-						// Get route for each place
-						for (const suggestion of suggestions) {
-							const place = places.find((p: any) => p.name === suggestion.name) || places[0];
-							
-							// Get detailed place info including photos
-							let photoUrl = '';
-							try {
-								const placeDetailsResult = await axios.get(
-									`https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=photos&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
-								);
-								
-								if (placeDetailsResult.data.result && 
-										placeDetailsResult.data.result.photos && 
-										placeDetailsResult.data.result.photos.length > 0) {
-									const photoRef = placeDetailsResult.data.result.photos[0].photo_reference;
-									photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`;
-								}
-							} catch (error) {
-								console.error('Place details error:', error);
-								// Continue without photo
-							}
-							
-							// Get route to place based on user preferences
-							let routeData;
-							try {
-								const origin = searchData.useCurrentLocation && searchData.latitude && searchData.longitude
-									? `${searchData.latitude},${searchData.longitude}`
-									: location;
-									
-								const destination = `${place.geometry.location.lat},${place.geometry.location.lng}`;
-								const transportMode = preferences?.mode_of_transport || 'driving';
-								
-								const routeResult = await axios.get(
-									`https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${transportMode}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
-								);
-								
-								if (routeResult.data.routes && routeResult.data.routes.length > 0) {
-									const route = routeResult.data.routes[0];
-									const leg = route.legs[0];
-									
-									routeData = {
-										distance: leg.distance.text,
-										duration: leg.duration.text,
-										steps: leg.steps.map((step: any) => step.html_instructions)
-									};
-								}
-							} catch (error) {
-								console.error('Route error:', error);
-								// Continue without route data
-							}
-							
-							// Save POI to database
-							db.run(
-								`INSERT INTO points_of_interest (
-									search_id, name, description, image_url, location, mode_of_transport
-								) VALUES (?, ?, ?, ?, ?, ?)`,
-								[
-									searchId,
-									suggestion.name,
-									suggestion.description,
-									photoUrl,
-									place.formatted_address,
-									preferences?.mode_of_transport || TransportMode.CAR
-								],
-								function(err) {
-									if (err) {
-										console.error('Database error:', err);
-										// Continue with response
-									}
-								}
-							);
-							
-							// Add to response
-							pointsOfInterest.push({
-								id: pointsOfInterest.length + 1,
-								name: suggestion.name,
-								description: suggestion.description,
-								image_url: photoUrl,
-								location: place.formatted_address,
-								address: place.formatted_address,
-								type: place.types || [],
-								rating: place.rating,
-								weather: suggestion.weather,
-								route: routeData,
-								arrival_time: suggestion.arrival_time,
-								departure_time: suggestion.departure_time
-							});
-						}
-						
-						return res.status(200).json(createResponse(true, {
-							searchId,
-							location,
-							date,
-							pointsOfInterest
-						}));
-					} catch (error) {
-						console.error('API error:', error);
-						return res.status(500).json(createResponse(false, undefined, 'API_ERROR', 'Error fetching data from external APIs'));
+					// Get weather data (if applicable)
+					const end_date = new Date(preferences.end_date);
+					const currentDate = new Date();
+					const daysDifference = Math.ceil((end_date.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
+					let weatherContext: string | undefined = undefined;
+					if (daysDifference <= 1 && daysDifference >= 0) {
+						// end_date is within 24 hours
+						weatherContext = JSON.stringify(await axios.get(
+							`https://weather.googleapis.com/v1/forecast/hours:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&hours=24&pageSize=24`
+						), null, 2);
+					} else if (daysDifference <= 10 && daysDifference >= 0) {
+						// The end_date is within the next 10 days
+						weatherContext = JSON.stringify(await axios.get(
+							`https://weather.googleapis.com/v1/forecast/days:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&days=${daysDifference}&pageSize=${daysDifference}`
+						), null, 2);
 					}
+					
+					// try {
+					// 	// Make API call to OpenAI for AI-based recommendations
+					// 	// Prepare data for AI
+					// 	const aiRequestData = {
+					// 		location,
+					// 		preferences,
+					// 		places: places.map((place: any) => ({
+					// 			name: place.name,
+					// 			address: place.formatted_address,
+					// 			types: place.types,
+					// 			rating: place.rating
+					// 		})),
+					// 		weather: weatherData.map((item: any) => ({
+					// 			date: item.dt_txt,
+					// 			temperature: item.main.temp,
+					// 			condition: item.weather[0].main,
+					// 			description: item.weather[0].description,
+					// 			icon: item.weather[0].icon
+					// 		}))
+					// 	};
+						
+					// 	const genAI = new GoogleGenAI({ apiKey: gemini_key });
+					// 	const response = await genAI.models.generateContent({
+					// 		model: "gemini-2.0-flash-lite",
+					// 		contents: "Explain how AI works in a few words",
+					// 	});
+						
+					// 	const aiSuggestions = result.response.text();
+
+					// 	// Parse AI suggestions
+					// 	const suggestions = JSON.parse(aiSuggestions);
+						
+					// 	// Get route information for each POI
+					// 	const pointsOfInterest: PointOfInterestResponse[] = [];
+						
+					// 	// Get route for each place
+					// 	for (const suggestion of suggestions) {
+					// 		const place = places.find((p: any) => p.name === suggestion.name) || places[0];
+							
+					// 		// Get detailed place info including photos
+					// 		let photoUrl = '';
+					// 		try {
+					// 			const placeDetailsResult = await axios.get(
+					// 				`https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=photos&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
+					// 			);
+								
+					// 			if (placeDetailsResult.data.result && 
+					// 					placeDetailsResult.data.result.photos && 
+					// 					placeDetailsResult.data.result.photos.length > 0) {
+					// 				const photoRef = placeDetailsResult.data.result.photos[0].photo_reference;
+					// 				photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`;
+					// 			}
+					// 		} catch (error) {
+					// 			console.error('Place details error:', error);
+					// 			// Continue without photo
+					// 		}
+							
+					// 		// Get route to place based on user preferences
+					// 		let routeData;
+					// 		try {
+					// 			const origin = searchData.useCurrentLocation && searchData.latitude && searchData.longitude
+					// 				? `${searchData.latitude},${searchData.longitude}`
+					// 				: location;
+									
+					// 			const destination = `${place.geometry.location.lat},${place.geometry.location.lng}`;
+					// 			const transportMode = preferences?.mode_of_transport || 'driving';
+								
+					// 			const routeResult = await axios.get(
+					// 				`https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${transportMode}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
+					// 			);
+								
+					// 			if (routeResult.data.routes && routeResult.data.routes.length > 0) {
+					// 				const route = routeResult.data.routes[0];
+					// 				const leg = route.legs[0];
+									
+					// 				routeData = {
+					// 					distance: leg.distance.text,
+					// 					duration: leg.duration.text,
+					// 					steps: leg.steps.map((step: any) => step.html_instructions)
+					// 				};
+					// 			}
+					// 		} catch (error) {
+					// 			console.error('Route error:', error);
+					// 			// Continue without route data
+					// 		}
+							
+					// 		// Save POI to database
+					// 		db.run(
+					// 			`INSERT INTO points_of_interest (
+					// 				search_id, name, description, image_url, location, mode_of_transport
+					// 			) VALUES (?, ?, ?, ?, ?, ?)`,
+					// 			[
+					// 				searchId,
+					// 				suggestion.name,
+					// 				suggestion.description,
+					// 				photoUrl,
+					// 				place.formatted_address,
+					// 				preferences?.mode_of_transport || TransportMode.CAR
+					// 			],
+					// 			function(err) {
+					// 				if (err) {
+					// 					console.error('Database error:', err);
+					// 					// Continue with response
+					// 				}
+					// 			}
+					// 		);
+							
+					// 		// Add to response
+					// 		pointsOfInterest.push({
+					// 			id: pointsOfInterest.length + 1,
+					// 			name: suggestion.name,
+					// 			description: suggestion.description,
+					// 			image_url: photoUrl,
+					// 			location: place.formatted_address,
+					// 			address: place.formatted_address,
+					// 			type: place.types || [],
+					// 			rating: place.rating,
+					// 			weather: suggestion.weather,
+					// 			route: routeData,
+					// 			arrival_time: suggestion.arrival_time,
+					// 			departure_time: suggestion.departure_time
+					// 		});
+					// 	}
+						
+					// 	return res.status(200).json(createResponse(true, {
+					// 		searchId,
+					// 		location,
+					// 		date,
+					// 		pointsOfInterest
+					// 	}));
+					// } catch (error) {
+					// 	console.error('API error:', error);
+					// 	return res.status(500).json(createResponse(false, undefined, 'API_ERROR', 'Error fetching data from external APIs'));
+					// }
 				}
 			);
 		});

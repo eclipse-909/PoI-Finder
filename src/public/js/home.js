@@ -87,7 +87,7 @@ const homePage = {
 	handleSearch() {
 		const locationInput = document.getElementById('place-autocomplete-input').Eg;
 		
-		if (!locationInput || !locationInput.value.trim()) {
+		if (!locationInput || locationInput.value.trim() === '') {
 			alert('Please enter a location');
 			return;
 		}
@@ -99,7 +99,8 @@ const homePage = {
 		
 		// Perform search with entered location
 		this.performSearch({
-			location: locationInput.value.trim()
+			latitude: center.lat,
+			longitude: center.lng
 		});
 	},
 	

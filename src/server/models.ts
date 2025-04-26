@@ -48,14 +48,8 @@ export interface ApiResponse<T> {
 }
 
 export interface SearchRequest {
-	location: string;
-	dateRange?: {
-		start: string;
-		end: string;
-	};
-	useCurrentLocation?: boolean;
-	latitude?: number;
-	longitude?: number;
+	latitude: number;
+	longitude: number;
 }
 
 export interface WeatherData {
