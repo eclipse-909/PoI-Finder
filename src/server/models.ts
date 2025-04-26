@@ -109,4 +109,14 @@ export interface SignupRequest {
 export interface PasswordChangeRequest {
 	current_password: string;
 	new_password: string;
-} 
+}
+
+export interface GeminiResponse {
+	places: {
+		id: string;
+		date: string;
+		arrival_time: string;
+		departure_time: string;
+		mode_of_transport: string;
+	}[];
+}

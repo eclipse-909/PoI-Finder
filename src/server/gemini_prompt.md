@@ -38,3 +38,11 @@ If weather data is provided, use it do determine which days and times are best t
 	}
 	```
 ## Input Data
+### Location
+LOCATION_PLACEHOLDER
+### Preferences
+PREFERENCES_PLACEHOLDER
+### Places
+PLACES_PLACEHOLDER
+### Weather
+WEATHER_PLACEHOLDER

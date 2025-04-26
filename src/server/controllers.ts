@@ -10,13 +10,14 @@ import {
 	SignupRequest, 
 	TransportMode, 
 	UserPreferences,
-	SavedSearchSummary
+	SavedSearchSummary,
+	GeminiResponse
 } from './models';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import fs from 'fs';
 
 // Prompt string for Gemini
-const prompt = fs.readFileSync('./src/server/gemini_prompt.txt', 'utf8');
+const promptFileText = fs.readFileSync('./src/server/gemini_prompt.txt', 'utf8');
 
 // Add custom type to extend Express Request
 declare global {
@@ -485,10 +486,10 @@ export const search = async (req: Request, res: Response) => {
 				context: prefsRow.context
 			} : null;
 			if (!preferences) {
+				console.error('No preferences found');
 				return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Preferences are required'));
 			}
 			const preferencesContext: string = JSON.stringify(preferences, null, 2);
-			console.log(preferencesContext);
 			
 			// Save search to database
 			const date = new Date().toISOString();
@@ -558,10 +559,10 @@ export const search = async (req: Request, res: Response) => {
 					//@ts-ignore
 					const { places } = await Place.searchNearby(request);
 					if (!places || places.length === 0) {
+						console.error('No places found');
 						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No places found'));
 					}
 					const placesContext: string = JSON.stringify(places, null, 2);
-					console.log(placesContext);
 
 					// Get weather data (if applicable)
 					const end_date = new Date(preferences.end_date);
@@ -574,6 +575,7 @@ export const search = async (req: Request, res: Response) => {
 							`https://weather.googleapis.com/v1/forecast/hours:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&hours=24&pageSize=24`
 						);
 						if (weatherData.data.error) {
+							console.error('No weather data found');
 							return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No weather data found'));
 						}
 						weatherContext = JSON.stringify(weatherData.data, null, 2);
@@ -583,17 +585,40 @@ export const search = async (req: Request, res: Response) => {
 							`https://weather.googleapis.com/v1/forecast/days:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&days=${daysDifference}&pageSize=${daysDifference}`
 						);
 						if (weatherData.data.error) {
+							console.error('No weather data found');
 							return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No weather data found'));
 						}
 						weatherContext = JSON.stringify(weatherData.data, null, 2);
 					}
-					if (weatherContext) {
-						console.log(weatherContext);
+
+					// Make gemini call to get recommendations.
+					// Gemini should give a list of JSON objects with a departure time and arrival time
+					// which we can use to get the route matrix
+					const genAI = new GoogleGenAI({ apiKey: gemini_key });
+
+					const prompt = promptFileText
+						.replace("LOCATION_PLACEHOLDER", `Latitude: ${searchData.latitude}, Longitude: ${searchData.longitude}`)
+						.replace("PREFERENCES_PLACEHOLDER", preferencesContext)
+						.replace("PLACES_PLACEHOLDER", placesContext)
+						.replace("WEATHER_PLACEHOLDER", weatherContext ?? "Weather data not applicable - please ignore.");
+
+					const response: GenerateContentResponse = await genAI.models.generateContent({
+						model: "gemini-2.0-flash-lite",
+						contents: prompt
+					});
+					if (response.text === undefined) {
+						console.error('No response from Gemini');
+						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No response from Gemini'));
 					}
 
-					// TODO make gemini call to get recommendations
-					// gemnini should give a list of JSON objects with a departure time and arrival time
-					// which we can use to get the route matrix
+					// Parse the response from Gemini
+					let recommendedPlaces: GeminiResponse;
+					try {
+						recommendedPlaces = JSON.parse(response.text) as GeminiResponse;
+					} catch (error) {
+						console.error('Invalid response from Gemini');
+						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Invalid response from Gemini'));
+					}
 
 					// Get Route Matrix
 					let destinations: any[] = [];
