@@ -29,6 +29,7 @@ If weather data is provided, use it do determine which days and times are best t
 			{
 				"id": string,
 				"date": string,
+				"leave_time": string,
 				"arrival_time": string,
 				"departure_time": string,
 				"mode_of_transport": string,
@@ -37,6 +38,14 @@ If weather data is provided, use it do determine which days and times are best t
 		]
 	}
 	```
+	* All dates and times are in ISO format
+	* "id" should be copied from the "id" field in the places data
+	* "date" should be the date you recommend going to visit the point of interest. This must be within the start and end dates specified in the preferences.
+	* "leave_time" is the recommended time the user will leave from their location and begin going to the point of interest.
+	* "arrival_time" is the time the user will arrive at the point of interest. This is roughly calculated by taking the leave_time and adding the transportation time
+	* "departure_time" time is the recommend time the user will depart from the point of interest.
+	* "mode_of_transport" is the mode of transport you recommend to use to get to and from the point of interest. You should try to use the preferred mode, but it might not always be available or optimal.
+- You should try to recommend as many places as possible, and filter out places that don't make sense or places that contradict preferences.
 ## Input Data
 ### Location
 LOCATION_PLACEHOLDER
