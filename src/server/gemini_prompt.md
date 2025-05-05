@@ -28,24 +28,44 @@ If weather data is provided, use it do determine which days and times are best t
 		"places": [
 			{
 				"id": string,
-				"date": string,
-				"leave_time": string,
 				"arrival_time": string,
 				"departure_time": string,
-				"mode_of_transport": string,
+				"weatherCondition": {
+					"iconBaseUri": string,
+					"description": {
+						"text": string,
+						"languageCode": string
+					},
+					"type": string
+				},
+				"maxTemperature": {
+					"degrees": number,
+					"unit": string
+				},
+				"minTemperature": {
+					"degrees": number,
+					"unit": string
+				},
+				"temperature": {
+					"degrees": number,
+					"unit": string
+				}
 			},
 			// more objects in list
 		]
 	}
 	```
-	* All dates and times are in ISO format
 	* "id" should be copied from the "id" field in the places data
-	* "date" should be the date you recommend going to visit the point of interest. This must be within the start and end dates specified in the preferences.
-	* "leave_time" is the recommended time the user will leave from their location and begin going to the point of interest.
-	* "arrival_time" is the time the user will arrive at the point of interest. This is roughly calculated by taking the leave_time and adding the transportation time
+	* "arrival_time" is the recommended time the user will arrive at the point of interest.
 	* "departure_time" time is the recommend time the user will depart from the point of interest.
-	* "mode_of_transport" is the mode of transport you recommend to use to get to and from the point of interest. You should try to use the preferred mode, but it might not always be available or optimal.
+	* Arrival and departure times are in the format RFC 3339, where generated output will always be Z-normalized and uses 0, 3, 6 or 9 fractional digits. Offsets other than "Z" are also accepted. Examples: "2014-10-02T15:01:23Z", "2014-10-02T15:01:23.045123456Z" or "2014-10-02T15:01:23+05:30".
+	* "weatherConditions" should be copied over from the weather data (if weather data was provided). If the daily forecast was provided, copy it from the day you are recommending the user to visit the point of interest. If the hourly forecast was provided, copy it from the arrival-time hour you are recommending the user to visit the point of interest.
+	* "maxTemperature" is the max temperature of the day if the daily forecast was provided. This is just copied from the weather data. Copy this from the day you are recommending the user to visit the point of interest.
+	* "minTemperature" is the same as maxTemperature, but copy the minTemperature.
+	* "temperature" is the temperature of the hour if the hourly forecast is provided. This is just copied from the weather data. Copy this from the arrival-time hour you are recommending the user to visit the point of interest.
+	* For daily forecast, you will use maxTemperature and minTemperature. For hourly forecast, you will use temperature.
 - You should try to recommend as many places as possible, and filter out places that don't make sense or places that contradict preferences.
+- You are allowed to recommend multiple points of interest per day
 ## Input Data
 ### Location
 LOCATION_PLACEHOLDER

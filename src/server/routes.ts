@@ -137,10 +137,6 @@ const setupAuthenticatedRoutes = (db: Database): void => {
 	router.delete('/api/delete_search/:id', authenticateUser, csrfProtection, (req: Request, res: Response): void => {
 		void controllers.deleteSearch(req, res);
 	});
-	
-	router.post('/api/save_search/:id', authenticateUser, csrfProtection, checkApiKeys, (req: Request, res: Response): void => {
-		void controllers.saveSearch(req, res);
-	});
 
 	// Add this with the other routes that don't require authentication
 	router.get('/api/auth-status', (req: Request, res: Response): void => {
@@ -179,15 +175,6 @@ const checkApiKeys = (req: Request, res: Response, next: NextFunction): void => 
 	
 	next();
 };
-
-// Then add this middleware to relevant routes
-router.post('/api/search', authenticateUser, apiLimiter, checkApiKeys, (req: Request, res: Response): void => {
-	void controllers.search(req, res);
-});
-
-router.post('/api/save_search/:id', authenticateUser, csrfProtection, checkApiKeys, (req: Request, res: Response): void => {
-	void controllers.saveSearch(req, res);
-});
 
 // Also add to other routes that require API keys as appropriate
 

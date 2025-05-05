@@ -1,11 +1,8 @@
 export enum TransportMode {
-	CAR = 'car',
-	TAXI = 'taxi',
-	BIKE = 'bike',
-	WALK = 'walk',
-	BUS = 'bus',
-	TRAIN = 'train',
-	SUBWAY = 'subway'
+	DRIVE = "DRIVE",
+	TRANSIT = "TRANSIT",
+	WALK = "WALK",
+	BICYCLE = "BICYCLE"
 }
 
 export interface User {
@@ -26,16 +23,39 @@ export interface UserPreferences {
 }
 
 export interface PointOfInterest {
-	id: number;
-	username: string;
-	location: string;
-	name: string;
-	date: string; // Date in ISO format
-	description: string;
-	image_url: string;
-	mode_of_transport: TransportMode;
-	arrival_time: string; // Time in ISO format
-	departure_time: string; // Time in ISO format
+	id: string,
+	displayName: {
+		text: string,
+		languageCode: string
+	},
+	editorialSummary?: {
+		text: string,
+		languageCode: string
+	},
+	formattedAddress?: string,
+	openingHours?: {
+		periods: any[],
+		weekdayDescriptions: string[],
+		secondaryHoursType: any,
+		specialDays: any[],
+		nextOpenTime: string,
+		nextCloseTime: string,
+		openNow: boolean
+	},
+	photos?: any[],
+	websiteURI?: string,
+	addressDescriptor?: {
+		landmarks: any[],
+		areas: any[]
+	},
+
+	hasDineIn?: boolean,
+	servesBreakfast?: boolean,
+	servesBrunch?: boolean,
+	servesDessert?: boolean,
+	servesDinner?: boolean,
+	servesLunch?: boolean,
+	hasTakeout?: boolean
 }
 
 export interface ApiResponse<T> {
@@ -47,76 +67,69 @@ export interface ApiResponse<T> {
 	};
 }
 
-export interface SearchRequest {
+export interface Coordinates {
 	latitude: number;
 	longitude: number;
 }
 
-export interface WeatherData {
-	date: string;
-	temperature: number;
-	condition: string;
-	icon: string;
-}
-
-export interface RouteInfo {
-	distance: string;
-	duration: string;
-	steps: string[];
-}
-
 export interface PointOfInterestResponse {
-	id: number;
-	name: string;
-	description: string;
-	image_url: string;
-	location: string;
-	address: string;
-	type: string[];
-	rating?: number;
-	weather?: WeatherData;
-	route?: RouteInfo;
-	arrival_time?: string;
-	departure_time?: string;
+	poi: PointOfInterest,
+	arrivalTime: string,
+	departureTime: string,
+	routeDuration: string,
+	weatherCondition: {
+		iconBaseUri: string,
+		description: {
+			text: string,
+			languageCode: string
+		},
+		type: string
+	}
+	maxTemperature?: {
+		degrees: number,
+		unit: string
+	},
+	minTemperature?: {
+		degrees: number,
+		unit: string
+	},
+	temperature?: {
+		degrees: number,
+		unit: string
+	}
 }
 
-export interface SavedSearchSummary {
-	id: number;
-	location: string;
+export interface Search {
+	search_id: number;
+	latitude: number;
+	longitude: number;
 	date: string;
-	count: number;
-}
-
-export interface UserSession {
-	id: string;
-	username: string;
-	created_at: string;
-	expires_at: string;
-	ip_address: string;
-	user_agent: string;
-}
-
-export interface LoginRequest {
-	username: string;
-	password: string;
-}
-
-export interface SignupRequest {
-	username: string;
-	password: string;
-}
-
-export interface PasswordChangeRequest {
-	current_password: string;
-	new_password: string;
 }
 
 export interface GeminiResponse {
 	places: {
 		id: string;
-		date: string;
 		arrival_time: string;
 		departure_time: string;
-		mode_of_transport: string;
+		weatherCondition: {
+			iconBaseUri: string,
+			description: {
+				text: string,
+				languageCode: string
+			},
+			type: string
+        }
+		maxTemperature?: {
+			degrees: number,
+			unit: string
+		},
+		minTemperature?: {
+			degrees: number,
+			unit: string
+		},
+		temperature?: {
+			degrees: number,
+			unit: string
+		}
 	}[];
 }

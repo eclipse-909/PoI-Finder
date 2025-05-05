@@ -2,22 +2,30 @@ import { Request, Response } from 'express';
 import { Database } from 'sqlite3';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { 
 	ApiResponse,
 	PointOfInterestResponse, 
-	SearchRequest, 
-	SignupRequest, 
+	Coordinates,
 	TransportMode, 
 	UserPreferences,
-	SavedSearchSummary,
-	GeminiResponse
+	Search,
+	GeminiResponse,
+	PointOfInterest
 } from './models';
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import fs from 'fs';
 
 // Prompt string for Gemini
-const promptFileText = fs.readFileSync('./src/server/gemini_prompt.txt', 'utf8');
+const promptFileText = fs.readFileSync('./src/server/gemini_prompt.md', 'utf8');
+
+// ChatGPT estimated speeds in m/s for each mode of transport
+const transportSpeeds = {
+	walk: 1.4,
+	bicycle: 4.2,
+	drive: 13.9,
+	transit: 8.3
+};
 
 // Add custom type to extend Express Request
 declare global {
@@ -109,7 +117,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const signup = async (req: Request, res: Response) => {
 	try {
-		const { username, password }: SignupRequest = req.body;
+		const { username, password } = req.body;
 		
 		if (!username || !password) {
 			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Username and password are required'));
@@ -154,7 +162,7 @@ export const signup = async (req: Request, res: Response) => {
 				// Create default preferences
 				const defaultPrefs: UserPreferences = {
 					username,
-					mode_of_transport: TransportMode.CAR,
+					mode_of_transport: TransportMode.TRANSIT,
 					eat_out: true,
 					wake_up: '08:00',
 					home_by: '22:00',
@@ -446,26 +454,7 @@ export const search = async (req: Request, res: Response) => {
 			});
 		}
 		
-		const searchData: SearchRequest = req.body;
-		
-		// Get current location name if using coordinates
-		// if (searchData.useCurrentLocation && searchData.latitude && searchData.longitude) {
-		// 	try {
-		// 		// Use Google Geocoding API to get location name from coordinates
-		// 		const geocodeResult = await axios.get(
-		// 			`https://maps.googleapis.com/maps/api/geocode/json?latlng=${searchData.latitude},${searchData.longitude}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
-		// 		);
-				
-		// 		if (geocodeResult.data.results && geocodeResult.data.results.length > 0) {
-		// 			location = geocodeResult.data.results[0].formatted_address;
-		// 		} else {
-		// 			location = `${searchData.latitude},${searchData.longitude}`;
-		// 		}
-		// 	} catch (error) {
-		// 		console.error('Geocoding error:', error);
-		// 		location = `${searchData.latitude},${searchData.longitude}`;
-		// 	}
-		// }
+		const searchData: Coordinates = req.body;
 		
 		// Get user preferences
 		db.get('SELECT * FROM preferences WHERE username = ?', [username], async (err, prefsRow: any) => {
@@ -476,7 +465,7 @@ export const search = async (req: Request, res: Response) => {
 			
 			const preferences: UserPreferences | null = prefsRow ? {
 				username: prefsRow.username,
-				mode_of_transport: prefsRow.mode_of_transport as TransportMode,
+				mode_of_transport: prefsRow.mode_of_transport.toUpperCase(),
 				eat_out: prefsRow.eat_out,
 				wake_up: prefsRow.wake_up,
 				home_by: prefsRow.home_by,
@@ -495,8 +484,8 @@ export const search = async (req: Request, res: Response) => {
 			const date = new Date().toISOString();
 			
 			db.run(
-				'INSERT INTO searches (username, location, date) VALUES (?, ?, ?)',
-				[username, location, date],
+				'INSERT INTO searches (username, latitude, longitude, date) VALUES (?, ?, ?, ?)',
+				[username, searchData.latitude, searchData.longitude, date],
 				async function(err) {
 					if (err) {
 						console.error('Database error:', err);
@@ -515,11 +504,12 @@ export const search = async (req: Request, res: Response) => {
 					const placesFields: string[] = [
 						"displayName",
 						"editorialSummary",
-						"location",
+						"formattedAddress",
 						"openingHours",
 						"photos",
 						"id",
-						"websiteURI"
+						"websiteURI",
+						"addressDescriptor"
 					];
 					const foodPlacesFields: string[] = [
 						"hasDineIn",
@@ -557,7 +547,7 @@ export const search = async (req: Request, res: Response) => {
 						region: "us",
 					};
 					//@ts-ignore
-					const { places } = await Place.searchNearby(request);
+					let { places } = await Place.searchNearby(request);
 					if (!places || places.length === 0) {
 						console.error('No places found');
 						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No places found'));
@@ -569,31 +559,47 @@ export const search = async (req: Request, res: Response) => {
 					const currentDate = new Date();
 					const daysDifference = Math.ceil((end_date.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24));
 					let weatherContext: string | undefined = undefined;
-					if (daysDifference <= 1 && daysDifference >= 0) {
-						// end_date is within 24 hours
-						const weatherData = await axios.get(
-							`https://weather.googleapis.com/v1/forecast/hours:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&hours=24&pageSize=24`
-						);
-						if (weatherData.data.error) {
-							console.error('No weather data found');
-							return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No weather data found'));
+					try {
+						if (daysDifference <= 1 && daysDifference >= 0) {
+							// end_date is within 24 hours
+							const weatherData = await axios.get(
+								`https://weather.googleapis.com/v1/forecast/hours:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&hours=24&pageSize=24`
+							);
+							weatherContext = JSON.stringify(weatherData.data, null, 2);
+						} else if (daysDifference <= 10 && daysDifference >= 0) {
+							// The end_date is within the next 10 days
+							const weatherData = await axios.get(
+								`https://weather.googleapis.com/v1/forecast/days:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&days=${daysDifference}&pageSize=${daysDifference}`
+							);
+							weatherContext = JSON.stringify(weatherData.data, null, 2);
 						}
-						weatherContext = JSON.stringify(weatherData.data, null, 2);
-					} else if (daysDifference <= 10 && daysDifference >= 0) {
-						// The end_date is within the next 10 days
-						const weatherData = await axios.get(
-							`https://weather.googleapis.com/v1/forecast/days:lookup?key=${maps_platform_key}&location.latitude=${searchData.latitude}&location.longitude=${searchData.longitude}&days=${daysDifference}&pageSize=${daysDifference}`
-						);
-						if (weatherData.data.error) {
-							console.error('No weather data found');
-							return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No weather data found'));
+					} catch (error) {
+						if (axios.isAxiosError(error)) {
+							const axiosError = error as AxiosError;
+					  
+							// If the error has a response from the API
+							if (axiosError.response) {
+								res.status(axiosError.response.status).json({
+									message: 'Error from Google Weather API',
+									details: axiosError.response.data,
+								});
+							} else if (axiosError.request) {
+								// The request was made but no response received
+								res.status(504).json({ message: 'No response from Google Weather API' });
+							} else {
+								// Something else happened in setting up the request
+								res.status(500).json({ message: 'Error setting up API request', details: axiosError.message });
+							}
+						} else {
+							// Non-Axios error (e.g., unexpected runtime error)
+							res.status(500).json({ message: 'Unexpected server error' });
 						}
-						weatherContext = JSON.stringify(weatherData.data, null, 2);
+						return;
 					}
 
 					// Make gemini call to get recommendations.
 					// Gemini should give a list of JSON objects with a departure time and arrival time
-					// which we can use to get the route matrix
+					// which we can use to get the route data
 					const genAI = new GoogleGenAI({ apiKey: gemini_key });
 
 					const prompt = promptFileText
@@ -608,7 +614,7 @@ export const search = async (req: Request, res: Response) => {
 					});
 					if (response.text === undefined) {
 						console.error('No response from Gemini');
-						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No response from Gemini'));
+						return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'No response from Gemini'));
 					}
 
 					// Parse the response from Gemini
@@ -617,188 +623,205 @@ export const search = async (req: Request, res: Response) => {
 						recommendedPlaces = JSON.parse(response.text) as GeminiResponse;
 					} catch (error) {
 						console.error('Invalid response from Gemini');
-						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Invalid response from Gemini'));
+						return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Invalid response from Gemini'));
 					}
+					const filteredPlaces: PointOfInterest[] = places.filter((place: PointOfInterest) => !recommendedPlaces.places.some((recommendedPlace: any) => recommendedPlace.id === place.id));
 
-					// Get Route Matrix
+					// Get Route Data
+					const origin = {
+						"via": false,
+						"vehicleStopover": false,
+						"sideOfRoad": false,
+						"location": {
+							"latLng": {
+								"latitude": searchData.latitude,
+								"longitude": searchData.longitude
+							},
+							"heading": 0
+						}
+					};
 					let destinations: any[] = [];
-					places.forEach((place: any) => {
+					recommendedPlaces.places.forEach((place) => {
 						destinations.push({
+							"id": place.id,
 							"waypoint": {
 								"via": false,
 								"vehicleStopover": false,
 								"sideOfRoad": false,
 								"placeId": place.id
-							  }
+							},
+							"arrivalTime": place.arrival_time,
+							"departureTime": place.departure_time
 						});
-					})
-
-					const routeResponse = await axios.post(
-						"https://routes.googleapis.com/distanceMatrix/v2:computeRouteMatrix",
-						{
-							"origins": [
-								{
-									"waypoint": {
-										"via": false,
-										"vehicleStopover": false,
-										"sideOfRoad": false,
-										"location": {
-											"latLng": {
-												"latitude": searchData.latitude,
-												"longitude": searchData.longitude
-											}
-										}
+					});
+					let preferredMode: TransportMode = preferences.mode_of_transport;
+					let routeResponses: any[] = [];
+					try {
+						if (preferredMode === TransportMode.TRANSIT) {
+							// Since transit isn't always reliable, we'll get the route for the first destination.
+							// If transit is available, we can do the rest of the destinations.
+							// Otherwise, we'll switch to driving, try again, and do the rest of the destinations.
+							try {
+								let routeResponse = await axios.post(
+									"https://routes.googleapis.com/directions/v2:computeRoutes",
+									{
+										"origin": origin,
+										"destination": destinations[0].waypoint,
+										"travelMode": "TRANSIT",
+										"departureTime": destinations[0].departureTime,
+										"arrivalTime": destinations[0].arrivalTime,
+										"computeAlternativeRoutes": true,
+										"languageCode": "en-US",
+										"regionCode": "us",
+										"units": "METRIC"
 									}
+								);
+								routeResponse.data.id = destinations[0].id;
+								routeResponses.push(routeResponse.data);
+							} catch (error) {
+								if (axios.isAxiosError(error)) {
+									const axiosError = error as AxiosError;
+							  
+									// If the error has a response from the API
+									if (axiosError.response) {
+										// Switch to driving
+										preferredMode = TransportMode.DRIVE;
+										// Try again
+										let routeResponse = await axios.post(
+											"https://routes.googleapis.com/directions/v2:computeRoutes",
+											{
+												"origin": origin,
+												"destination": destinations[0].waypoint,
+												"travelMode": preferredMode,
+												"departureTime": destinations[0].departureTime,
+												"arrivalTime": destinations[0].arrivalTime,
+												"computeAlternativeRoutes": true,
+												"languageCode": "en-US",
+												"regionCode": "us",
+												"units": "METRIC"
+											}
+										);
+										routeResponse.data.id = destinations[0].id;
+										routeResponses.push(routeResponse.data);
+									} else if (axiosError.request) {
+										// The request was made but no response received
+										res.status(504).json({ message: 'No response from Google Routes API' });
+									} else {
+										// Something else happened in setting up the request
+										res.status(500).json({ message: 'Error setting up API request', details: axiosError.message });
+									}
+								} else {
+									// Non-Axios error (e.g., unexpected runtime error)
+									res.status(500).json({ message: 'Unexpected server error' });
 								}
-							],
-							"destinations": destinations,
-							"travelMode": preferences.mode_of_transport.toUpperCase(),
-							"routingPreference": "TRAFFIC_AWARE_OPTIMAL",
-							// "departureTime": string,
-							// "arrivalTime": string,
-							"languageCode": "en-US"
-						  }
-					);
-
-					if (routeResponse.data.error) {
-						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No route data found'));
+							}
+							// Do the rest of the destinations
+							for (let i = 1; i < destinations.length; i++) {
+								let routeResponse = await axios.post(
+									"https://routes.googleapis.com/directions/v2:computeRoutes",
+									{
+										"origin": origin,
+										"destination": destinations[0].waypoint,
+										"travelMode": preferredMode,
+										"departureTime": destinations[0].departureTime,
+										"arrivalTime": destinations[0].arrivalTime,
+										"computeAlternativeRoutes": true,
+										"languageCode": "en-US",
+										"regionCode": "us",
+										"units": "METRIC"
+									}
+								);
+								routeResponse.data.id = destinations[i].id;
+								routeResponses.push(routeResponse.data);
+							}
+						} else {
+							// Get route for each destination
+							for (const dest of destinations) {
+								let routeResponse = await axios.post(
+									"https://routes.googleapis.com/directions/v2:computeRoutes",
+									{
+										"origin": origin,
+										"destination": dest.waypoint,
+										"travelMode": preferences.mode_of_transport,
+										"departureTime": dest.departureTime,
+										"arrivalTime": dest.arrivalTime,
+										"computeAlternativeRoutes": true,
+										"languageCode": "en-US",
+										"regionCode": "us",
+										"units": "METRIC"
+									}
+								);
+								routeResponse.data.id = dest.id;
+								routeResponses.push(routeResponse.data);
+							}
+						}
+					} catch (error) {
+						if (axios.isAxiosError(error)) {
+							const axiosError = error as AxiosError;
+					  
+							// If the error has a response from the API
+							if (axiosError.response) {
+								res.status(axiosError.response.status).json({
+									message: 'Error from Google Routes API',
+									details: axiosError.response.data,
+								});
+							} else if (axiosError.request) {
+								// The request was made but no response received
+								res.status(504).json({ message: 'No response from Google Routes API' });
+							} else {
+								// Something else happened in setting up the request
+								res.status(500).json({ message: 'Error setting up API request', details: axiosError.message });
+							}
+						} else {
+							// Non-Axios error (e.g., unexpected runtime error)
+							res.status(500).json({ message: 'Unexpected server error' });
+						}
+						return;
 					}
-					const routeMatrix = routeResponse.data;
-					
-					// try {
-					// 	// Make API call to OpenAI for AI-based recommendations
-					// 	// Prepare data for AI
-					// 	const aiRequestData = {
-					// 		location,
-					// 		preferences,
-					// 		places: places.map((place: any) => ({
-					// 			name: place.name,
-					// 			address: place.formatted_address,
-					// 			types: place.types,
-					// 			rating: place.rating
-					// 		})),
-					// 		weather: weatherData.map((item: any) => ({
-					// 			date: item.dt_txt,
-					// 			temperature: item.main.temp,
-					// 			condition: item.weather[0].main,
-					// 			description: item.weather[0].description,
-					// 			icon: item.weather[0].icon
-					// 		}))
-					// 	};
-						
-					// 	const genAI = new GoogleGenAI({ apiKey: gemini_key });
-					// 	const response = await genAI.models.generateContent({
-					// 		model: "gemini-2.0-flash-lite",
-					// 		contents: "Explain how AI works in a few words",
-					// 	});
-						
-					// 	const aiSuggestions = result.response.text();
 
-					// 	// Parse AI suggestions
-					// 	const suggestions = JSON.parse(aiSuggestions);
-						
-					// 	// Get route information for each POI
-					// 	const pointsOfInterest: PointOfInterestResponse[] = [];
-						
-					// 	// Get route for each place
-					// 	for (const suggestion of suggestions) {
-					// 		const place = places.find((p: any) => p.name === suggestion.name) || places[0];
-							
-					// 		// Get detailed place info including photos
-					// 		let photoUrl = '';
-					// 		try {
-					// 			const placeDetailsResult = await axios.get(
-					// 				`https://maps.googleapis.com/maps/api/place/details/json?place_id=${place.place_id}&fields=photos&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
-					// 			);
-								
-					// 			if (placeDetailsResult.data.result && 
-					// 					placeDetailsResult.data.result.photos && 
-					// 					placeDetailsResult.data.result.photos.length > 0) {
-					// 				const photoRef = placeDetailsResult.data.result.photos[0].photo_reference;
-					// 				photoUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`;
-					// 			}
-					// 		} catch (error) {
-					// 			console.error('Place details error:', error);
-					// 			// Continue without photo
-					// 		}
-							
-					// 		// Get route to place based on user preferences
-					// 		let routeData;
-					// 		try {
-					// 			const origin = searchData.useCurrentLocation && searchData.latitude && searchData.longitude
-					// 				? `${searchData.latitude},${searchData.longitude}`
-					// 				: location;
-									
-					// 			const destination = `${place.geometry.location.lat},${place.geometry.location.lng}`;
-					// 			const transportMode = preferences?.mode_of_transport || 'driving';
-								
-					// 			const routeResult = await axios.get(
-					// 				`https://maps.googleapis.com/maps/api/directions/json?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&mode=${transportMode}&key=${process.env.GOOGLE_MAPS_PLATFORM_API_KEY}`
-					// 			);
-								
-					// 			if (routeResult.data.routes && routeResult.data.routes.length > 0) {
-					// 				const route = routeResult.data.routes[0];
-					// 				const leg = route.legs[0];
-									
-					// 				routeData = {
-					// 					distance: leg.distance.text,
-					// 					duration: leg.duration.text,
-					// 					steps: leg.steps.map((step: any) => step.html_instructions)
-					// 				};
-					// 			}
-					// 		} catch (error) {
-					// 			console.error('Route error:', error);
-					// 			// Continue without route data
-					// 		}
-							
-					// 		// Save POI to database
-					// 		db.run(
-					// 			`INSERT INTO points_of_interest (
-					// 				search_id, name, description, image_url, location, mode_of_transport
-					// 			) VALUES (?, ?, ?, ?, ?, ?)`,
-					// 			[
-					// 				searchId,
-					// 				suggestion.name,
-					// 				suggestion.description,
-					// 				photoUrl,
-					// 				place.formatted_address,
-					// 				preferences?.mode_of_transport || TransportMode.CAR
-					// 			],
-					// 			function(err) {
-					// 				if (err) {
-					// 					console.error('Database error:', err);
-					// 					// Continue with response
-					// 				}
-					// 			}
-					// 		);
-							
-					// 		// Add to response
-					// 		pointsOfInterest.push({
-					// 			id: pointsOfInterest.length + 1,
-					// 			name: suggestion.name,
-					// 			description: suggestion.description,
-					// 			image_url: photoUrl,
-					// 			location: place.formatted_address,
-					// 			address: place.formatted_address,
-					// 			type: place.types || [],
-					// 			rating: place.rating,
-					// 			weather: suggestion.weather,
-					// 			route: routeData,
-					// 			arrival_time: suggestion.arrival_time,
-					// 			departure_time: suggestion.departure_time
-					// 		});
-					// 	}
-						
-					// 	return res.status(200).json(createResponse(true, {
-					// 		searchId,
-					// 		location,
-					// 		date,
-					// 		pointsOfInterest
-					// 	}));
-					// } catch (error) {
-					// 	console.error('API error:', error);
-					// 	return res.status(500).json(createResponse(false, undefined, 'API_ERROR', 'Error fetching data from external APIs'));
-					// }
+					let pois: PointOfInterestResponse[] = [];
+					for (let i = 0; i < recommendedPlaces.places.length; i++) {
+						const place = recommendedPlaces.places[i];
+						const poi = filteredPlaces.find((p: PointOfInterest) => p.id === place.id);
+						const routeResponse = routeResponses.find((r: any) => r.id === place.id);
+						if (!poi || !routeResponse || !routeResponse.routes || routeResponse.routes.length === 0) {
+							continue;
+						}
+						pois.push({
+							poi: poi,
+							arrivalTime: place.arrival_time,
+							departureTime: place.departure_time,
+							routeDuration: routeResponse.routes[0].duration,
+							weatherCondition: place.weatherCondition
+						});
+					}
+
+					// Insert PoIs into database
+					for (const poi of pois) {
+						db.run(
+							`INSERT OR REPLACE INTO points_of_interest (
+								id, json_data
+							) VALUES (?, ?)`,
+							[
+								poi.poi.id,
+								JSON.stringify(poi)
+							],
+							function(err) {
+								if (err) {
+									console.error('Database error:', err);
+									// Continue with response
+								}
+							}
+						);
+						db.run(
+							`INSERT OR REPLACE INTO search_poi (
+								search_id, poi_id
+							) VALUES (?, ?)`,
+							[searchId, poi.poi.id]
+						);
+					}
+					
+					return res.status(200).json(createResponse(true, pois));
 				}
 			);
 		});
@@ -824,21 +847,17 @@ export const getSavedSearches = (req: Request, res: Response) => {
 		}
 		
 		const query = `
-			SELECT 
-				s.id, 
-				s.location, 
-				s.date,
-				COUNT(poi.id) as count
-			FROM 
-				searches s
-			LEFT JOIN 
-				points_of_interest poi ON s.id = poi.search_id
-			WHERE 
-				s.username = ?
-			GROUP BY 
-				s.id
-			ORDER BY 
-				s.date DESC
+			SELECT
+				search_id,
+				latitude,
+				longitude,
+				date,
+			FROM
+				search
+			WHERE
+				username = ?
+			ORDER BY
+				date DESC
 		`;
 		
 		db.all(query, [username], (err, rows: any[]) => {
@@ -847,11 +866,11 @@ export const getSavedSearches = (req: Request, res: Response) => {
 				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
 			}
 			
-			const searches: SavedSearchSummary[] = rows.map(row => ({
-				id: row.id,
-				location: row.location,
-				date: row.date,
-				count: row.count
+			const searches: Search[] = rows.map(row => ({
+				search_id: row.search_id,
+				latitude: row.latitude,
+				longitude: row.longitude,
+				date: row.date
 			}));
 			
 			return res.status(200).json(createResponse(true, searches));
@@ -864,7 +883,7 @@ export const getSavedSearches = (req: Request, res: Response) => {
 
 export const getSavedSearch = (req: Request, res: Response) => {
 	try {
-		const username: string = req.session.user?.username ?? '';
+		const username: string | undefined = req.session.user?.username;
 		
 		// Then check if it's empty
 		if (!username) {
@@ -877,47 +896,41 @@ export const getSavedSearch = (req: Request, res: Response) => {
 			});
 		}
 		
-		const { id } = req.params;
+		const { search_id } = req.params;
 		
 		// Get search data
-		db.get('SELECT * FROM searches WHERE id = ? AND username = ?', [id, username], (err, searchRow: any) => {
+		
+		// Use search_poi and points_of_interest to get the POIs for this search
+		const query: string = `
+			SELECT poi.id, poi.json_data, s.search_id, s.latitude, s.longitude, s.date
+			FROM points_of_interest poi
+			JOIN search_poi sp ON poi.id = sp.poi_id
+			JOIN search s ON s.search_id = sp.search_id
+			WHERE s.search_id = ? AND s.username = ?;
+		`;
+
+		db.get(query, [search_id, username], (err, poiRows: any[]) => {
 			if (err) {
 				console.error('Database error:', err);
 				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
 			}
 			
-			if (!searchRow) {
+			if (!poiRows) {
 				return res.status(404).json(createResponse(false, undefined, 'NOT_FOUND', 'Search not found'));
 			}
 			
 			// Get POIs for this search
-			db.all('SELECT * FROM points_of_interest WHERE search_id = ?', [id], (err, poiRows: any[]) => {
-				if (err) {
-					console.error('Database error:', err);
-					return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
-				}
-				
-				const pointsOfInterest: PointOfInterestResponse[] = poiRows.map(row => ({
-					id: row.id,
-					name: row.name,
-					description: row.description,
-					image_url: row.image_url,
-					location: row.location,
-					address: row.location,
-					type: [],
-					mode_of_transport: row.mode_of_transport as TransportMode,
-					arrival_time: row.arrival_time,
-					departure_time: row.departure_time
-				}));
-				
-				return res.status(200).json(createResponse(true, {
-					searchId: searchRow.id,
-					location: searchRow.location,
-					date: searchRow.date,
-					saved: !!searchRow.saved,
-					pointsOfInterest
-				}));
-			});
+			const pointsOfInterest: PointOfInterestResponse[] = poiRows.map(row => JSON.parse(row.json_data));
+			
+			return res.status(200).json(createResponse(true, {
+				searchId: poiRows[0].search_id,
+				location: {
+					latitude: poiRows[0].latitude,
+					longitude: poiRows[0].longitude
+				},
+				date: poiRows[0].date,
+				pointsOfInterest
+			}));
 		});
 	} catch (error) {
 		console.error('Get saved search error:', error);
@@ -940,9 +953,9 @@ export const deleteSearch = (req: Request, res: Response) => {
 			});
 		}
 		
-		const { id } = req.params;
+		const { search_id } = req.params;
 		
-		db.get('SELECT id FROM searches WHERE id = ? AND username = ?', [id, username], (err, row) => {
+		db.get('SELECT search_id FROM search WHERE search_id = ? AND username = ?', [search_id, username], (err, row) => {
 			if (err) {
 				console.error('Database error:', err);
 				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
@@ -952,7 +965,7 @@ export const deleteSearch = (req: Request, res: Response) => {
 				return res.status(404).json(createResponse(false, undefined, 'NOT_FOUND', 'Search not found'));
 			}
 			
-			db.run('DELETE FROM searches WHERE id = ?', [id], (err) => {
+			db.run('DELETE FROM search WHERE search_id = ?', [search_id], (err) => {
 				if (err) {
 					console.error('Database error:', err);
 					return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
@@ -966,45 +979,3 @@ export const deleteSearch = (req: Request, res: Response) => {
 		return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
 	}
 };
-
-export const saveSearch = (req: Request, res: Response) => {
-	try {
-		const username: string = req.session.user?.username ?? '';
-		
-		// Then check if it's empty
-		if (!username) {
-			return res.status(500).json({
-				success: false,
-				error: {
-					code: 'SESSION_ERROR',
-					message: 'User session is invalid or missing username'
-				}
-			});
-		}
-		
-		const { id } = req.params;
-		
-		db.get('SELECT id FROM searches WHERE id = ? AND username = ?', [id, username], (err, row) => {
-			if (err) {
-				console.error('Database error:', err);
-				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
-			}
-			
-			if (!row) {
-				return res.status(404).json(createResponse(false, undefined, 'NOT_FOUND', 'Search not found'));
-			}
-			
-			db.run('UPDATE searches SET saved = 1 WHERE id = ?', [id], (err) => {
-				if (err) {
-					console.error('Database error:', err);
-					return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
-				}
-				
-				return res.status(200).json(createResponse(true));
-			});
-		});
-	} catch (error) {
-		console.error('Save search error:', error);
-		return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
-	}
-}; 

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Create preferences table
 CREATE TABLE IF NOT EXISTS preferences (
 	username TEXT PRIMARY KEY,
-	mode_of_transport TEXT CHECK(mode_of_transport IN ('Transit', 'Bicycle', 'Walk', 'Drive')),
+	mode_of_transport TEXT CHECK(mode_of_transport IN ('Transit', 'Bicycle', 'Walk', 'Drive')) DEFAULT 'Transit',
 	eat_out BOOLEAN DEFAULT FALSE,
 	wake_up TEXT,
 	home_by TEXT,
@@ -19,27 +19,28 @@ CREATE TABLE IF NOT EXISTS preferences (
 );
 
 -- Create searches table
-CREATE TABLE IF NOT EXISTS searches (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS search (
+	search_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	username TEXT NOT NULL,
-	location TEXT NOT NULL,
+	latitude REAL NOT NULL,
+	longitude REAL NOT NULL,
 	date TEXT NOT NULL,
-	saved BOOLEAN DEFAULT FALSE,
 	FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 
 -- Create points_of_interest table
 CREATE TABLE IF NOT EXISTS points_of_interest (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	id TEXT PRIMARY KEY,
+	json_data TEXT NOT NULL
+);
+
+-- Create search_poi table
+CREATE TABLE IF NOT EXISTS search_poi (
 	search_id INTEGER NOT NULL,
-	name TEXT NOT NULL,
-	description TEXT,
-	image_url TEXT,
-	location TEXT NOT NULL,
-	mode_of_transport TEXT CHECK(mode_of_transport IN ('Transit', 'Bicycle', 'Walk', 'Drive')),
-	arrival_time TEXT,
-	departure_time TEXT,
-	FOREIGN KEY (search_id) REFERENCES searches(id) ON DELETE CASCADE
+	poi_id TEXT NOT NULL,
+	PRIMARY KEY (search_id, poi_id),
+	FOREIGN KEY (search_id) REFERENCES search(search_id) ON DELETE CASCADE,
+	FOREIGN KEY (poi_id) REFERENCES points_of_interest(id) ON DELETE CASCADE
 );
 
 -- -- Create sessions table
