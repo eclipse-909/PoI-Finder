@@ -1,8 +1,8 @@
 export enum TransportMode {
-	DRIVE = "DRIVE",
-	TRANSIT = "TRANSIT",
-	WALK = "WALK",
-	BICYCLE = "BICYCLE"
+	DRIVE = "Drive",
+	TRANSIT = "Transit",
+	WALK = "Walk",
+	BICYCLE = "Bicycle"
 }
 
 export interface User {

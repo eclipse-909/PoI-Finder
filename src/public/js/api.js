@@ -304,41 +304,6 @@ class ApiClient {
 	}
 
 	/**
-	 * Save a search
-	 * @param {number} id - Search ID
-	 * @returns {Promise<object>} Save response
-	 */
-	static async saveSearch(id) {
-		try {
-			const csrfToken = await this.getCsrfToken();
-			
-			const response = await fetch(`${ApiClient.BASE_URL}/save_search/${id}`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'CSRF-Token': csrfToken
-				},
-				credentials: 'include'
-			});
-
-			const data = await response.json();
-			
-			if (!response.ok) {
-				// Special handling for missing API keys
-				if (data.error?.code === 'API_KEYS_MISSING') {
-					alert('This server is running in debug mode without required API keys. Some features are disabled.');
-				}
-				throw new Error(data.error?.message || 'Failed to save search');
-			}
-
-			return data;
-		} catch (error) {
-			console.error('Save search error:', error);
-			throw error;
-		}
-	}
-
-	/**
 	 * Change user password
 	 * @param {string} currentPassword - Current password
 	 * @param {string} newPassword - New password

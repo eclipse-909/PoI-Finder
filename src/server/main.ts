@@ -25,7 +25,6 @@ const criticalEnvVars = [
 const apiKeyEnvVars = [
 	'GOOGLE_MAP_API_KEY',
 	'GOOGLE_MAPS_PLATFORM_API_KEY',
-	'OPENWEATHER_API_KEY',
 	'GOOGLE_GEMINI_API_KEY'
 ];
 

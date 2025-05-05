@@ -817,7 +817,13 @@ export const search = async (req: Request, res: Response) => {
 							`INSERT OR REPLACE INTO search_poi (
 								search_id, poi_id
 							) VALUES (?, ?)`,
-							[searchId, poi.poi.id]
+							[searchId, poi.poi.id],
+							function(err) {
+								if (err) {
+									console.error('Database error:', err);
+									// Continue with response
+								}
+							}
 						);
 					}
 					
@@ -851,7 +857,7 @@ export const getSavedSearches = (req: Request, res: Response) => {
 				search_id,
 				latitude,
 				longitude,
-				date,
+				date
 			FROM
 				search
 			WHERE

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS preferences (
 	FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 
--- Create searches table
+-- Create search table
 CREATE TABLE IF NOT EXISTS search (
 	search_id INTEGER PRIMARY KEY AUTOINCREMENT,
 	username TEXT NOT NULL,
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS search_poi (
 -- );
 
 -- Create indexes for frequently queried fields
-CREATE INDEX IF NOT EXISTS idx_searches_username ON searches(username);
+CREATE INDEX IF NOT EXISTS idx_search_username ON search(username);
 -- CREATE INDEX IF NOT EXISTS idx_poi_search_id ON points_of_interest(search_id);
 -- CREATE INDEX IF NOT EXISTS idx_sessions_username ON sessions(username);
 -- CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at); 
