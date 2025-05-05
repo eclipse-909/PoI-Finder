@@ -70,6 +70,8 @@ tsc
 echo "Copying assets..."
 mkdir -p dist/public
 cp -r src/public/* dist/public 2>/dev/null || true
+mkdir -p dist/migrations
+cp -r src/migrations/* dist/migrations 2>/dev/null || true
 
 echo "Starting server..."
 node dist/server/main.js
