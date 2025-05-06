@@ -11,7 +11,6 @@ export interface User {
 }
 
 export interface UserPreferences {
-	username: string;
 	mode_of_transport: TransportMode;
 	eat_out: boolean;
 	wake_up: string; // Time in ISO format

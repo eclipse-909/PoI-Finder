@@ -21,10 +21,10 @@ const promptFileText = fs.readFileSync('./src/server/gemini_prompt.md', 'utf8');
 
 // ChatGPT estimated speeds in m/s for each mode of transport
 const transportSpeeds = {
-	walk: 1.4,
-	bicycle: 4.2,
-	drive: 13.9,
-	transit: 8.3
+	Walk: 1.4,
+	Bicycle: 4.2,
+	Drive: 13.9,
+	Transit: 8.3
 };
 
 // Add custom type to extend Express Request
@@ -161,7 +161,6 @@ export const signup = async (req: Request, res: Response) => {
 				
 				// Create default preferences
 				const defaultPrefs: UserPreferences = {
-					username,
 					mode_of_transport: TransportMode.TRANSIT,
 					eat_out: true,
 					wake_up: '08:00',
@@ -175,7 +174,7 @@ export const signup = async (req: Request, res: Response) => {
 				db.run(
 					'INSERT INTO preferences (username, mode_of_transport, eat_out, wake_up, home_by, start_date, end_date, range, context) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
 					[
-						defaultPrefs.username,
+						username,
 						defaultPrefs.mode_of_transport,
 						defaultPrefs.eat_out ? 1 : 0,
 						defaultPrefs.wake_up,
@@ -303,7 +302,7 @@ export const logout = (req: Request, res: Response) => {
 
 export const deleteAccount = (req: Request, res: Response) => {
 	try {
-		const { username } = req.session.user as { username: string };
+		const username: string = req.session.user?.username ?? '';
 		
 		// Delete user from database (cascade will delete preferences, searches, points of interest, and sessions)
 		db.run('DELETE FROM users WHERE username = ?', [username], (err) => {
@@ -349,7 +348,6 @@ export const getPreferences = (req: Request, res: Response) => {
 			}
 			
 			const preferences: UserPreferences = {
-				username: row.username,
 				mode_of_transport: row.mode_of_transport as TransportMode,
 				eat_out: !!row.eat_out,
 				wake_up: row.wake_up,
@@ -464,8 +462,7 @@ export const search = async (req: Request, res: Response) => {
 			}
 			
 			const preferences: UserPreferences | null = prefsRow ? {
-				username: prefsRow.username,
-				mode_of_transport: prefsRow.mode_of_transport.toUpperCase(),
+				mode_of_transport: prefsRow.mode_of_transport,
 				eat_out: prefsRow.eat_out,
 				wake_up: prefsRow.wake_up,
 				home_by: prefsRow.home_by,
@@ -484,7 +481,7 @@ export const search = async (req: Request, res: Response) => {
 			const date = new Date().toISOString();
 			
 			db.run(
-				'INSERT INTO searches (username, latitude, longitude, date) VALUES (?, ?, ?, ?)',
+				'INSERT INTO search (username, latitude, longitude, date) VALUES (?, ?, ?, ?)',
 				[username, searchData.latitude, searchData.longitude, date],
 				async function(err) {
 					if (err) {
@@ -495,59 +492,123 @@ export const search = async (req: Request, res: Response) => {
 					const searchId = this.lastID;
 
 					// Get nearby places using Google Places API
-					//@ts-ignore
-					const { Place, SearchNearbyRankPreference } = await google.maps.importLibrary(
-						"places",
-					);
 					//Most of these fields use Places Pro or Enterprise, so we don't get as many free requests.
 					//https://developers.google.com/maps/documentation/javascript/place-class-data-fields
 					const placesFields: string[] = [
 						"displayName",
 						"editorialSummary",
 						"formattedAddress",
-						"openingHours",
+						"regularOpeningHours",
 						"photos",
 						"id",
-						"websiteURI",
-						"addressDescriptor"
+						"websiteUri"
 					];
 					const foodPlacesFields: string[] = [
-						"hasDineIn",
+						"dineIn",
 						"servesBreakfast",
 						"servesBrunch",
 						"servesDessert",
 						"servesDinner",
 						"servesLunch",
-						"hasTakeout"
+						"takeout"
 					];
-					//I'm using types from Table B because I don't want to spend a long time going through Table A.
+					//You must use the types from table A, not table B. There cannot be more than 50 total.
 					//https://developers.google.com/maps/documentation/places/web-service/place-types
+					//These are the types from the categories Culture, Entertainment and Recreation, Natural Features, and Sports
 					const placesTypes: string[] = [
-						"establishment",
-						"landmark",
-						"natural_feature",
-						"point_of_interest",
-						"town_square"
+						"art_gallery",
+						"cultural_landmark",
+						"historical_place",
+						"monument",
+						"museum",
+						"performing_arts_theater",
+						"adventure_sports_center",
+						"amphitheatre",
+						"amusement_center",
+						"amusement_park",
+						"aquarium",
+						"botanical_garden",
+						"casino",
+						"comedy_club",
+						"concert_hall",
+						"cultural_center",
+						"event_venue",
+						"ferris_wheel",
+						"garden",
+						"hiking_area",
+						"historical_landmark",
+						"karaoke",
+						"marina",
+						"national_park",
+						"night_club",
+						"opera_house",
+						"philharmonic_hall",
+						"plaza",
+						"roller_coaster",
+						"state_park",
+						"tourist_attraction",
+						"water_park",
+						"zoo",
+						"beach",
+						"arena",
+						"athletic_field",
+						"golf_course",
+						"ice_skating_rink",
+						"ski_resort",
+						"sports_activity_location",
+						"sports_complex",
+						"stadium",
+						"swimming_pool"
 					];
+					//These are the types from the categories Food and Drink
 					const foodPlacesTypes: string[] = [
-						"food"
+						"bar",
+						"breakfast_restaurant",
+						"brunch_restaurant",
+						"dessert_restaurant",
+						"fine_dining_restaurant",
+						"pub",
+						"restaurant"
 					];
+					let radius: number = preferences.range * transportSpeeds[preferences.mode_of_transport];
+					if (radius <= 0) {
+						radius = 50000;
+					}
 					const request = {
 						// required parameters
-						fields: preferences.eat_out ? placesFields.concat(foodPlacesFields) : placesFields,
 						locationRestriction: {
-							center: new google.maps.LatLng(searchData.latitude, searchData.longitude),
-							radius: 500,
+							circle: {
+								center: {
+									latitude: searchData.latitude,
+									longitude: searchData.longitude
+								},
+								radius: radius
+							}
 						},
 						// optional parameters
 						includedTypes: preferences.eat_out ? placesTypes.concat(foodPlacesTypes) : placesTypes,
 						maxResultCount: 20,
-						rankPreference: SearchNearbyRankPreference.POPULARITY,
-						language: "en-US",
-						region: "us",
+						rankPreference: "POPULARITY",
+						languageCode: "en-US",
+						regionCode: "us"
 					};
-					//@ts-ignore
-					let { places } = await Place.searchNearby(request);
+					const placesResponse = await axios.post(
+						`https://places.googleapis.com/v1/places:searchNearby`,
+						request,
+						{
+							headers: {
+								"X-Goog-Api-Key": maps_platform_key,
+								"X-Goog-FieldMask": (preferences.eat_out ? placesFields.concat(foodPlacesFields) : placesFields).map((field: string) => {return "places." + field}).join(",")
+								// "X-Goog-FieldMask": "places.displayName"
+							}
+						}
+					);
+					// handle error
+					if (placesResponse.status !== 200) {
+						console.error('Error from Google Places API');
+						return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Error from Google Places API'));
+					}
+					let places = placesResponse.data.places;
 					if (!places || places.length === 0) {
 						console.error('No places found');
 						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No places found'));
@@ -620,12 +681,11 @@ export const search = async (req: Request, res: Response) => {
 					// Parse the response from Gemini
 					let recommendedPlaces: GeminiResponse;
 					try {
-						recommendedPlaces = JSON.parse(response.text) as GeminiResponse;
+						recommendedPlaces = JSON.parse(response.text.replace('```json\n', '').replace('\n```', '')) as GeminiResponse;
 					} catch (error) {
 						console.error('Invalid response from Gemini');
 						return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Invalid response from Gemini'));
 					}
-					const filteredPlaces: PointOfInterest[] = places.filter((place: PointOfInterest) => !recommendedPlaces.places.some((recommendedPlace: any) => recommendedPlace.id === place.id));
 
 					// Get Route Data
 					const origin = {
@@ -674,6 +734,11 @@ export const search = async (req: Request, res: Response) => {
 										"languageCode": "en-US",
 										"regionCode": "us",
 										"units": "METRIC"
+									},
+									{
+										headers: {
+											"X-Goog-Api-Key": maps_platform_key
+										}
 									}
 								);
 								routeResponse.data.id = destinations[0].id;
@@ -699,6 +764,11 @@ export const search = async (req: Request, res: Response) => {
 												"languageCode": "en-US",
 												"regionCode": "us",
 												"units": "METRIC"
+											},
+											{
+												headers: {
+													"X-Goog-Api-Key": maps_platform_key
+												}
 											}
 										);
 										routeResponse.data.id = destinations[0].id;
@@ -729,6 +799,11 @@ export const search = async (req: Request, res: Response) => {
 										"languageCode": "en-US",
 										"regionCode": "us",
 										"units": "METRIC"
+									},
+									{
+										headers: {
+											"X-Goog-Api-Key": maps_platform_key
+										}
 									}
 								);
 								routeResponse.data.id = destinations[i].id;
@@ -749,6 +824,11 @@ export const search = async (req: Request, res: Response) => {
 										"languageCode": "en-US",
 										"regionCode": "us",
 										"units": "METRIC"
+									},
+									{
+										headers: {
+											"X-Goog-Api-Key": maps_platform_key
+										}
 									}
 								);
 								routeResponse.data.id = dest.id;
@@ -758,7 +838,7 @@ export const search = async (req: Request, res: Response) => {
 					} catch (error) {
 						if (axios.isAxiosError(error)) {
 							const axiosError = error as AxiosError;
-					  
+
 							// If the error has a response from the API
 							if (axiosError.response) {
 								res.status(axiosError.response.status).json({
@@ -782,7 +862,7 @@ export const search = async (req: Request, res: Response) => {
 					let pois: PointOfInterestResponse[] = [];
 					for (let i = 0; i < recommendedPlaces.places.length; i++) {
 						const place = recommendedPlaces.places[i];
-						const poi = filteredPlaces.find((p: PointOfInterest) => p.id === place.id);
+						const poi: PointOfInterest | undefined = places.find((p: any) => p.id === place.id) as PointOfInterest | undefined;
 						const routeResponse = routeResponses.find((r: any) => r.id === place.id);
 						if (!poi || !routeResponse || !routeResponse.routes || routeResponse.routes.length === 0) {
 							continue;
