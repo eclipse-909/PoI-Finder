@@ -74,7 +74,6 @@ export interface Coordinates {
 export interface PointOfInterestResponse {
 	poi: PointOfInterest,
 	arrivalTime: string,
-	departureTime: string,
 	routeDuration: string,
 	weatherCondition: {
 		iconBaseUri: string,
@@ -109,7 +108,6 @@ export interface GeminiResponse {
 	places: {
 		id: string;
 		arrival_time: string;
-		departure_time: string;
 		weatherCondition: {
 			iconBaseUri: string,
 			description: {

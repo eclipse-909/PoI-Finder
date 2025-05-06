@@ -572,7 +572,7 @@ export const search = async (req: Request, res: Response) => {
 					];
 					let radius: number = preferences.range * transportSpeeds[preferences.mode_of_transport];
 					if (radius <= 0) {
-						radius = 50000;
+						radius = 50000; //setting radius to 0 minutes in preferences will set it to maximum distance
 					}
 					const request = {
 						// required parameters
@@ -599,7 +599,6 @@ export const search = async (req: Request, res: Response) => {
 							headers: {
 								"X-Goog-Api-Key": maps_platform_key,
 								"X-Goog-FieldMask": (preferences.eat_out ? placesFields.concat(foodPlacesFields) : placesFields).map((field: string) => {return "places." + field}).join(",")
-								// "X-Goog-FieldMask": "places.displayName"
 							}
 						}
 					);
@@ -659,7 +658,7 @@ export const search = async (req: Request, res: Response) => {
 					}
 
 					// Make gemini call to get recommendations.
-					// Gemini should give a list of JSON objects with a departure time and arrival time
+					// Gemini should give a list of JSON objects with an arrival time
 					// which we can use to get the route data
 					const genAI = new GoogleGenAI({ apiKey: gemini_key });
 
@@ -711,11 +710,16 @@ export const search = async (req: Request, res: Response) => {
 								"placeId": place.id
 							},
 							"arrivalTime": place.arrival_time,
-							"departureTime": place.departure_time
 						});
 					});
 					let preferredMode: TransportMode = preferences.mode_of_transport;
 					let routeResponses: any[] = [];
+					const routeHeaders = {
+						headers: {
+							"X-Goog-Api-Key": maps_platform_key,
+							"X-Goog-FieldMask": "routes.duration"
+						}
+					};
 					try {
 						if (preferredMode === TransportMode.TRANSIT) {
 							// Since transit isn't always reliable, we'll get the route for the first destination.
@@ -728,18 +732,13 @@ export const search = async (req: Request, res: Response) => {
 										"origin": origin,
 										"destination": destinations[0].waypoint,
 										"travelMode": "TRANSIT",
-										"departureTime": destinations[0].departureTime,
 										"arrivalTime": destinations[0].arrivalTime,
 										"computeAlternativeRoutes": true,
 										"languageCode": "en-US",
 										"regionCode": "us",
 										"units": "METRIC"
 									},
-									{
-										headers: {
-											"X-Goog-Api-Key": maps_platform_key
-										}
-									}
+									routeHeaders
 								);
 								routeResponse.data.id = destinations[0].id;
 								routeResponses.push(routeResponse.data);
@@ -758,18 +757,13 @@ export const search = async (req: Request, res: Response) => {
 												"origin": origin,
 												"destination": destinations[0].waypoint,
 												"travelMode": preferredMode,
-												"departureTime": destinations[0].departureTime,
 												"arrivalTime": destinations[0].arrivalTime,
 												"computeAlternativeRoutes": true,
 												"languageCode": "en-US",
 												"regionCode": "us",
 												"units": "METRIC"
 											},
-											{
-												headers: {
-													"X-Goog-Api-Key": maps_platform_key
-												}
-											}
+											routeHeaders
 										);
 										routeResponse.data.id = destinations[0].id;
 										routeResponses.push(routeResponse.data);
@@ -793,18 +787,13 @@ export const search = async (req: Request, res: Response) => {
 										"origin": origin,
 										"destination": destinations[0].waypoint,
 										"travelMode": preferredMode,
-										"departureTime": destinations[0].departureTime,
 										"arrivalTime": destinations[0].arrivalTime,
 										"computeAlternativeRoutes": true,
 										"languageCode": "en-US",
 										"regionCode": "us",
 										"units": "METRIC"
 									},
-									{
-										headers: {
-											"X-Goog-Api-Key": maps_platform_key
-										}
-									}
+									routeHeaders
 								);
 								routeResponse.data.id = destinations[i].id;
 								routeResponses.push(routeResponse.data);
@@ -818,18 +807,13 @@ export const search = async (req: Request, res: Response) => {
 										"origin": origin,
 										"destination": dest.waypoint,
 										"travelMode": preferences.mode_of_transport,
-										"departureTime": dest.departureTime,
 										"arrivalTime": dest.arrivalTime,
 										"computeAlternativeRoutes": true,
 										"languageCode": "en-US",
 										"regionCode": "us",
 										"units": "METRIC"
 									},
-									{
-										headers: {
-											"X-Goog-Api-Key": maps_platform_key
-										}
-									}
+									routeHeaders
 								);
 								routeResponse.data.id = dest.id;
 								routeResponses.push(routeResponse.data);
@@ -870,7 +854,6 @@ export const search = async (req: Request, res: Response) => {
 						pois.push({
 							poi: poi,
 							arrivalTime: place.arrival_time,
-							departureTime: place.departure_time,
 							routeDuration: routeResponse.routes[0].duration,
 							weatherCondition: place.weatherCondition
 						});

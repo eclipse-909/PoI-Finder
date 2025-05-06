@@ -29,7 +29,6 @@ If weather data is provided, use it do determine which days and times are best t
 			{
 				"id": string,
 				"arrival_time": string,
-				"departure_time": string,
 				"weatherCondition": {
 					"iconBaseUri": string,
 					"description": {
@@ -57,8 +56,7 @@ If weather data is provided, use it do determine which days and times are best t
 	```
 	* "id" should be copied from the "id" field in the places data
 	* "arrival_time" is the recommended time the user will arrive at the point of interest.
-	* "departure_time" time is the recommend time the user will depart from the point of interest.
-	* Arrival and departure times are in the format RFC 3339, where generated output will always be Z-normalized and uses 0, 3, 6 or 9 fractional digits. Offsets other than "Z" are also accepted. Examples: "2014-10-02T15:01:23Z", "2014-10-02T15:01:23.045123456Z" or "2014-10-02T15:01:23+05:30".
+	* Arrival time is in the format RFC 3339, where generated output will always be Z-normalized and uses 0, 3, 6 or 9 fractional digits. Offsets other than "Z" are also accepted. Examples: "2014-10-02T15:01:23Z", "2014-10-02T15:01:23.045123456Z" or "2014-10-02T15:01:23+05:30".
 	* "weatherConditions" should be copied over from the weather data (if weather data was provided). If the daily forecast was provided, copy it from the day you are recommending the user to visit the point of interest. If the hourly forecast was provided, copy it from the arrival-time hour you are recommending the user to visit the point of interest.
 	* "maxTemperature" is the max temperature of the day if the daily forecast was provided. This is just copied from the weather data. Copy this from the day you are recommending the user to visit the point of interest.
 	* "minTemperature" is the same as maxTemperature, but copy the minTemperature.
