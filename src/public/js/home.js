@@ -154,8 +154,8 @@ const homePage = {
 		saveStatus.textContent = '';
 		
 		// Create POI cards for each result
-		if (data.pointsOfInterest && data.pointsOfInterest.length > 0) {
-			data.pointsOfInterest.forEach(poi => {
+		if (data && data.length > 0) {
+			data.forEach(poi => {
 				const poiCard = this.createPoiCard(poi);
 				poiResults.appendChild(poiCard);
 			});

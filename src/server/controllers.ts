@@ -620,7 +620,7 @@ export const search = async (req: Request, res: Response) => {
 						console.error('Error from Google Places API');
 						return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Error from Google Places API'));
 					}
-					let places = placesResponse.data.places;
+					let places: any[] = placesResponse.data.places;
 					if (!places || places.length === 0) {
 						console.error('No places found');
 						return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'No places found'));
@@ -698,6 +698,10 @@ export const search = async (req: Request, res: Response) => {
 						console.error('Invalid response from Gemini');
 						return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Invalid response from Gemini'));
 					}
+					recommendedPlaces.places = recommendedPlaces.places.filter((place: any) => {
+						// The AI might make typos, so unfortunately we have to exlude the places where the ID doesn't match
+						return places.some((p: any) => p.id === place.id);
+					});
 
 					// Get Route Data
 					const origin = {
@@ -708,8 +712,7 @@ export const search = async (req: Request, res: Response) => {
 							"latLng": {
 								"latitude": searchData.latitude,
 								"longitude": searchData.longitude
-							},
-							"heading": 0
+							}
 						}
 					};
 					let destinations: any[] = [];
