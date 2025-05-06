@@ -391,16 +391,16 @@ export const updatePreferences = (req: Request, res: Response) => {
 		if (preferences.range < 0 || preferences.range > 60) {
 			preferences.range = 60;
 		}
-		if (preferences.wake_up >= preferences.home_by) {
+		if (new Date(preferences.wake_up) >= new Date(preferences.home_by)) {
 			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Wake up time must be before home by time'));
 		}
-		if (preferences.start_date >= preferences.end_date) {
+		if (new Date(preferences.start_date) >= new Date(preferences.end_date)) {
 			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Start date must be before end date'));
 		}
-		if (preferences.start_date < new Date().toISOString().slice(0, 10)) {
+		if (new Date(preferences.start_date) < new Date()) {
 			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Start date must be in the future'));
 		}
-		if (preferences.end_date < new Date().toISOString().slice(0, 10)) {
+		if (new Date(preferences.end_date) < new Date()) {
 			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'End date must be in the future'));
 		}
 		
@@ -482,11 +482,16 @@ export const search = async (req: Request, res: Response) => {
 				console.error('No preferences found');
 				return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Preferences are required'));
 			}
+			const date = new Date().toISOString();
+			if (new Date(preferences.start_date) < new Date()) {
+				preferences.start_date = date;
+			}
+			if (new Date(preferences.end_date) < new Date()) {
+				preferences.end_date = date;
+			}
 			const preferencesContext: string = JSON.stringify(preferences, null, 2);
 			
 			// Save search to database
-			const date = new Date().toISOString();
-			
 			db.run(
 				'INSERT INTO search (username, latitude, longitude, date) VALUES (?, ?, ?, ?)',
 				[username, searchData.latitude, searchData.longitude, date],
