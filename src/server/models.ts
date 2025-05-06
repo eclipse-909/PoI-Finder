@@ -21,6 +21,23 @@ export interface UserPreferences {
 	context: string;
 }
 
+export enum SecondaryHoursType {
+	SECONDARY_HOURS_TYPE_UNSPECIFIED,
+	DRIVE_THROUGH,
+	HAPPY_HOUR,
+	DELIVERY,
+	TAKEOUT,
+	KITCHEN,
+	BREAKFAST,
+	LUNCH,
+	DINNER,
+	BRUNCH,
+	PICKUP,
+	ACCESS,
+	SENIOR_HOURS,
+	ONLINE_SERVICE_HOURS
+}
+
 export interface PointOfInterest {
 	id: string,
 	displayName: {
@@ -33,20 +50,64 @@ export interface PointOfInterest {
 	},
 	formattedAddress?: string,
 	openingHours?: {
-		periods: any[],
+		periods: [
+			{
+				open: {
+					date: {
+						year: number,
+						month: number,
+						day: number
+					},
+					truncated: boolean,
+					day: number,
+					hour: number,
+					minute: number
+				},
+				close: {
+					date: {
+						year: number,
+						month: number,
+						day: number
+					},
+					truncated: boolean,
+					day: number,
+					hour: number,
+					minute: number
+				}
+			}
+		],
 		weekdayDescriptions: string[],
-		secondaryHoursType: any,
-		specialDays: any[],
+		secondaryHoursType: SecondaryHoursType,
+		specialDays: [
+			{
+				date: {
+					year: number,
+					month: number,
+					day: number
+				}
+			}
+		],
 		nextOpenTime: string,
 		nextCloseTime: string,
 		openNow: boolean
 	},
-	photos?: any[],
-	websiteURI?: string,
-	addressDescriptor?: {
-		landmarks: any[],
-		areas: any[]
-	},
+	photos?: [
+		{
+			name: string,
+			widthPx: number,
+			heightPx: number,
+			authorAttributions: [
+				{
+					displayName: string,
+					uri: string,
+					photoUri: string
+				}
+			],
+			flagContentUri: string,
+			googleMapsUri: string
+		}
+	],
+	websiteUri?: string,
 
 	hasDineIn?: boolean,
 	servesBreakfast?: boolean,
@@ -76,6 +137,7 @@ export interface PointOfInterestResponse {
 	arrivalTime: string,
 	routeDuration: string,
 	weatherCondition: {
+		///Must be appended with '.svg' to get the correct icon
 		iconBaseUri: string,
 		description: {
 			text: string,
