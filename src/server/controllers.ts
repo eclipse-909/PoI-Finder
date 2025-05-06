@@ -388,13 +388,20 @@ export const updatePreferences = (req: Request, res: Response) => {
 		}
 		
 		// Validate preferences
-		if (preferences.range && (preferences.range < 1 || preferences.range > 300)) {
-			return res.status(400).json(createResponse(
-				false, 
-				undefined, 
-				'INVALID_INPUT', 
-				'Range must be between 1 and 300 minutes'
-			));
+		if (preferences.range < 0 || preferences.range > 60) {
+			preferences.range = 60;
+		}
+		if (preferences.wake_up >= preferences.home_by) {
+			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Wake up time must be before home by time'));
+		}
+		if (preferences.start_date >= preferences.end_date) {
+			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Start date must be before end date'));
+		}
+		if (preferences.start_date < new Date().toISOString().slice(0, 10)) {
+			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Start date must be in the future'));
+		}
+		if (preferences.end_date < new Date().toISOString().slice(0, 10)) {
+			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'End date must be in the future'));
 		}
 		
 		db.run(
@@ -570,8 +577,9 @@ export const search = async (req: Request, res: Response) => {
 						"pub",
 						"restaurant"
 					];
-					let radius: number = preferences.range * transportSpeeds[preferences.mode_of_transport];
-					if (radius <= 0) {
+					// Radius (meters) = range (minutes) * speed (meters/second) * 60 (seconds/minute)
+					let radius: number = preferences.range * transportSpeeds[preferences.mode_of_transport] * 60;
+					if (radius <= 0 || radius > 50000) {
 						radius = 50000; //setting radius to 0 minutes in preferences will set it to maximum distance
 					}
 					const request = {
@@ -757,7 +765,6 @@ export const search = async (req: Request, res: Response) => {
 												"origin": origin,
 												"destination": destinations[0].waypoint,
 												"travelMode": preferredMode,
-												"arrivalTime": destinations[0].arrivalTime,
 												"computeAlternativeRoutes": true,
 												"languageCode": "en-US",
 												"regionCode": "us",
@@ -787,7 +794,7 @@ export const search = async (req: Request, res: Response) => {
 										"origin": origin,
 										"destination": destinations[0].waypoint,
 										"travelMode": preferredMode,
-										"arrivalTime": destinations[0].arrivalTime,
+										"arrivalTime": preferredMode === TransportMode.TRANSIT ? destinations[0].arrivalTime : undefined,
 										"computeAlternativeRoutes": true,
 										"languageCode": "en-US",
 										"regionCode": "us",
@@ -807,7 +814,6 @@ export const search = async (req: Request, res: Response) => {
 										"origin": origin,
 										"destination": dest.waypoint,
 										"travelMode": preferences.mode_of_transport,
-										"arrivalTime": dest.arrivalTime,
 										"computeAlternativeRoutes": true,
 										"languageCode": "en-US",
 										"regionCode": "us",

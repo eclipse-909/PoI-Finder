@@ -185,6 +185,11 @@ const preferencesPage = {
 			if (response.success) {
 				// Reset form changed state
 				this.formChanged = false;
+
+				const range = document.getElementById('range-value');
+				if (range.innerHTML == 0) {
+					range.innerHTML = '60';
+				}
 				
 				// Keep button disabled after successful save
 				if (submitButton) {
