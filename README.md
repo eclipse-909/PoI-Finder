@@ -2,6 +2,10 @@
 
 This web application allows users to discover points of interest in any location using AI to generate personalized recommendations. The app integrates several APIs to provide a comprehensive travel planning experience.
 
+## Live Website
+
+[*Link will go here when it exists*]()
+
 ## Features
 
 - **Location-Based Search**: Use your current location or enter a specific location manually
@@ -30,8 +34,10 @@ This web application allows users to discover points of interest in any location
 
 - Node.js
 - npm
-- API keys for:
-  - Google Maps Platform (with JavaScript Map, Places (New), Geocoding, Routes, and Weather APIs enabled)
+- openssl v3.5.x or later
+- API keys required for functionality, but not required to run:
+  - Google Map (with JavaScript Map, Places (New), and Geocoding enabled)
+  - Google Maps Platform (with Places (New), Geocoding, Routes, and Weather APIs enabled)
   - Google Gemini AI
 
 ### Installation
@@ -43,7 +49,7 @@ This web application allows users to discover points of interest in any location
    ./run.sh
    ```
 
-2. Follow the instructions of the run script if you get errors. If you do not have API keys, most features will not work, but you can at least look at the website.
+2. Follow the instructions of the run script if you get errors. If you do not have API keys, most features will not work, but you can at least run and look at the website.
 
 3. Visit https://127.0.0.1:3000 in your browser once the server starts.
 
@@ -51,7 +57,7 @@ This web application allows users to discover points of interest in any location
 
 ### Debugging
 
-For VS Code-based editors, a .vscode directory is provided with a debug configuration.
+For VS Code-based editors, a .vscode directory is provided with a debug configuration. The tasks will not work if you have not successfully ran using the run.sh script once.
 
 ### Project Structure
 
@@ -95,7 +101,6 @@ For VS Code-based editors, a .vscode directory is provided with a debug configur
 - `GET /api/saved_searches` - Get all saved searches
 - `GET /api/saved_search/{id}` - Get a specific saved search
 - `DELETE /api/delete_search/{id}` - Delete a saved search
-- `POST /api/save_search/{id}` - Save a search
 
 ## Security Features
 
@@ -106,6 +111,10 @@ For VS Code-based editors, a .vscode directory is provided with a debug configur
 - Session management
 - Input validation and sanitization
 - Secure cookies
+
+## AI Integration
+
+We use Retrieval-Augmented Generation (RAG) for our AI approach. This means that we dynamically gather information, put it in the prompt, and send it to the AI. Specifically, we are getting user preferences from the database, weather data, and nearby places from Google, and we inject this data into the prompt string directly. This prompt is sent to the AI. Since we dynamically retrieve the data every search, users can change their preferences, the weather can change, and nearby places can update their information without us having to do anything. As long as the APIs remain the same, the data can change and the AI model's job is to handle the data.
 
 ## License
 Closed source at the moment. We may consider open sourcing when the project is done.
