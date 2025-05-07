@@ -422,7 +422,8 @@ const savedPage = {
 		
 		const routeValue = document.createElement('span');
 		routeValue.className = 'poi-detail-value';
-		routeValue.textContent = poi.routeDuration;
+		const duration = Math.ceil(Number.parseInt(poi.routeDuration.replace('s','')) / 600) * 10;
+		routeValue.textContent = `${duration} minutes`;
 		
 		routeDetail.appendChild(routeLabel);
 		routeDetail.appendChild(routeValue);
