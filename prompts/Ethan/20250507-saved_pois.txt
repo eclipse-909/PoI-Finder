@@ -11,3 +11,7 @@ The photos are visible now. There are a couple changes I wan't you to make. Firs
 
 
 This looks pretty good, but there's one problem. The author attribution photoUri is a photo of the author, not the photo of the place. You need to use the getURI method to get the image source. Can you fix this? Please review the website I provided for examples. @https://developers.google.com/maps/documentation/javascript/place-photos#maps_place_photos-javascript
+
+
+
+When I hover over the arrow buttons, the button has this press-down effect where it looks like it's being pressed. It moves way too much. Can you fix this?

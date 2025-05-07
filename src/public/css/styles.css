@@ -511,7 +511,8 @@ footer {
 	display: block;
 }
 
-.photo-nav-button {
+/* Ensure nav buttons don't get hover effects from general buttons */
+.poi-image-container .photo-nav-button {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
@@ -530,17 +531,21 @@ footer {
 	z-index: 2;
 	padding: 0;
 	line-height: 1;
+	box-shadow: none;
 }
 
-.photo-nav-button:hover {
+.poi-image-container .photo-nav-button:hover {
 	background-color: rgba(0, 0, 0, 0.5);
+	transform: translateY(-50%);
+	box-shadow: none;
+	opacity: 1;
 }
 
-.photo-nav-prev {
+.poi-image-container .photo-nav-prev {
 	left: 10px;
 }
 
-.photo-nav-next {
+.poi-image-container .photo-nav-next {
 	right: 10px;
 }
 
