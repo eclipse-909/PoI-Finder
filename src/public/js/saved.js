@@ -142,7 +142,7 @@ const savedPage = {
 				const searchData = response.data;
 				
 				// Update location and date
-				locationElement.textContent = `Points of Interest in ${searchData.location}`;
+				locationElement.textContent = `Points of Interest in ${searchData.location.latitude.toFixed(4)}, ${searchData.location.longitude.toFixed(4)}`;
 				dateElement.textContent = `Date: ${new Date(searchData.date).toLocaleString()}`;
 				
 				// Clear loading state
@@ -180,10 +180,10 @@ const savedPage = {
 		card.className = 'poi-card';
 		
 		// Image
-		if (poi.image_url) {
+		if (poi.poi.photos && poi.poi.photos.length > 0) {
 			const img = document.createElement('img');
-			img.src = poi.image_url;
-			img.alt = poi.name;
+			img.src = poi.poi.photos[0].googleMapsUri;
+			img.alt = poi.poi.displayName.text;
 			img.className = 'poi-image';
 			card.appendChild(img);
 		}
@@ -195,21 +195,23 @@ const savedPage = {
 		// Name
 		const name = document.createElement('h3');
 		name.className = 'poi-name';
-		name.textContent = poi.name;
+		name.textContent = poi.poi.displayName.text;
 		content.appendChild(name);
 		
 		// Description
-		const description = document.createElement('p');
-		description.className = 'poi-description';
-		description.textContent = poi.description;
-		content.appendChild(description);
+		if (poi.poi.editorialSummary) {
+			const description = document.createElement('p');
+			description.className = 'poi-description';
+			description.textContent = poi.poi.editorialSummary.text;
+			content.appendChild(description);
+		}
 		
 		// Details
 		const details = document.createElement('div');
 		details.className = 'poi-details';
 		
 		// Address
-		if (poi.address) {
+		if (poi.poi.formattedAddress) {
 			const addressDetail = document.createElement('div');
 			addressDetail.className = 'poi-detail';
 			
@@ -219,29 +221,88 @@ const savedPage = {
 			
 			const addressValue = document.createElement('span');
 			addressValue.className = 'poi-detail-value';
-			addressValue.textContent = poi.address;
+			addressValue.textContent = poi.poi.formattedAddress;
 			
 			addressDetail.appendChild(addressLabel);
 			addressDetail.appendChild(addressValue);
 			details.appendChild(addressDetail);
 		}
 		
-		// Transport mode
-		if (poi.mode_of_transport) {
-			const transportDetail = document.createElement('div');
-			transportDetail.className = 'poi-detail';
+		// Arrival Time
+		const arrivalDetail = document.createElement('div');
+		arrivalDetail.className = 'poi-detail';
+		
+		const arrivalLabel = document.createElement('span');
+		arrivalLabel.className = 'poi-detail-label';
+		arrivalLabel.textContent = 'Arrival Time:';
+		
+		const arrivalValue = document.createElement('span');
+		arrivalValue.className = 'poi-detail-value';
+		arrivalValue.textContent = new Date(poi.arrivalTime).toLocaleTimeString();
+		
+		arrivalDetail.appendChild(arrivalLabel);
+		arrivalDetail.appendChild(arrivalValue);
+		details.appendChild(arrivalDetail);
+		
+		// Route Duration
+		const routeDetail = document.createElement('div');
+		routeDetail.className = 'poi-detail';
+		
+		const routeLabel = document.createElement('span');
+		routeLabel.className = 'poi-detail-label';
+		routeLabel.textContent = 'Travel Time:';
+		
+		const routeValue = document.createElement('span');
+		routeValue.className = 'poi-detail-value';
+		routeValue.textContent = poi.routeDuration;
+		
+		routeDetail.appendChild(routeLabel);
+		routeDetail.appendChild(routeValue);
+		details.appendChild(routeDetail);
+		
+		// Weather
+		if (poi.weatherCondition) {
+			const weatherDetail = document.createElement('div');
+			weatherDetail.className = 'poi-detail';
 			
-			const transportLabel = document.createElement('span');
-			transportLabel.className = 'poi-detail-label';
-			transportLabel.textContent = 'Transport:';
+			const weatherLabel = document.createElement('span');
+			weatherLabel.className = 'poi-detail-label';
+			weatherLabel.textContent = 'Weather:';
 			
-			const transportValue = document.createElement('span');
-			transportValue.className = 'poi-detail-value';
-			transportValue.textContent = poi.mode_of_transport.charAt(0).toUpperCase() + poi.mode_of_transport.slice(1);
+			const weatherValue = document.createElement('span');
+			weatherValue.className = 'poi-detail-value';
+			weatherValue.textContent = poi.weatherCondition.description.text;
 			
-			transportDetail.appendChild(transportLabel);
-			transportDetail.appendChild(transportValue);
-			details.appendChild(transportDetail);
+			weatherDetail.appendChild(weatherLabel);
+			weatherDetail.appendChild(weatherValue);
+			details.appendChild(weatherDetail);
+			
+			// Add weather icon if available
+			if (poi.weatherCondition.iconBaseUri) {
+				const weatherIcon = document.createElement('img');
+				weatherIcon.src = poi.weatherCondition.iconBaseUri + '.svg';
+				weatherIcon.alt = poi.weatherCondition.description.text;
+				weatherIcon.className = 'weather-icon';
+				weatherDetail.appendChild(weatherIcon);
+			}
+		}
+		
+		// Temperature
+		if (poi.temperature) {
+			const tempDetail = document.createElement('div');
+			tempDetail.className = 'poi-detail';
+			
+			const tempLabel = document.createElement('span');
+			tempLabel.className = 'poi-detail-label';
+			tempLabel.textContent = 'Temperature:';
+			
+			const tempValue = document.createElement('span');
+			tempValue.className = 'poi-detail-value';
+			tempValue.textContent = `${poi.temperature.degrees}°${poi.temperature.unit}`;
+			
+			tempDetail.appendChild(tempLabel);
+			tempDetail.appendChild(tempValue);
+			details.appendChild(tempDetail);
 		}
 		
 		content.appendChild(details);

@@ -114,15 +114,26 @@ const homePage = {
 			const response = await window.ApiClient.search(searchData);
 			
 			if (response.success) {
-				this.searchResults = response.data;
-				this.displayResults(response.data);
+				// Hide searching container
+				document.getElementById('searching-container').classList.add('hidden');
+				
+				// Switch to saved tab
+				const savedTab = document.querySelector('.tab-item[data-tab="saved"]');
+				if (savedTab) {
+					savedTab.click();
+				}
+				
+				// Initialize saved page with the new search ID
+				if (window.savedPage && typeof window.savedPage.initDetail === 'function') {
+					window.savedPage.initDetail(response.data.searchId);
+				}
 			} else {
 				// Hide loading UI
 				document.getElementById('searching-container').classList.add('hidden');
 				
 				// Show appropriate error
 				if (response.error?.code === 'API_KEYS_MISSING') {
-					alert('This application is running in debug mode without required API keys (Google Maps, Places, OpenWeather, OpenAI). Search functionality is disabled.');
+					alert('This application is running in debug mode without required API keys (Google Maps and Google Gemini). Search functionality is disabled.');
 				} else {
 					alert(response.error?.message || 'Search failed');
 				}

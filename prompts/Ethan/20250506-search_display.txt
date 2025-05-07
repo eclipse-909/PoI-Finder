@@ -1,0 +1,5 @@
+Right now, when a search is complete, it will make cards for each point of interest and display them in the home tab. Instead, I would like it to go to the saved poi tab and expand the latest search. The search function in controller.ts should not send back the poi data. On the frontend, a success error code should indicate that it needs to switch to the saved poi tab and expand the latest search. The latest search should already be in the database at that point, so when loading the saved poi tab, it will just call getSavedSearch as it normally would. I would also like you to update the card display in the saved poi tab to match the new PointOfInterestResponse object. I have updated what the PointOfInterestResponse object looks like in models.ts. Keep in mind, the saved poi tab will initially display a list of all the searches made. You should be able to click on a search and it will show the poi cards instead. There should be a button to go back to view all the saved searches again.
+
+
+
+This is not how to switch between tabs. Please look at the code in app.js and update the code in home.js to switch to the saved poi tab and expand the latest search.

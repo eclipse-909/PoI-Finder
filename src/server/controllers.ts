@@ -904,7 +904,7 @@ export const search = async (req: Request, res: Response) => {
 						);
 					}
 					
-					return res.status(200).json(createResponse(true, pois));
+					return res.status(200).json(createResponse(true, { searchId }));
 				}
 			);
 		});
