@@ -268,5 +268,9 @@ const homePage = {
 	// }
 };
 
+document.addEventListener('DOMContentLoaded', () => {
+	document.getElementById('manual-location').addEventListener('click', () => homePage.handleManualLocation());
+});
+
 // Export the module
 window.homePage = homePage; 
