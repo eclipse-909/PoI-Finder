@@ -209,8 +209,8 @@ const savedPage = {
 				}
 				
 				// Create POI cards
-				searchData.pointsOfInterest.forEach(poi => {
-					const poiCard = this.createPoiCard(poi);
+				searchData.pointsOfInterest.forEach(async (poi) => {
+					const poiCard = await this.createPoiCard(poi);
 					poiListContainer.appendChild(poiCard);
 				});
 			} else {
@@ -230,17 +230,110 @@ const savedPage = {
 	 * @param {object} poi - Point of interest data
 	 * @returns {HTMLElement} POI card element
 	 */
-	createPoiCard(poi) {
+	async createPoiCard(poi) {
+		const { Photo } = await google.maps.importLibrary("places");
 		const card = document.createElement('div');
 		card.className = 'poi-card';
 		
-		// Image
+		// Image container with attribution
 		if (poi.poi.photos && poi.poi.photos.length > 0) {
+			// Create image container
+			const imageContainer = document.createElement('div');
+			imageContainer.className = 'poi-image-container';
+			
+			// Create image element
 			const img = document.createElement('img');
-			img.src = poi.poi.photos[0].googleMapsUri;
-			img.alt = poi.poi.displayName.text;
 			img.className = 'poi-image';
-			card.appendChild(img);
+			img.alt = poi.poi.displayName.text;
+			img.style.objectFit = 'contain'; // Preserve aspect ratio
+			img.style.maxHeight = '200px'; // Set maximum height
+			
+			// Current photo index
+			let currentPhotoIndex = 0;
+			const photos = poi.poi.photos;
+			
+			// Function to update the displayed photo
+			const updatePhoto = () => {
+				const photo = photos[currentPhotoIndex];
+				
+				// Use the getURI method of the photo to get the image source
+				// with a maximum height of 200px
+				const p = new Photo(photo);
+				img.src = p.getURI({ maxHeight: 200 });
+				
+				if (photo.authorAttributions && photo.authorAttributions.length > 0) {
+					// Update attribution
+					const attribution = imageContainer.querySelector('.poi-image-attribution');
+					if (attribution) {
+						attribution.href = photo.authorAttributions[0].uri;
+						attribution.textContent = photo.authorAttributions[0].displayName;
+					}
+				}
+				
+				// Update navigation buttons state
+				prevButton.style.opacity = currentPhotoIndex > 0 ? '1' : '0.3';
+				nextButton.style.opacity = currentPhotoIndex < photos.length - 1 ? '1' : '0.3';
+			};
+			
+			// Create left arrow button
+			const prevButton = document.createElement('button');
+			prevButton.className = 'photo-nav-button photo-nav-prev';
+			prevButton.innerHTML = '&#10094;'; // Left arrow
+			prevButton.addEventListener('click', (e) => {
+				e.stopPropagation(); // Prevent card click
+				if (currentPhotoIndex > 0) {
+					currentPhotoIndex--;
+					updatePhoto();
+				}
+			});
+			
+			// Create right arrow button
+			const nextButton = document.createElement('button');
+			nextButton.className = 'photo-nav-button photo-nav-next';
+			nextButton.innerHTML = '&#10095;'; // Right arrow
+			nextButton.addEventListener('click', (e) => {
+				e.stopPropagation(); // Prevent card click
+				if (currentPhotoIndex < photos.length - 1) {
+					currentPhotoIndex++;
+					updatePhoto();
+				}
+			});
+			
+			// Create attribution container
+			const attributionContainer = document.createElement('div');
+			attributionContainer.className = 'poi-image-attribution-container';
+			
+			if (photos[0].authorAttributions && photos[0].authorAttributions.length > 0) {
+				// Create attribution link
+				const attribution = document.createElement('a');
+				attribution.className = 'poi-image-attribution';
+				attribution.href = photos[0].authorAttributions[0].uri;
+				attribution.target = '_blank';
+				attribution.textContent = photos[0].authorAttributions[0].displayName;
+				
+				// Add attribution to container
+				attributionContainer.appendChild(attribution);
+			}
+			
+			// Add image to container
+			imageContainer.appendChild(img);
+			imageContainer.appendChild(attributionContainer);
+			
+			// Add navigation buttons if there are multiple photos
+			if (photos.length > 1) {
+				imageContainer.appendChild(prevButton);
+				imageContainer.appendChild(nextButton);
+				
+				// Initialize button states
+				prevButton.style.opacity = '0.3'; // Disabled initially (first photo)
+				nextButton.style.opacity = photos.length > 1 ? '1' : '0.3';
+			}
+			
+			// Add image container to card
+			card.appendChild(imageContainer);
+			
+			// Set the initial image
+			updatePhoto();
 		}
 		
 		// Content
@@ -264,6 +357,26 @@ const savedPage = {
 		// Details
 		const details = document.createElement('div');
 		details.className = 'poi-details';
+		
+		// Website link if available
+		if (poi.poi.websiteUri) {
+			const websiteDetail = document.createElement('div');
+			websiteDetail.className = 'poi-detail';
+			
+			const websiteLabel = document.createElement('span');
+			websiteLabel.className = 'poi-detail-label';
+			websiteLabel.textContent = 'Website:';
+			
+			const websiteValue = document.createElement('a');
+			websiteValue.className = 'poi-detail-value';
+			websiteValue.href = poi.poi.websiteUri;
+			websiteValue.target = '_blank';
+			websiteValue.textContent = 'Visit website';
+			
+			websiteDetail.appendChild(websiteLabel);
+			websiteDetail.appendChild(websiteValue);
+			details.appendChild(websiteDetail);
+		}
 		
 		// Address
 		if (poi.poi.formattedAddress) {
@@ -342,58 +455,58 @@ const savedPage = {
 			}
 		}
 		
-		// Temperature
-		if (poi.temperature) {
-			const tempDetail = document.createElement('div');
-			tempDetail.className = 'poi-detail';
-			
-			const tempLabel = document.createElement('span');
-			tempLabel.className = 'poi-detail-label';
-			tempLabel.textContent = 'Temperature:';
-			
-			const tempValue = document.createElement('span');
-			tempValue.className = 'poi-detail-value';
-			tempValue.textContent = `${poi.temperature.degrees}°${poi.temperature.unit}`;
-			
-			tempDetail.appendChild(tempLabel);
-			tempDetail.appendChild(tempValue);
-			details.appendChild(tempDetail);
-		}
+	// Temperature
+	if (poi.temperature) {
+		const tempDetail = document.createElement('div');
+		tempDetail.className = 'poi-detail';
 		
-		content.appendChild(details);
-		card.appendChild(content);
+		const tempLabel = document.createElement('span');
+		tempLabel.className = 'poi-detail-label';
+		tempLabel.textContent = 'Temperature:';
 		
-		return card;
-	},
-	
-	/**
-	 * Handle deleting a saved search
-	 */
-	async handleDeleteSearch() {
-		if (!this.currentSearchId) {
-			alert('No search selected');
-			return;
-		}
+		const tempValue = document.createElement('span');
+		tempValue.className = 'poi-detail-value';
+		tempValue.textContent = `${poi.temperature.degrees}°${poi.temperature.unit}`;
 		
-		if (!confirm('Are you sure you want to delete this search?')) {
-			return;
-		}
-		
-		try {
-			// Call API to delete search
-			const response = await window.ApiClient.deleteSearch(this.currentSearchId);
-			
-			if (response.success) {
-				// Navigate back to saved searches list
-				window.router.navigate('saved');
-			} else {
-				alert(response.error?.message || 'Failed to delete search');
-			}
-		} catch (error) {
-			console.error('Delete search error:', error);
-			alert(error.message || 'Failed to delete search');
-		}
+		tempDetail.appendChild(tempLabel);
+		tempDetail.appendChild(tempValue);
+		details.appendChild(tempDetail);
 	}
+	
+	content.appendChild(details);
+	card.appendChild(content);
+	
+	return card;
+},
+
+/**
+ * Handle deleting a saved search
+ */
+async handleDeleteSearch() {
+	if (!this.currentSearchId) {
+		alert('No search selected');
+		return;
+	}
+	
+	if (!confirm('Are you sure you want to delete this search?')) {
+		return;
+	}
+	
+	try {
+		// Call API to delete search
+		const response = await window.ApiClient.deleteSearch(this.currentSearchId);
+		
+		if (response.success) {
+			// Navigate back to saved searches list
+			window.router.navigate('saved');
+		} else {
+			alert(response.error?.message || 'Failed to delete search');
+		}
+	} catch (error) {
+		console.error('Delete search error:', error);
+		alert(error.message || 'Failed to delete search');
+	}
+}
 };
 
 // Export the module

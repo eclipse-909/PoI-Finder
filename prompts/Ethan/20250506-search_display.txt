@@ -32,3 +32,7 @@ saved.js:220 Load saved search error: Error: Search not found
 
 
 I think the old route was correct. I have inluded routes.ts in the context. The problem must be something else.
+
+
+
+I am able to click on a search and view the searches. The image doesn't load since it's a googleMapsUri and not a regular URI. This website @https://developers.google.com/maps/documentation/javascript/place-photos#maps_place_photos-javascript gives an example of how to display photos. Can you incorporate this into the card? Also, it's required to display the author attributions, so please do that too.

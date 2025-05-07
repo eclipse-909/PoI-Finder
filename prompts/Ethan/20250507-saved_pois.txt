@@ -1,0 +1,13 @@
+Why can't we use the getURI() method to get the image URI? Is there a way to import it or something? This website has a complete example of how to display googleMapsUri photos: @https://developers.google.com/maps/documentation/javascript/place-photos#maps_place_photos-javascript
+
+
+
+The photos object contains a googleMapsUri property. This property can't directly be used to display images. We need to use the Maps JavaScript API to display the image. This website has an example of how to do this: @https://developers.google.com/maps/documentation/javascript/place-photos#maps_place_photos-javascript. Can you write the code in the createPoiCard function to display the image using the Maps JavaScript API? Make sure to include the attribution.
+
+
+
+The photos are visible now. There are a couple changes I wan't you to make. First, I would like it if you can put arrow buttons on the left and right of the image that will allow the user to see the next and previous images in the photos array. Second, The image aspect ratio should be preserved. Third, there should be a maximum height instead of a maximum width.
+
+
+
+This looks pretty good, but there's one problem. The author attribution photoUri is a photo of the author, not the photo of the place. You need to use the getURI method to get the image source. Can you fix this? Please review the website I provided for examples. @https://developers.google.com/maps/documentation/javascript/place-photos#maps_place_photos-javascript
