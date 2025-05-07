@@ -488,7 +488,10 @@ async handleDeleteSearch() {
 		
 		if (response.success) {
 			// Navigate back to saved searches list
-			window.router.navigate('saved');
+			this.currentSearchId = null;
+			document.getElementById('saved-detail').classList.add('hidden');
+			document.getElementById('saved-searches').classList.remove('hidden');
+			this.loadSavedSearches();
 		} else {
 			alert(response.error?.message || 'Failed to delete search');
 		}

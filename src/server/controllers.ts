@@ -1027,7 +1027,7 @@ export const getSavedSearch = (req: Request, res: Response) => {
 
 export const deleteSearch = (req: Request, res: Response) => {
 	try {
-		const username: string = req.session.user?.username ?? '';
+		const username: string | undefined = req.session.user?.username;
 		
 		// Then check if it's empty
 		if (!username) {
@@ -1040,9 +1040,9 @@ export const deleteSearch = (req: Request, res: Response) => {
 			});
 		}
 		
-		const { search_id } = req.params;
+		const { id } = req.params;
 		
-		db.get('SELECT search_id FROM search WHERE search_id = ? AND username = ?', [search_id, username], (err, row) => {
+		db.get('SELECT search_id FROM search WHERE search_id = ? AND username = ?', [id, username], (err, row) => {
 			if (err) {
 				console.error('Database error:', err);
 				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
@@ -1052,7 +1052,7 @@ export const deleteSearch = (req: Request, res: Response) => {
 				return res.status(404).json(createResponse(false, undefined, 'NOT_FOUND', 'Search not found'));
 			}
 			
-			db.run('DELETE FROM search WHERE search_id = ?', [search_id], (err) => {
+			db.run('DELETE FROM search WHERE search_id = ?', [id], (err) => {
 				if (err) {
 					console.error('Database error:', err);
 					return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
