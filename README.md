@@ -18,7 +18,7 @@ This web application allows users to discover points of interest in any location
 ## Technology Stack
 
 - **Frontend**: HTML5, CSS3, JavaScript (vanilla)
-- **Backend**: Node.js, Express.js
+- **Backend**: TypeScript, Node.js, Express.js
 - **Database**: SQLite
 - **APIs**:
   - Google Maps JavaScript API

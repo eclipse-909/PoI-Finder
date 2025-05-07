@@ -15,3 +15,12 @@ This looks pretty good, but there's one problem. The author attribution photoUri
 
 
 When I hover over the arrow buttons, the button has this press-down effect where it looks like it's being pressed. It moves way too much. Can you fix this?
+
+
+
+Can you add the following disclaimers to the bottom of the preferences page?
+* Travel time roughly estimates the radius to look up possible points of interest. Radius may be closer or farther than expected. Adjust the travel time as needed.
+* Walking, bicycling, and two-wheel routes are in beta and might sometimes be missing clear sidewalks, pedestrian paths, or bicycling paths.
+* Mode of transport will fallback to driving when the preferred mode is unavailable.
+* Results may vary
+* AI may make mistakes

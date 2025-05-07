@@ -823,4 +823,31 @@ button:disabled:hover,
 
 .attribution a:hover {
 	text-decoration: underline;
+}
+
+/* Disclaimers styles */
+.disclaimers {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #f8f8f8;
+    border-left: 4px solid var(--primary-light);
+    border-radius: 4px;
+}
+
+.disclaimers h3 {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.disclaimers ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.disclaimers li {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    line-height: 1.4;
 } 
