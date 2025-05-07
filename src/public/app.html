@@ -34,7 +34,7 @@
                     </div>
                     <h2>Find Points of Interest</h2>
                     <div class="location-options">
-                        <button id="use-current-location" class="btn" onclick="homePage.handleCurrentLocation()">Use Current Location</button>
+                        <button id="use-current-location" class="btn">Use Current Location</button>
                         <div class="or-divider">OR</div>
                         <button id="manual-location" class="btn">Enter Location Manually</button>
                     </div>
@@ -89,7 +89,7 @@
                         
                         <div class="form-group">
                             <label for="mode-of-transport">Preferred Mode of Transport</label>
-                            <select id="mode-of-transport" name="mode_of_transport" oninput="preferencesPage.handleFormChange()">
+                            <select id="mode-of-transport" name="mode_of_transport">
                                 <option value="Transit">Transit</option>
                                 <option value="Bicycle">Bike</option>
                                 <option value="Walk">Walk</option>
@@ -100,34 +100,34 @@
                         <div class="form-group">
                             <label for="eat-out">Do You Want to Find Places to Eat?</label>
                             <div class="toggle-container">
-                                <input type="checkbox" id="eat-out" name="eat_out" onchange="preferencesPage.handleFormChange()">
+                                <input type="checkbox" id="eat-out" name="eat_out">
                                 <label for="eat-out" class="toggle-label"></label>
                             </div>
                         </div>
                         
                         <div class="form-group">
                             <label for="wake-up">What Time Do You Usually Wake Up?</label>
-                            <input type="time" id="wake-up" name="wake_up" onchange="preferencesPage.handleFormChange()">
+                            <input type="time" id="wake-up" name="wake_up">
                         </div>
                         
                         <div class="form-group">
                             <label for="home-by">What Time Do You Usually Return Home?</label>
-                            <input type="time" id="home-by" name="home_by" onchange="preferencesPage.handleFormChange()">
+                            <input type="time" id="home-by" name="home_by">
                         </div>
                         
                         <div class="form-group">
                             <label for="start-date">Trip Start Date</label>
-                            <input type="date" id="start-date" name="start_date" onchange="preferencesPage.handleFormChange()">
+                            <input type="date" id="start-date" name="start_date">
                         </div>
                         
                         <div class="form-group">
                             <label for="end-date">Trip End Date</label>
-                            <input type="date" id="end-date" name="end_date" onchange="preferencesPage.handleFormChange()">
+                            <input type="date" id="end-date" name="end_date">
                         </div>
                         
                         <div class="form-group">
                             <label for="range">How Far Are You Willing to Travel? (minutes by preferred mode of transport)</label>
-                            <input type="range" id="range" name="range" min="0" max="60" step="1" onchange="preferencesPage.handleRangeChange()">
+                            <input type="range" id="range" name="range" min="0" max="60" step="1">
                             <div class="range-value">
                                 <span id="range-value">30</span> minutes
                             </div>
@@ -135,7 +135,7 @@
                         
                         <div class="form-group">
                             <label for="context">Additional Context</label>
-                            <textarea id="context" name="context" placeholder="Any additional preferences or restrictions..." oninput="preferencesPage.handleFormChange()"></textarea>
+                            <textarea id="context" name="context" placeholder="Any additional preferences or restrictions..."></textarea>
                         </div>
                     </form>
                     

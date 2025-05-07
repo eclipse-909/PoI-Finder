@@ -17,22 +17,6 @@ const preferencesPage = {
 			submitButton.disabled = true;
 		}
 	},
-
-	handleRangeChange() {
-		const rangeValue = document.getElementById('range-value');
-		if (rangeValue) {
-			rangeValue.textContent = rangeInput.value;
-		}
-	},
-
-	handleFormChange() {
-		this.formChanged = true;
-		const form = document.getElementById('preferences-form');
-		const submitButton = form.querySelector('button[type="submit"]');
-		if (submitButton) {
-			submitButton.disabled = false;
-		}
-	},
 	
 	/**
 	 * Load user preferences
@@ -209,6 +193,35 @@ const preferencesPage = {
 		}
 	}
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+	const form = document.getElementById('preferences-form');
+	const rangeInput = document.getElementById('range');
+	const rangeValue = document.getElementById('range-value');
+	
+	if (form) {
+		form.addEventListener('submit', preferencesPage.handleSubmit.bind(preferencesPage));
+		
+		// Add change detection to all form inputs
+		const formInputs = form.querySelectorAll('input, select, textarea');
+		formInputs.forEach(input => {
+			const eventType = input.type === 'checkbox' ? 'change' : 'input';
+			input.addEventListener(eventType, () => {
+				preferencesPage.formChanged = true;
+				const submitButton = form.querySelector('button[type="submit"]');
+				if (submitButton) {
+					submitButton.disabled = false;
+				}
+			});
+		});
+	}
+	
+	if (rangeInput && rangeValue) {
+		rangeInput.addEventListener('input', () => {
+			rangeValue.textContent = rangeInput.value;
+		});
+	}
+});
 
 // Export the module
 window.preferencesPage = preferencesPage; 
