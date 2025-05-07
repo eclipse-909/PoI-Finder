@@ -15,49 +15,6 @@ const accountPage = {
 				}
 			})
 			.catch(error => console.error('Error fetching user info:', error));
-			
-		this.setupEventListeners();
-	},
-	
-	/**
-	 * Setup event listeners for account page
-	 */
-	setupEventListeners() {
-		const changePasswordBtn = document.getElementById('change-password');
-		const logoutBtn = document.getElementById('logout');
-		const deleteAccountBtn = document.getElementById('delete-account');
-		const changePasswordForm = document.getElementById('change-password-form');
-		const cancelPasswordChangeBtn = document.getElementById('cancel-password-change');
-		const confirmDeleteAccountBtn = document.getElementById('confirm-delete-account');
-		const cancelDeleteAccountBtn = document.getElementById('cancel-delete-account');
-		
-		if (changePasswordBtn) {
-			changePasswordBtn.addEventListener('click', this.showChangePasswordModal.bind(this));
-		}
-		
-		if (logoutBtn) {
-			logoutBtn.addEventListener('click', this.handleLogout.bind(this));
-		}
-		
-		if (deleteAccountBtn) {
-			deleteAccountBtn.addEventListener('click', this.showDeleteAccountModal.bind(this));
-		}
-		
-		if (changePasswordForm) {
-			changePasswordForm.addEventListener('submit', this.handleChangePassword.bind(this));
-		}
-		
-		if (cancelPasswordChangeBtn) {
-			cancelPasswordChangeBtn.addEventListener('click', this.hideChangePasswordModal.bind(this));
-		}
-		
-		if (confirmDeleteAccountBtn) {
-			confirmDeleteAccountBtn.addEventListener('click', this.handleDeleteAccount.bind(this));
-		}
-		
-		if (cancelDeleteAccountBtn) {
-			cancelDeleteAccountBtn.addEventListener('click', this.hideDeleteAccountModal.bind(this));
-		}
 	},
 	
 	/**

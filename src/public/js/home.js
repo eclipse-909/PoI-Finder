@@ -3,40 +3,7 @@
  */
 const homePage = {
 	searchResults: null,
-	
-	/**
-	 * Initialize home page
-	 */
-	init() {
-		this.initLocationButtons();
-	},
-	
-	/**
-	 * Initialize location selection buttons
-	 */
-	initLocationButtons() {
-		const useCurrentLocationBtn = document.getElementById('use-current-location');
-		const manualLocationBtn = document.getElementById('manual-location');
-		const searchLocationBtn = document.getElementById('search-location');
-		const saveResultsBtn = document.getElementById('save-results');
-		
-		if (useCurrentLocationBtn) {
-			useCurrentLocationBtn.addEventListener('click', this.handleCurrentLocation.bind(this));
-		}
-		
-		if (manualLocationBtn) {
-			manualLocationBtn.addEventListener('click', this.handleManualLocation.bind(this));
-		}
-		
-		if (searchLocationBtn) {
-			searchLocationBtn.addEventListener('click', this.handleSearch.bind(this));
-		}
-		
-		// if (saveResultsBtn) {
-		// 	saveResultsBtn.addEventListener('click', this.handleSaveResults.bind(this));
-		// }
-	},
-	
+
 	/**
 	 * Handle using current location
 	 */

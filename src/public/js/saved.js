@@ -19,20 +19,6 @@ const savedPage = {
 	initDetail(id) {
 		this.currentSearchId = id;
 		this.loadSavedSearch(id);
-		
-		// Set up back button
-		const backButton = document.getElementById('back-to-saved');
-		if (backButton) {
-			backButton.addEventListener('click', () => {
-				window.router.navigate('saved');
-			});
-		}
-		
-		// Set up delete button
-		const deleteButton = document.getElementById('delete-saved-search');
-		if (deleteButton) {
-			deleteButton.addEventListener('click', this.handleDeleteSearch.bind(this));
-		}
 	},
 	
 	/**
@@ -128,6 +114,7 @@ const savedPage = {
 				backButton.className = 'btn';
 				backButton.textContent = 'Back to Saved Searches';
 				backButton.addEventListener('click', () => {
+					this.currentSearchId = null;
 					document.getElementById('saved-detail').classList.add('hidden');
 					document.getElementById('saved-searches').classList.remove('hidden');
 				});
@@ -137,6 +124,7 @@ const savedPage = {
 				deleteButton.id = 'delete-saved-search';
 				deleteButton.className = 'btn btn-danger';
 				deleteButton.textContent = 'Delete Search';
+				deleteButton.addEventListener('click', this.handleDeleteSearch.bind(this));
 				
 				// Add header
 				const header = document.createElement('div');
@@ -179,6 +167,7 @@ const savedPage = {
 	 */
 	async loadSavedSearch(id) {
 		try {
+			this.currentSearchId = id;
 			const poiListContainer = document.getElementById('saved-detail-poi-list');
 			const locationElement = document.getElementById('saved-detail-location');
 			const dateElement = document.getElementById('saved-detail-date');

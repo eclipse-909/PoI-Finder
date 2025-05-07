@@ -34,9 +34,9 @@
                     </div>
                     <h2>Find Points of Interest</h2>
                     <div class="location-options">
-                        <button id="use-current-location" class="btn">Use Current Location</button>
+                        <button id="use-current-location" class="btn" onclick="homePage.handleCurrentLocation()">Use Current Location</button>
                         <div class="or-divider">OR</div>
-                        <button id="manual-location" class="btn">Enter Location Manually</button>
+                        <button id="manual-location" class="btn" onclick="homePage.handleManualLocation()">Enter Location Manually</button>
                     </div>
                     
                     <div id="manual-location-container" class="hidden">
@@ -45,7 +45,7 @@
                             <!-- Place Autocomplete will be injected here -->
                         </div>
                         <div id="map"></div>
-                        <button id="search-location" class="btn btn-primary">Find Points of Interest</button>
+                        <button id="search-location" class="btn btn-primary" onclick="homePage.handleSearch()">Find Points of Interest</button>
                     </div>
                     
                     <div id="searching-container" class="hidden">
@@ -81,7 +81,7 @@
                         <a href="/"><img src="images/logo.png" alt="POI Finder Logo"></a>
                     </div>
                     <h2>Your Preferences</h2>
-                    <form id="preferences-form">
+                    <form id="preferences-form" onsubmit="preferencesPage.handleSubmit(event)">
                         <div class="form-header">
                             <button type="submit" class="btn btn-primary">Save Preferences</button>
                             <div id="preferences-status" class="hidden"></div>
@@ -89,7 +89,7 @@
                         
                         <div class="form-group">
                             <label for="mode-of-transport">Preferred Mode of Transport</label>
-                            <select id="mode-of-transport" name="mode_of_transport">
+                            <select id="mode-of-transport" name="mode_of_transport" oninput="preferencesPage.handleFormChange()">
                                 <option value="Transit">Transit</option>
                                 <option value="Bicycle">Bike</option>
                                 <option value="Walk">Walk</option>
@@ -100,34 +100,34 @@
                         <div class="form-group">
                             <label for="eat-out">Do You Want to Find Places to Eat?</label>
                             <div class="toggle-container">
-                                <input type="checkbox" id="eat-out" name="eat_out">
+                                <input type="checkbox" id="eat-out" name="eat_out" onchange="preferencesPage.handleFormChange()">
                                 <label for="eat-out" class="toggle-label"></label>
                             </div>
                         </div>
                         
                         <div class="form-group">
                             <label for="wake-up">What Time Do You Usually Wake Up?</label>
-                            <input type="time" id="wake-up" name="wake_up">
+                            <input type="time" id="wake-up" name="wake_up" onchange="preferencesPage.handleFormChange()">
                         </div>
                         
                         <div class="form-group">
                             <label for="home-by">What Time Do You Usually Return Home?</label>
-                            <input type="time" id="home-by" name="home_by">
+                            <input type="time" id="home-by" name="home_by" onchange="preferencesPage.handleFormChange()">
                         </div>
                         
                         <div class="form-group">
                             <label for="start-date">Trip Start Date</label>
-                            <input type="date" id="start-date" name="start_date">
+                            <input type="date" id="start-date" name="start_date" onchange="preferencesPage.handleFormChange()">
                         </div>
                         
                         <div class="form-group">
                             <label for="end-date">Trip End Date</label>
-                            <input type="date" id="end-date" name="end_date">
+                            <input type="date" id="end-date" name="end_date" onchange="preferencesPage.handleFormChange()">
                         </div>
                         
                         <div class="form-group">
                             <label for="range">How Far Are You Willing to Travel? (minutes by preferred mode of transport)</label>
-                            <input type="range" id="range" name="range" min="0" max="60" step="1">
+                            <input type="range" id="range" name="range" min="0" max="60" step="1" onchange="preferencesPage.handleRangeChange()">
                             <div class="range-value">
                                 <span id="range-value">30</span> minutes
                             </div>
@@ -135,7 +135,7 @@
                         
                         <div class="form-group">
                             <label for="context">Additional Context</label>
-                            <textarea id="context" name="context" placeholder="Any additional preferences or restrictions..."></textarea>
+                            <textarea id="context" name="context" placeholder="Any additional preferences or restrictions..." oninput="preferencesPage.handleFormChange()"></textarea>
                         </div>
                     </form>
                 </section>
@@ -151,9 +151,9 @@
                     </div>
                     
                     <div class="account-actions">
-                        <button id="change-password" class="btn">Change Password</button>
-                        <button id="logout" class="btn">Logout</button>
-                        <button id="delete-account" class="btn btn-danger">Delete Account</button>
+                        <button id="change-password" class="btn" onclick="accountPage.showChangePasswordModal()">Change Password</button>
+                        <button id="logout" class="btn" onclick="accountPage.handleLogout()">Logout</button>
+                        <button id="delete-account" class="btn btn-danger" onclick="accountPage.showDeleteAccountModal()">Delete Account</button>
                     </div>
                     
                     <div id="change-password-modal" class="modal hidden">
@@ -175,8 +175,8 @@
                                 </div>
                                 <div class="form-error" id="change-password-error"></div>
                                 <div class="modal-buttons">
-                                    <button type="button" id="cancel-password-change" class="btn">Cancel</button>
-                                    <button type="submit" class="btn btn-primary">Change Password</button>
+                                    <button type="button" id="cancel-password-change" class="btn" onclick="accountPage.hideChangePasswordModal()">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" onclick="accountPage.handleChangePassword()">Change Password</button>
                                 </div>
                             </form>
                         </div>
@@ -187,8 +187,8 @@
                             <h3>Delete Account</h3>
                             <p>Are you sure you want to delete your account? This action cannot be undone.</p>
                             <div class="modal-buttons">
-                                <button id="cancel-delete-account" class="btn">Cancel</button>
-                                <button id="confirm-delete-account" class="btn btn-danger">Delete My Account</button>
+                                <button id="cancel-delete-account" class="btn" onclick="accountPage.hideDeleteAccountModal()">Cancel</button>
+                                <button id="confirm-delete-account" class="btn btn-danger" onclick="accountPage.handleDeleteAccount()">Delete My Account</button>
                             </div>
                         </div>
                     </div>
