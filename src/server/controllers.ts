@@ -916,7 +916,7 @@ export const search = async (req: Request, res: Response) => {
 
 export const getSavedSearches = (req: Request, res: Response) => {
 	try {
-		const username: string = req.session.user?.username ?? '';
+		const username: string | undefined = req.session.user?.username;
 		
 		// Then check if it's empty
 		if (!username) {
@@ -931,16 +931,21 @@ export const getSavedSearches = (req: Request, res: Response) => {
 		
 		const query = `
 			SELECT
-				search_id,
-				latitude,
-				longitude,
-				date
+				s.search_id,
+				s.latitude,
+				s.longitude,
+				s.date,
+				COUNT(sp.poi_id) as poi_count
 			FROM
-				search
+				search s
+			LEFT JOIN
+				search_poi sp ON s.search_id = sp.search_id
 			WHERE
-				username = ?
+				s.username = ?
+			GROUP BY
+				s.search_id
 			ORDER BY
-				date DESC
+				s.date DESC
 		`;
 		
 		db.all(query, [username], (err, rows: any[]) => {
@@ -953,7 +958,8 @@ export const getSavedSearches = (req: Request, res: Response) => {
 				search_id: row.search_id,
 				latitude: row.latitude,
 				longitude: row.longitude,
-				date: row.date
+				date: row.date,
+				poi_count: row.poi_count
 			}));
 			
 			return res.status(200).json(createResponse(true, searches));
@@ -979,11 +985,9 @@ export const getSavedSearch = (req: Request, res: Response) => {
 			});
 		}
 		
-		const { search_id } = req.params;
+		const { id } = req.params;
 		
-		// Get search data
-		
-		// Use search_poi and points_of_interest to get the POIs for this search
+		// Get search data and POIs
 		const query: string = `
 			SELECT poi.id, poi.json_data, s.search_id, s.latitude, s.longitude, s.date
 			FROM points_of_interest poi
@@ -992,26 +996,26 @@ export const getSavedSearch = (req: Request, res: Response) => {
 			WHERE s.search_id = ? AND s.username = ?;
 		`;
 
-		db.get(query, [search_id, username], (err, poiRows: any[]) => {
+		db.all(query, [id, username], (err, rows: any[]) => {
 			if (err) {
 				console.error('Database error:', err);
 				return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Internal server error'));
 			}
 			
-			if (!poiRows) {
+			if (!rows || rows.length === 0) {
 				return res.status(404).json(createResponse(false, undefined, 'NOT_FOUND', 'Search not found'));
 			}
 			
 			// Get POIs for this search
-			const pointsOfInterest: PointOfInterestResponse[] = poiRows.map(row => JSON.parse(row.json_data));
+			const pointsOfInterest: PointOfInterestResponse[] = rows.map(row => JSON.parse(row.json_data));
 			
 			return res.status(200).json(createResponse(true, {
-				searchId: poiRows[0].search_id,
+				searchId: rows[0].search_id,
 				location: {
-					latitude: poiRows[0].latitude,
-					longitude: poiRows[0].longitude
+					latitude: rows[0].latitude,
+					longitude: rows[0].longitude
 				},
-				date: poiRows[0].date,
+				date: rows[0].date,
 				pointsOfInterest
 			}));
 		});

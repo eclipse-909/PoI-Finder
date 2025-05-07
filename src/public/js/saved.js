@@ -88,14 +88,14 @@ const savedPage = {
 	createSavedSearchCard(search) {
 		const card = document.createElement('div');
 		card.className = 'saved-search-card';
-		card.dataset.id = search.id;
+		card.dataset.id = search.search_id;
 		
 		const info = document.createElement('div');
 		info.className = 'saved-search-info';
 		
 		const location = document.createElement('div');
 		location.className = 'saved-search-location';
-		location.textContent = search.location;
+		location.textContent = `${search.latitude.toFixed(4)}, ${search.longitude.toFixed(4)}`;
 		
 		const date = document.createElement('div');
 		date.className = 'saved-search-date';
@@ -103,7 +103,7 @@ const savedPage = {
 		
 		const count = document.createElement('div');
 		count.className = 'saved-search-count';
-		count.textContent = `${search.count} points of interest`;
+		count.textContent = `${search.poi_count} points of interest`;
 		
 		info.appendChild(location);
 		info.appendChild(date);
@@ -112,7 +112,62 @@ const savedPage = {
 		
 		// Click handler for card
 		card.addEventListener('click', () => {
-			window.router.navigate('saved-detail', { id: search.id });
+			// Show the saved search detail view
+			document.getElementById('saved-searches').classList.add('hidden');
+			
+			// Create and show the detail view if it doesn't exist
+			let detailView = document.getElementById('saved-detail');
+			if (!detailView) {
+				detailView = document.createElement('div');
+				detailView.id = 'saved-detail';
+				detailView.className = 'saved-detail';
+				
+				// Add back button
+				const backButton = document.createElement('button');
+				backButton.id = 'back-to-saved';
+				backButton.className = 'btn';
+				backButton.textContent = 'Back to Saved Searches';
+				backButton.addEventListener('click', () => {
+					document.getElementById('saved-detail').classList.add('hidden');
+					document.getElementById('saved-searches').classList.remove('hidden');
+				});
+				
+				// Add delete button
+				const deleteButton = document.createElement('button');
+				deleteButton.id = 'delete-saved-search';
+				deleteButton.className = 'btn btn-danger';
+				deleteButton.textContent = 'Delete Search';
+				
+				// Add header
+				const header = document.createElement('div');
+				header.className = 'saved-detail-header';
+				header.appendChild(backButton);
+				header.appendChild(deleteButton);
+				
+				// Add location and date
+				const locationElement = document.createElement('h3');
+				locationElement.id = 'saved-detail-location';
+				
+				const dateElement = document.createElement('p');
+				dateElement.id = 'saved-detail-date';
+				
+				// Add POI list container
+				const poiList = document.createElement('div');
+				poiList.id = 'saved-detail-poi-list';
+				
+				detailView.appendChild(header);
+				detailView.appendChild(locationElement);
+				detailView.appendChild(dateElement);
+				detailView.appendChild(poiList);
+				
+				document.getElementById('saved-content').appendChild(detailView);
+			}
+			
+			// Show the detail view
+			detailView.classList.remove('hidden');
+			
+			// Load the search details
+			this.loadSavedSearch(search.search_id);
 		});
 		
 		return card;

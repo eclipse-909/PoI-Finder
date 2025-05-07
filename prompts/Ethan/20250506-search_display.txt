@@ -3,3 +3,32 @@ Right now, when a search is complete, it will make cards for each point of inter
 
 
 This is not how to switch between tabs. Please look at the code in app.js and update the code in home.js to switch to the saved poi tab and expand the latest search.
+
+
+
+When getting the saved searches, the cards all say undefined points of interest. Also, it's unable to click on and expand a search. It gives this error:
+saved.js:115 Uncaught TypeError: Cannot read properties of undefined (reading 'navigate')
+    at HTMLDivElement.<anonymous> (saved.js:115:18)
+(anonymous)	@	saved.js:115
+
+
+
+The saved searches are now displaying correctly. However, when I click on a search, it says Failed to load search details. There are also errors in the console:
+GET https://127.0.0.1:3000/api/saved_search/20 404 (Not Found)
+getSavedSearch @ api.js:257
+loadSavedSearch @ saved.js:194
+(anonymous) @ saved.js:170
+api.js:270 Get saved search error: Error: Search not found
+    at ApiClient.getSavedSearch (api.js:265:11)
+    at async Object.loadSavedSearch (saved.js:194:21)
+getSavedSearch @ api.js:270
+await in getSavedSearch
+loadSavedSearch @ saved.js:194
+(anonymous) @ saved.js:170
+saved.js:220 Load saved search error: Error: Search not found
+    at ApiClient.getSavedSearch (api.js:265:11)
+    at async Object.loadSavedSearch (saved.js:194:21)
+
+
+
+I think the old route was correct. I have inluded routes.ts in the context. The problem must be something else.

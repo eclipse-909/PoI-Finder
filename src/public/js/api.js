@@ -250,21 +250,24 @@ class ApiClient {
 	/**
 	 * Get a specific saved search
 	 * @param {number} id - Search ID
-	 * @returns {Promise<object>} Saved search details
+	 * @returns {Promise<ApiResponse>} API response
 	 */
 	static async getSavedSearch(id) {
 		try {
 			const response = await fetch(`${ApiClient.BASE_URL}/saved_search/${id}`, {
 				method: 'GET',
-				credentials: 'include'
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json'
+				}
 			});
-
+			
 			const data = await response.json();
 			
 			if (!response.ok) {
-				throw new Error(data.error?.message || 'Failed to get saved search');
+				throw new Error(data.error?.message || 'Search not found');
 			}
-
+			
 			return data;
 		} catch (error) {
 			console.error('Get saved search error:', error);
