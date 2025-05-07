@@ -4,6 +4,10 @@ let infoWindow;
 let geocoder;
 let center = { lat: 40.749933, lng: -73.98633 }; // New York City
 
+document.addEventListener('DOMContentLoaded', () => {
+	document.getElementById('manual-location').addEventListener('click', () => window.homePage.handleManualLocation());
+});
+
 // Function to initialize the map
 async function initMap() {
     try {
