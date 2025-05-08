@@ -136,6 +136,7 @@ export interface PointOfInterestResponse {
 	poi: PointOfInterest,
 	arrivalTime: string,
 	routeDuration: string,
+	modeOfTransport: TransportMode,
 	weatherCondition: {
 		///Must be appended with '.svg' to get the correct icon
 		iconBaseUri: string,
