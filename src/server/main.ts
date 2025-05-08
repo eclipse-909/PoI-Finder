@@ -23,7 +23,8 @@ const criticalEnvVars = [
 ];
 
 const apiKeyEnvVars = [
-	'GOOGLE_MAP_API_KEY',
+	'GOOGLE_MAP_API_DEV_KEY',
+	'GOOGLE_MAP_API_PROD_KEY',
 	'GOOGLE_MAPS_PLATFORM_API_KEY',
 	'GOOGLE_GEMINI_API_KEY'
 ];
@@ -103,7 +104,7 @@ const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 
 //dynamically serve app.html and inject the google maps api key by replacing GOOGLE_MAP_API_KEY with the actual key
 app.get('/app.html', (req, res) => {
-	const googleMapsApiKey = process.env.GOOGLE_MAP_API_KEY;
+	const googleMapsApiKey = process.env.NODE_ENV === 'development' ? process.env.GOOGLE_MAP_API_DEV_KEY : process.env.GOOGLE_MAP_API_PROD_KEY;
 	if (!googleMapsApiKey || googleMapsApiKey == 'placeholder') {
 		app.use('/app.html', authenticateUser, express.static(path.join(PUBLIC_DIR, 'app.html')));
 	} else {

@@ -29,7 +29,8 @@ fi
 if [ ! -f .env ]; then
 	echo "Warning: .env file not found. Creating a template .env file."
 	cat > .env << 'EOF'
-GOOGLE_MAP_API_KEY=placeholder
+GOOGLE_MAP_API_DEV_KEY=placeholder
+GOOGLE_MAP_API_PROD_KEY=placeholder
 GOOGLE_MAPS_PLATFORM_API_KEY=placeholder
 GOOGLE_GEMINI_API_KEY=placeholder
 SESSION_SECRET=placeholder
