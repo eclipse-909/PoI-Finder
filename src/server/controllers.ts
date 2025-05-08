@@ -391,17 +391,21 @@ export const updatePreferences = (req: Request, res: Response) => {
 		if (preferences.range < 0 || preferences.range > 60) {
 			preferences.range = 60;
 		}
-		if (new Date(preferences.wake_up) >= new Date(preferences.home_by)) {
+		if (preferences.wake_up >= preferences.home_by) {
 			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Wake up time must be before home by time'));
 		}
-		if (new Date(preferences.start_date) >= new Date(preferences.end_date)) {
+		if (new Date(preferences.start_date) > new Date(preferences.end_date)) {
 			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Start date must be before end date'));
 		}
-		if (new Date(preferences.start_date) < new Date()) {
-			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Start date must be in the future'));
-		}
-		if (new Date(preferences.end_date) < new Date()) {
-			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'End date must be in the future'));
+		
+		// Get today's date in local timezone YYYY-MM-DD format
+		const today = new Date();
+		const todayStr = today.getFullYear() + '-' + 
+			String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+			String(today.getDate()).padStart(2, '0');
+		
+		if (preferences.start_date < todayStr) {
+			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Start date must be today or in the future'));
 		}
 		
 		db.run(
@@ -869,6 +873,7 @@ export const search = async (req: Request, res: Response) => {
 							poi: poi,
 							arrivalTime: place.arrival_time,
 							routeDuration: routeResponse.routes[0].duration,
+							modeOfTransport: preferredMode,
 							weatherCondition: place.weatherCondition
 						});
 					}

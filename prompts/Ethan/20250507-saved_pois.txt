@@ -24,3 +24,11 @@ Can you add the following disclaimers to the bottom of the preferences page?
 * Mode of transport will fallback to driving when the preferred mode is unavailable.
 * Results may vary
 * AI may make mistakes
+
+
+
+preferences.start_date must be today or in the future. I didn't think it would be difficult to make this if condition, but there are inconsistencies in the date object creation. preferences.start_date is a string formatted as yyyy-mm-dd and when I pass it into new Date(preferences.start_date), it subtracts a few hours because it assumes it's at GMT+0 and it has to adjust for my time zone. When I just do new Date(), it doesn't do any subtraction because it's already in my time zone. Can you fix this so the dates are time zone agnostic and it checks to see if the start date is before today?
+
+
+
+This didn't work. preferences.start_date is '2025-05-07' and the todayStr is '2025-05-08'. It's currently 8:10 pm 2025-05-07 in New York time. I don't care what the format is, as long as I can compare them.
