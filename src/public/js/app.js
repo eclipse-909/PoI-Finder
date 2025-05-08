@@ -21,6 +21,7 @@ function setupTabs() {
 	
 	tabItems.forEach(tab => {
 		tab.addEventListener('click', (event) => {
+			window.homePage.handleCloseReminder();
 			event.preventDefault();
 			const tabName = tab.getAttribute('data-tab');
 			

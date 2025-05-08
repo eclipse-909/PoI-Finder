@@ -850,4 +850,60 @@ button:disabled:hover,
     color: var(--text-secondary);
     margin-bottom: 8px;
     line-height: 1.4;
+}
+
+/* Reminder popup styles */
+.reminder-popup {
+    position: fixed;
+    bottom: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 90%;
+    z-index: 99;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: var(--primary-light);
+    border-radius: var(--radius);
+    color: var(--primary-dark);
+    font-weight: 500;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    animation: floatUp 0.3s ease-in-out;
+}
+
+.reminder-close {
+    background: none;
+    border: none;
+    color: var(--primary-dark);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 5px;
+    box-shadow: none;
+    margin-left: 10px;
+}
+
+.reminder-close:hover {
+    color: var(--primary);
+    background: none;
+    box-shadow: none;
+    transform: none;
+}
+
+.reminder-arrow {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid var(--primary-light);
+}
+
+@keyframes floatUp {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
 } 

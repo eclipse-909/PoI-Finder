@@ -32,3 +32,19 @@ preferences.start_date must be today or in the future. I didn't think it would b
 
 
 This didn't work. preferences.start_date is '2025-05-07' and the todayStr is '2025-05-08'. It's currently 8:10 pm 2025-05-07 in New York time. I don't care what the format is, as long as I can compare them.
+
+
+
+How do I store data on the client side that persists across a session?
+
+
+
+I would like you to create a little reminder popup on the home page right above the preferences tab. It should be a small popup that says "Don't forget to set your preferences!" and it should have a close button. It should only show if the user hasn't set their preferences yet. Use session storage to track whether the reminder has been shown. If it hasn't, then show it. If it has, then don't show it. When the user closes the popup, set the session storage item to true.
+
+
+
+This is close to what I want, but I want the popup to be a floating element that floats right above the preferences tab. It shouldn't be at the top of the page, but right above the preferences tab.
+
+
+
+This is almost exactly what I want, but the popup is a little too low. Can you move it up a little?

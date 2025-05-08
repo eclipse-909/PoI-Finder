@@ -112,12 +112,72 @@ const homePage = {
 			document.getElementById('searching-container').classList.add('hidden');
 			alert(error.message || 'Search failed');
 		}
+	},
+
+	/**
+	 * Check and show preferences reminder if needed
+	 */
+	checkPreferencesReminder() {
+		const reminderShown = sessionStorage.getItem('reminderShown');
+		
+		if (reminderShown !== 'true') {
+			const reminderElement = document.getElementById('preferences-reminder');
+			const preferencesTab = document.querySelector('.tab-item[data-tab="preferences"]');
+			
+			if (reminderElement && preferencesTab) {
+				// Position the reminder above the preferences tab
+				const preferencesRect = preferencesTab.getBoundingClientRect();
+				reminderElement.style.left = (preferencesRect.left + preferencesRect.width / 2) + 'px';
+				reminderElement.style.transform = 'translateX(-50%)';
+				reminderElement.classList.remove('hidden');
+			}
+		}
+	},
+
+	/**
+	 * Handle closing the preferences reminder
+	 */
+	handleCloseReminder() {
+		const reminderElement = document.getElementById('preferences-reminder');
+		if (reminderElement) {
+			reminderElement.classList.add('hidden');
+			sessionStorage.setItem('reminderShown', 'true');
+		}
 	}
 };
 
 document.addEventListener('DOMContentLoaded', () => {
 	document.getElementById('use-current-location').addEventListener('click', () => homePage.handleCurrentLocation());
 	document.getElementById('manual-location').addEventListener('click', () => homePage.handleManualLocation());
+
+	// Set up preferences reminder
+	if (sessionStorage.getItem('reminderShown') !== 'true') {
+		sessionStorage.setItem('reminderShown', 'false');
+		homePage.checkPreferencesReminder();
+	}
+	
+	// Add event listener for the close button
+	const closeReminderButton = document.getElementById('close-reminder');
+	if (closeReminderButton) {
+		closeReminderButton.addEventListener('click', () => homePage.handleCloseReminder());
+	}
+	
+	// Reposition reminder on window resize
+	window.addEventListener('resize', () => {
+		if (sessionStorage.getItem('reminderShown') !== 'true') {
+			homePage.checkPreferencesReminder();
+		}
+	});
+	
+	// Reposition reminder when tab is clicked
+	const tabItems = document.querySelectorAll('.tab-item');
+	tabItems.forEach(tab => {
+		tab.addEventListener('click', () => {
+			if (sessionStorage.getItem('reminderShown') !== 'true') {
+				setTimeout(() => homePage.checkPreferencesReminder(), 50);
+			}
+		});
+	});
 });
 
 // Export the module

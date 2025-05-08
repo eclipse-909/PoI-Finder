@@ -32,6 +32,7 @@
                     <div class="logo">
                         <a href="/"><img src="images/logo.png" alt="POI Finder Logo"></a>
                     </div>
+
                     <h2>Find Points of Interest</h2>
                     <div class="location-options">
                         <button id="use-current-location" class="btn">Use Current Location</button>
@@ -206,6 +207,13 @@
                     </div>
                 </section>
             </main>
+            
+            <!-- Added preferences reminder popup right before the tab bar -->
+            <div id="preferences-reminder" class="reminder-popup hidden">
+                <span>Don't forget to set your preferences!</span>
+                <button id="close-reminder" class="reminder-close">&times;</button>
+                <div class="reminder-arrow"></div>
+            </div>
             
             <nav class="tab-bar">
                 <a href="#" class="tab-item active" data-tab="home">
