@@ -216,5 +216,41 @@ const accountPage = {
 	}
 };
 
+document.addEventListener('DOMContentLoaded', () => {
+	const changePasswordForm = document.getElementById('change-password-form');
+	const changePasswordButton = document.getElementById('change-password');
+	
+	if (changePasswordForm && changePasswordButton) {
+		changePasswordForm.addEventListener('submit', accountPage.handleChangePassword.bind(accountPage));
+		changePasswordButton.addEventListener('click', accountPage.showChangePasswordModal.bind(accountPage));
+	}
+
+	const deleteAccountForm = document.getElementById('delete-account-form');
+	const deleteAccountButton = document.getElementById('delete-account');
+
+	if (deleteAccountForm && deleteAccountButton) {
+		deleteAccountForm.addEventListener('submit', accountPage.handleDeleteAccount.bind(accountPage));
+		deleteAccountButton.addEventListener('click', accountPage.showDeleteAccountModal.bind(accountPage));
+	}
+
+	const logoutButton = document.getElementById('logout');
+
+	if (logoutButton) {
+		logoutButton.addEventListener('click', accountPage.handleLogout.bind(accountPage));
+	}
+
+	const cancelPasswordChangeButton = document.getElementById('cancel-password-change');
+
+	if (cancelPasswordChangeButton) {
+		cancelPasswordChangeButton.addEventListener('click', accountPage.hideChangePasswordModal.bind(accountPage));
+	}
+	
+	const cancelDeleteAccountButton = document.getElementById('cancel-delete-account');
+
+	if (cancelDeleteAccountButton) {
+		cancelDeleteAccountButton.addEventListener('click', accountPage.hideDeleteAccountModal.bind(accountPage));
+	}
+});
+
 // Export the module
 window.accountPage = accountPage; 

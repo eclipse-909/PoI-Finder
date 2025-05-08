@@ -149,6 +149,7 @@ const homePage = {
 document.addEventListener('DOMContentLoaded', () => {
 	document.getElementById('use-current-location').addEventListener('click', () => homePage.handleCurrentLocation());
 	document.getElementById('manual-location').addEventListener('click', () => homePage.handleManualLocation());
+	document.getElementById('search-location').addEventListener('click', () => homePage.handleSearch());
 
 	// Set up preferences reminder
 	if (sessionStorage.getItem('reminderShown') !== 'true') {
