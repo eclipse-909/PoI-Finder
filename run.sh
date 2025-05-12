@@ -35,28 +35,11 @@ GOOGLE_MAPS_PLATFORM_API_KEY=placeholder
 GOOGLE_GEMINI_API_KEY=placeholder
 SESSION_SECRET=placeholder
 NODE_ENV=development
-PORT=3000
+PORT=8080
 DB_PATH=./database.sqlite
-TLS_CERT_PATH=./cert.pem
-TLS_KEY_PATH=./key.pem
 EOF
 	echo "Please update the .env file with your API keys before proceeding."
 	exit 1
-fi
-
-# Check if TLS certificates exist
-if [ ! -f cert.pem ] || [ ! -f key.pem ]; then
-	echo "Warning: TLS certificates not found. Creating self-signed certificates for development."
-
-	# Create the self-signed certificate
-	openssl req -x509 -newkey rsa:4096 \
-		-keyout key.pem \
-		-out cert.pem \
-		-days 70 \
-		-nodes \
-		-subj "/C=US/ST=NY/L=Poughkeepsie/O=Marist University/OU=CMPT_394L_111/CN=localhost" \
-		-addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
-	echo "Self-signed certificates created for development purposes."
 fi
 
 # Install dependencies if node_modules doesn't exist

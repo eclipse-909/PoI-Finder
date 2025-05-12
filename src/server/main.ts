@@ -1,5 +1,5 @@
 import express, { NextFunction } from 'express';
-import https from 'https';
+import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { Database } from 'sqlite3';
@@ -17,9 +17,7 @@ const criticalEnvVars = [
 	'SESSION_SECRET',
 	'NODE_ENV',
 	'PORT',
-	'DB_PATH',
-	'TLS_CERT_PATH',
-	'TLS_KEY_PATH'
+	'DB_PATH'
 ];
 
 const apiKeyEnvVars = [
@@ -52,7 +50,7 @@ const app = express();
 
 // Add CORS middleware
 app.use(cors({
-	origin: ['https://localhost:3000', 'https://www.google.com'],
+	origin: ['http://localhost:3000', 'http://www.google.com'],
 	credentials: true,
 	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 	allowedHeaders: ['Content-Type', 'Authorization']
@@ -118,13 +116,7 @@ app.get('/app.html', (req, res) => {
 
 app.use('/', express.static(PUBLIC_DIR));
 
-// Start HTTPS server
-const httpsOptions = {
-	key: fs.readFileSync(process.env.TLS_KEY_PATH as string),
-	cert: fs.readFileSync(process.env.TLS_CERT_PATH as string)
-};
-
-const server = https.createServer(httpsOptions, app);
+const server = http.createServer(app);
 
 // Handle server errors
 server.on('error', (error: NodeJS.ErrnoException) => {
@@ -140,7 +132,7 @@ server.on('error', (error: NodeJS.ErrnoException) => {
 });
 
 server.listen(port, () => {
-	console.log(`Server running on https://localhost:${port}`);
+	console.log(`Server running on http://localhost:${port}`);
 	if (global.missingApiKeys?.length > 0) {
 		console.log(`Note: Running in debug mode without some API keys. Some features will not work.`);
 	}

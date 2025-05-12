@@ -34,7 +34,6 @@ This web application allows users to discover points of interest in any location
 
 - Node.js
 - npm
-- openssl v3.5.x or later
 - API keys required for functionality, but not required to run:
   - Google Map (with JavaScript Map, Places (New), and Geocoding enabled)
   - Google Maps Platform (with Places (New), Geocoding, Routes, and Weather APIs enabled)
@@ -51,7 +50,7 @@ This web application allows users to discover points of interest in any location
 
 2. Follow the instructions of the run script if you get errors. If you do not have API keys, most features will not work, but you can at least run and look at the website.
 
-3. Visit https://127.0.0.1:3000 in your browser once the server starts.
+3. Visit http://127.0.0.1:8080 in your browser once the server starts. The website does not use TLS/SSL encryption because that will be provided by Heroku for the produciton build.
 
 ## Development
 
@@ -104,7 +103,6 @@ For VS Code-based editors, a .vscode directory is provided with a debug configur
 
 ## Security Features
 
-- HTTPS/TLS encryption
 - Password hashing with bcrypt
 - CSRF protection
 - Rate limiting

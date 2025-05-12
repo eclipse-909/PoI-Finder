@@ -3,6 +3,4 @@ Final Project.pdf
 /dist
 /node_modules
 .env
-key.pem
-cert.pem
 database.sqlite
