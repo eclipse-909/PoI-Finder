@@ -39,3 +39,7 @@ Can you rewrite this prompt file by using less words and tokens? Please keep all
 
 
 Can you make it so the context in the preferences has a word limit of 250 words? Enforce this on the client and server side.
+
+
+
+in response.text, remove everything before and including ```json, and remove everything after and including ```

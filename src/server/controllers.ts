@@ -633,7 +633,16 @@ export const search = async (req: Request, res: Response) => {
 		// Parse the response from Gemini
 		let recommendedPlaces: GeminiResponse;
 		try {
-			recommendedPlaces = JSON.parse(response.text.replace('```json\n', '').replace('\n```', '')) as GeminiResponse;
+			// Extract JSON content by removing markdown code block markers
+			let text = response.text;
+			const jsonStart = text.indexOf('```json\n');
+			const jsonEnd = text.lastIndexOf('\n```');
+			
+			if (jsonStart !== -1 && jsonEnd !== -1) {
+				text = text.substring(jsonStart + 8, jsonEnd).trim();
+			}
+
+			recommendedPlaces = JSON.parse(text) as GeminiResponse;
 		} catch (error) {
 			console.error('Invalid response from Gemini');
 			return res.status(500).json(createResponse(false, undefined, 'SERVER_ERROR', 'Invalid response from Gemini'));
