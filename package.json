@@ -83,6 +83,7 @@
     "combined-stream": "^1.0.8",
     "concat-map": "^0.0.1",
     "concurrently": "^8.2.2",
+    "connect-pg-simple": "^10.0.0",
     "connect-sqlite3": "^0.9.15",
     "console-control-strings": "^1.1.0",
     "content-disposition": "^0.5.4",
@@ -424,6 +425,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/connect-sqlite3": "^0.9.5",
     "@types/cookie-parser": "^1.4.8",
     "@types/cors": "^2.8.17",

@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { Pool } from 'pg';
 import session from 'express-session';
+import pgSession from 'connect-pg-simple';
 
 const router = express.Router();
 
@@ -224,10 +225,17 @@ export const setupRoutes = (app: express.Application, db: Pool): void => {
 		throw new Error('NODE_ENV is not set');
 	}
 	
-	// Session middleware
+	// Session middleware with PostgreSQL session store
+	const PgSessionStore = pgSession(session);
+	
 	app.use(session({
+		store: new PgSessionStore({
+			pool: db,
+			tableName: 'user_sessions', // Optional custom table name
+			createTableIfMissing: true, // Automatically create the session table if it doesn't exist
+		}),
 		secret: sessionSecret,
-		resave: true,
+		resave: false,
 		saveUninitialized: false,
 		cookie: {
 			httpOnly: true,
