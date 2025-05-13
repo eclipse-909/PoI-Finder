@@ -4,7 +4,9 @@ This web application allows users to discover points of interest in any location
 
 ## Live Website
 
-[*Link will go here when it exists*]()
+[https://poi-finder.onrender.com]()
+
+*Disclaimer* This website will only be active for demonstration in class and will be shutdown after.
 
 ## Features
 
@@ -19,7 +21,7 @@ This web application allows users to discover points of interest in any location
 
 - **Frontend**: HTML5, CSS3, JavaScript (vanilla)
 - **Backend**: TypeScript, Node.js, Express.js
-- **Database**: SQLite
+- **Database**: Postgres
 - **APIs**:
   - Google Maps JavaScript API
   - Google Places (New) API
@@ -38,6 +40,7 @@ This web application allows users to discover points of interest in any location
   - Google Map (with JavaScript Map, Places (New), and Geocoding enabled)
   - Google Maps Platform (with Places (New), Geocoding, Routes, and Weather APIs enabled)
   - Google Gemini AI
+- Postgres database
 
 ### Installation
 
