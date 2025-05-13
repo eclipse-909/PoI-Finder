@@ -48,9 +48,9 @@ if (missingApiKeys.length > 0) {
 // Setup server
 const app = express();
 
-// Trust proxy when in production (important for rate limiting behind proxies)
+// Configure trust proxy more securely - trust only first proxy
 if (process.env.NODE_ENV === 'production') {
-	app.set('trust proxy', true);
+	app.set('trust proxy', 1);
 }
 
 // Add CORS middleware

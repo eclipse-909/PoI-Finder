@@ -15,6 +15,12 @@ const apiLimiter = rateLimit({
 	max: 50, // limit each IP to 100 requests per windowMs
 	standardHeaders: true,
 	legacyHeaders: false,
+	// Use custom key generator that's aware of our trust proxy setting
+	keyGenerator: (req) => {
+		return req.ip || '127.0.0.1';
+	},
+	// Disable validation in production since we've set trust proxy in main.ts
+	validate: { trustProxy: false, xForwardedForHeader: false },
 	message: {
 		success: false,
 		error: {
@@ -30,6 +36,12 @@ const authLimiter = rateLimit({
 	max: 5, // limit each IP to 10 login attempts per hour
 	standardHeaders: true,
 	legacyHeaders: false,
+	// Use custom key generator that's aware of our trust proxy setting
+	keyGenerator: (req) => {
+		return req.ip || '127.0.0.1';
+	},
+	// Disable validation in production since we've set trust proxy in main.ts
+	validate: { trustProxy: false, xForwardedForHeader: false },
 	message: {
 		success: false,
 		error: {

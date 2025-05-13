@@ -17,3 +17,17 @@ ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust prox
   code: 'ERR_ERL_UNEXPECTED_X_FORWARDED_FOR',
   help: 'https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/'
 }
+
+
+
+I can login, but I'm getting this error now:
+ValidationError: The Express 'trust proxy' setting is true, which allows anyone to trivially bypass IP-based rate limiting. See https://express-rate-limit.github.io/ERR_ERL_PERMISSIVE_TRUST_PROXY/ for more information.
+    at Object.trustProxy (/opt/render/project/src/node_modules/express-rate-limit/dist/index.cjs:169:13)
+    at wrappedValidations.<computed> [as trustProxy] (/opt/render/project/src/node_modules/express-rate-limit/dist/index.cjs:398:22)
+    at Object.keyGenerator (/opt/render/project/src/node_modules/express-rate-limit/dist/index.cjs:670:20)
+    at /opt/render/project/src/node_modules/express-rate-limit/dist/index.cjs:724:32
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /opt/render/project/src/node_modules/express-rate-limit/dist/index.cjs:704:5 {
+  code: 'ERR_ERL_PERMISSIVE_TRUST_PROXY',
+  help: 'https://express-rate-limit.github.io/ERR_ERL_PERMISSIVE_TRUST_PROXY/'
+}
