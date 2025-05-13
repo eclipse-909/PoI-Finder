@@ -31,3 +31,7 @@ ValidationError: The Express 'trust proxy' setting is true, which allows anyone 
   code: 'ERR_ERL_PERMISSIVE_TRUST_PROXY',
   help: 'https://express-rate-limit.github.io/ERR_ERL_PERMISSIVE_TRUST_PROXY/'
 }
+
+
+
+Can you rewrite this prompt file by using less words and tokens? Please keep all of the content because all the information is important. Just try to reduce the token count where possible.
