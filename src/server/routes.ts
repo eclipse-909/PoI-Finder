@@ -3,7 +3,7 @@ import * as controllers from './controllers';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-import { Database } from 'sqlite3';
+import { Pool } from 'pg';
 import session from 'express-session';
 
 const router = express.Router();
@@ -98,7 +98,7 @@ router.post('/api/login', authLimiter, createHandler(controllers.login));
 router.post('/api/signup', authLimiter, createHandler(controllers.signup));
 
 // Authentication required for all routes below
-const setupAuthenticatedRoutes = (db: Database): void => {
+const setupAuthenticatedRoutes = (db: Pool): void => {
 	// User routes
 	router.post('/api/change_password', authenticateUser, csrfProtection, (req: Request, res: Response): void => {
 		void controllers.changePassword(req, res);
@@ -178,7 +178,7 @@ const checkApiKeys = (req: Request, res: Response, next: NextFunction): void => 
 
 // Also add to other routes that require API keys as appropriate
 
-export const setupRoutes = (app: express.Application, db: Database): void => {
+export const setupRoutes = (app: express.Application, db: Pool): void => {
 	// Security middleware
 	app.use(helmet({
 		contentSecurityPolicy: {
@@ -211,11 +211,11 @@ export const setupRoutes = (app: express.Application, db: Database): void => {
 	
 	app.use(cookieParser());
 
-	const dbPath = process.env.DB_PATH
+	const dbUrl = process.env.DB_URL
 	const sessionSecret = process.env.SESSION_SECRET
 	const nodeEnv = process.env.NODE_ENV
-	if (!dbPath) {
-		throw new Error('DB_PATH is not set');
+	if (!dbUrl) {
+		throw new Error('DB_URL is not set');
 	}
 	if (!sessionSecret) {
 		throw new Error('SESSION_SECRET is not set');

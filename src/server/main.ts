@@ -2,7 +2,7 @@ import express, { NextFunction } from 'express';
 import http from 'http';
 import fs from 'fs';
 import path from 'path';
-import { Database } from 'sqlite3';
+import { Pool } from 'pg';
 import { setupRoutes } from './routes';
 import { initializeDatabase } from './controllers';
 import dotenv from 'dotenv';
@@ -17,7 +17,7 @@ const criticalEnvVars = [
 	'SESSION_SECRET',
 	'NODE_ENV',
 	'PORT',
-	'DB_PATH'
+	'DB_URL'
 ];
 
 const apiKeyEnvVars = [
@@ -61,27 +61,31 @@ if (!port) {
 	throw new Error('PORT is not set');
 }
 
-// Connect to database
-const dbPath = process.env.DB_PATH as string;
-const db = new Database(dbPath);
+// Connect to PostgreSQL database
+const pool = new Pool({
+	connectionString: process.env.DB_URL,
+	ssl: {
+		rejectUnauthorized: false,
+	},
+});
 
-// Initialize database
-initializeDatabase(db);
+// Initialize database connection
+initializeDatabase(pool);
 
 // Create database tables if they don't exist
 const migrationsDir = path.join(__dirname, '..', 'migrations');
 fs.readdirSync(migrationsDir)
 	.filter(file => file.endsWith('.sql'))
 	.sort() // Ensure migrations run in order
-	.forEach(file => {
+	.forEach(async (file) => {
 		console.log(`Running migration: ${file}`);
 		const migration = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
-		db.exec(migration, err => {
-			if (err) {
-				console.error(`Error running migration ${file}:`, err);
-				process.exit(1);
-			}
-		});
+		try {
+			await pool.query(migration);
+		} catch (err) {
+			console.error(`Error running migration ${file}:`, err);
+			process.exit(1);
+		}
 	});
 
 // Authentication middleware
@@ -94,7 +98,7 @@ const authenticateUser = (req: Request, res: Response, next: NextFunction): void
 };
 
 // IMPORTANT: Initialize session middleware FIRST
-setupRoutes(app, db);  // This sets up session middleware
+setupRoutes(app, pool);  // This sets up session middleware
 // THEN define your routes
 
 // Serve HTML files
@@ -143,13 +147,12 @@ process.on('SIGINT', () => {
 	console.log('Shutting down server...');
 	server.close(() => {
 		console.log('Server stopped');
-		db.close(err => {
-			if (err) {
-				console.error('Error closing database:', err);
-			} else {
-				console.log('Database connection closed');
-			}
+		pool.end().then(() => {
+			console.log('Database connection closed');
 			process.exit(0);
+		}).catch((err: any) => {
+			console.error('Error closing database:', err);
+			process.exit(1);
 		});
 	});
 });

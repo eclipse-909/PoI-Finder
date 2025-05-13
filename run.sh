@@ -36,11 +36,14 @@ GOOGLE_GEMINI_API_KEY=placeholder
 SESSION_SECRET=placeholder
 NODE_ENV=development
 PORT=8080
-DB_PATH=./database.sqlite
+DB_URL=placeholder
 EOF
 	echo "Please update the .env file with your API keys before proceeding."
 	exit 1
 fi
+
+# Remove dist directory if it exists
+rm -rf dist
 
 # Install dependencies if node_modules doesn't exist
 if [ ! -d "node_modules" ]; then
