@@ -934,7 +934,7 @@ export const getSavedSearch = async (req: Request, res: Response) => {
 		}
 		
 		// Get POIs for this search
-		const pointsOfInterest: PointOfInterestResponse[] = result.rows.map(row => JSON.parse(row.json_data));
+		const pointsOfInterest: PointOfInterestResponse[] = result.rows.map(row => row.json_data as PointOfInterestResponse);
 		
 		return res.status(200).json(createResponse(true, {
 			searchId: result.rows[0].search_id,
