@@ -220,7 +220,6 @@ const savedPage = {
 	 * @returns {HTMLElement} POI card element
 	 */
 	async createPoiCard(poi) {
-		const { Photo } = await google.maps.importLibrary("places");
 		const card = document.createElement('div');
 		card.className = 'poi-card';
 		
@@ -242,26 +241,33 @@ const savedPage = {
 			const photos = poi.poi.photos;
 			
 			// Function to update the displayed photo
-			const updatePhoto = () => {
-				const photo = photos[currentPhotoIndex];
-				
-				// Use the getURI method of the photo to get the image source
-				// with a maximum height of 200px
-				const p = new Photo(photo);
-				img.src = p.getURI({ maxHeight: 200 });
-				
-				if (photo.authorAttributions && photo.authorAttributions.length > 0) {
-					// Update attribution
-					const attribution = imageContainer.querySelector('.poi-image-attribution');
-					if (attribution) {
-						attribution.href = photo.authorAttributions[0].uri;
-						attribution.textContent = photo.authorAttributions[0].displayName;
+			const updatePhoto = async () => {
+				try {
+					const photo = photos[currentPhotoIndex];
+					
+					// Wait for the Places library to be loaded
+					const { Photo } = await google.maps.importLibrary("places");
+					
+					// Use the getURI method of the photo to get the image source
+					const p = new Photo(photo);
+					img.src = p.getURI({ maxHeight: 200 });
+					
+					if (photo.authorAttributions && photo.authorAttributions.length > 0) {
+						// Update attribution
+						const attribution = imageContainer.querySelector('.poi-image-attribution');
+						if (attribution) {
+							attribution.href = photo.authorAttributions[0].uri;
+							attribution.textContent = photo.authorAttributions[0].displayName;
+						}
 					}
+					
+					// Update navigation buttons state
+					prevButton.style.opacity = currentPhotoIndex > 0 ? '1' : '0.3';
+					nextButton.style.opacity = currentPhotoIndex < photos.length - 1 ? '1' : '0.3';
+				} catch (error) {
+					console.error('Error loading photo:', error);
+					img.src = 'images/placeholder.png'; // Fallback image
 				}
-				
-				// Update navigation buttons state
-				prevButton.style.opacity = currentPhotoIndex > 0 ? '1' : '0.3';
-				nextButton.style.opacity = currentPhotoIndex < photos.length - 1 ? '1' : '0.3';
 			};
 			
 			// Create left arrow button
@@ -322,7 +328,7 @@ const savedPage = {
 			card.appendChild(imageContainer);
 			
 			// Set the initial image
-			updatePhoto();
+			await updatePhoto();
 		}
 		
 		// Content

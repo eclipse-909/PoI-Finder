@@ -43,3 +43,17 @@ Can you make it so the context in the preferences has a word limit of 250 words?
 
 
 in response.text, remove everything before and including ```json, and remove everything after and including ```
+
+
+
+When I look at a saved search, the images on the cards don't load. It displays the file icon and the alt name. There are no errors in the browser or in the server console. This isn't a problem when I run the server on my laptop. This only happens when the server is running via the Render deployment.
+
+
+
+Here's what happens when I try to fetch the image url from the console.
+
+let img = await fetch("https://places.googleapis.com/v1/places/ChIJoUm4R9g93YkRXEJoAgzLwYo/photos/AXQCQNQpAbfQohr0VUgNZJg6g51QL-bxEEtDkCAqMnDynryCNymxGEkKCTWZZZSI8sS2rsItkqzo9gFSAq-pgCAe6TRmyFv83sjVkGNelzZz8HI_-5wi10tyhoKO2iZWFEw7bRJTGJBu_tJXMh5IUx7C1xwkIiUINbtncdnqZpFnq7Eq8jt81TUmcfWlYXuZcmLujlCKdHpT1f5HR5Q3Zh7bPBVF_TgB4jX9zVScrLs_86PL2bbH_TypBMSJI2mbjj7exvRNkYn3-pDI5P91zkB3k1BgDj-hXGYXcvsGnzWWiPnAbQ/media?maxHeightPx=200&key=AIzaSyDzliW579MLOevrhhNqO4163i7CE6r8Yzk");
+app.html:1 Refused to connect to 'https://lh3.googleusercontent.com/places/ANXAkqECrQZR5rK370cYPQKx0Hwu5LJ245kNEcJYZWes-t8WxM5sh_QMkiYiUafbn-6u3nWGBPzqhCpkkST_Qo3-aOpAo9lWmJijTJE=s4800-h200' because it violates the following Content Security Policy directive: "connect-src 'self' https://maps.googleapis.com https://maps.gstatic.com https://*.googleapis.com https://*.google.com".
+
+VM644:2 Uncaught TypeError: Failed to fetch
+    at <anonymous>:1:17
