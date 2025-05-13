@@ -119,6 +119,13 @@ const preferencesPage = {
 		const form = event.target;
 		const formData = new FormData(form);
 		
+		// Validate context word count
+		const context = formData.get('context');
+		if (context && typeof context === 'string' && context.trim().split(/\s+/).length > 250) {
+			alert('Context cannot exceed 250 words');
+			return;
+		}
+		
 		// Create preferences object
 		const preferences = {
 			mode_of_transport: formData.get('mode_of_transport'),
@@ -198,6 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const form = document.getElementById('preferences-form');
 	const rangeInput = document.getElementById('range');
 	const rangeValue = document.getElementById('range-value');
+	const contextInput = document.getElementById('context');
 	
 	if (form) {
 		form.addEventListener('submit', preferencesPage.handleSubmit.bind(preferencesPage));
@@ -219,6 +227,16 @@ document.addEventListener('DOMContentLoaded', () => {
 	if (rangeInput && rangeValue) {
 		rangeInput.addEventListener('input', () => {
 			rangeValue.textContent = rangeInput.value;
+		});
+	}
+
+	// Add word count validation for context
+	if (contextInput) {
+		contextInput.addEventListener('input', () => {
+			const words = contextInput.value.trim().split(/\s+/);
+			if (words.length > 250) {
+				contextInput.value = words.slice(0, 250).join(' ');
+			}
 		});
 	}
 });

@@ -35,3 +35,7 @@ ValidationError: The Express 'trust proxy' setting is true, which allows anyone 
 
 
 Can you rewrite this prompt file by using less words and tokens? Please keep all of the content because all the information is important. Just try to reduce the token count where possible.
+
+
+
+Can you make it so the context in the preferences has a word limit of 250 words? Enforce this on the client and server side.

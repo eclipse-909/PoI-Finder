@@ -338,6 +338,11 @@ export const updatePreferences = async (req: Request, res: Response) => {
 		if (new Date(preferences.start_date) > new Date(preferences.end_date)) {
 			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Start date must be before end date'));
 		}
+
+		// Validate context word count
+		if (preferences.context && preferences.context.trim().split(/\s+/).length > 250) {
+			return res.status(400).json(createResponse(false, undefined, 'INVALID_INPUT', 'Context cannot exceed 250 words'));
+		}
 		
 		// Get today's date in local timezone YYYY-MM-DD format
 		const today = new Date();
