@@ -48,6 +48,11 @@ if (missingApiKeys.length > 0) {
 // Setup server
 const app = express();
 
+// Trust proxy when in production (important for rate limiting behind proxies)
+if (process.env.NODE_ENV === 'production') {
+	app.set('trust proxy', true);
+}
+
 // Add CORS middleware
 app.use(cors({
 	origin: ['http://localhost:3000', 'http://www.google.com'],
