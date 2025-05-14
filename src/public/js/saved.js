@@ -242,32 +242,27 @@ const savedPage = {
 			
 			// Function to update the displayed photo
 			const updatePhoto = async () => {
-				try {
-					const photo = photos[currentPhotoIndex];
-					
-					// Wait for the Places library to be loaded
-					const { Photo } = await google.maps.importLibrary("places");
-					
-					// Use the getURI method of the photo to get the image source
-					const p = new Photo(photo);
-					img.src = p.getURI({ maxHeight: 200 });
-					
-					if (photo.authorAttributions && photo.authorAttributions.length > 0) {
-						// Update attribution
-						const attribution = imageContainer.querySelector('.poi-image-attribution');
-						if (attribution) {
-							attribution.href = photo.authorAttributions[0].uri;
-							attribution.textContent = photo.authorAttributions[0].displayName;
-						}
+				const photo = photos[currentPhotoIndex];
+				
+				// Wait for the Places library to be loaded
+				const { Photo } = await google.maps.importLibrary("places");
+				
+				// Use the getURI method of the photo to get the image source
+				const p = new Photo(photo);
+				img.src = p.getURI({ maxHeight: 200 });
+				
+				if (photo.authorAttributions && photo.authorAttributions.length > 0) {
+					// Update attribution
+					const attribution = imageContainer.querySelector('.poi-image-attribution');
+					if (attribution) {
+						attribution.href = photo.authorAttributions[0].uri;
+						attribution.textContent = photo.authorAttributions[0].displayName;
 					}
-					
-					// Update navigation buttons state
-					prevButton.style.opacity = currentPhotoIndex > 0 ? '1' : '0.3';
-					nextButton.style.opacity = currentPhotoIndex < photos.length - 1 ? '1' : '0.3';
-				} catch (error) {
-					console.error('Error loading photo:', error);
-					img.src = 'images/placeholder.png'; // Fallback image
 				}
+				
+				// Update navigation buttons state
+				prevButton.style.opacity = currentPhotoIndex > 0 ? '1' : '0.3';
+				nextButton.style.opacity = currentPhotoIndex < photos.length - 1 ? '1' : '0.3';
 			};
 			
 			// Create left arrow button

@@ -57,3 +57,11 @@ app.html:1 Refused to connect to 'https://lh3.googleusercontent.com/places/ANXAk
 
 VM644:2 Uncaught TypeError: Failed to fetch
     at <anonymous>:1:17
+
+
+
+In the browsers network tab, when it tries to load the image, it gets a 403 Forbidden error. It also says (failed) net::ERR_BLOCKED_BY_ORB
+
+
+
+Something weird is happening. I can sometimes see the images when I look at the cards. If I scroll through all the images, some of them load, but most don't. If I keep scrolling through multiple times, the same images won't necessarily load again. It almost seems random whether an image will load each time I try to load it.

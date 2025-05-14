@@ -79,11 +79,11 @@ const preferencesPage = {
 				}
 				
 				if (startDateInput && preferences.start_date) {
-					startDateInput.value = preferences.start_date;
+					startDateInput.value = preferences.start_date.substring(0, preferences.start_date.indexOf('T'));
 				}
 				
 				if (endDateInput && preferences.end_date) {
-					endDateInput.value = preferences.end_date;
+					endDateInput.value = preferences.end_date.substring(0, preferences.end_date.indexOf('T'));
 				}
 				
 				if (rangeInput && preferences.range) {
