@@ -4,9 +4,7 @@ This web application allows users to discover points of interest in any location
 
 ## Live Website
 
-[https://poi-finder.onrender.com]()
-
-*Disclaimer* This website will only be active for demonstration in class and will be shutdown after.
+Live website has been shutdown following the completion of the class.
 
 ## Features
 
@@ -116,6 +114,3 @@ For VS Code-based editors, a .vscode directory is provided with a debug configur
 ## AI Integration
 
 We use Retrieval-Augmented Generation (RAG) for our AI approach. This means that we dynamically gather information, put it in the prompt, and send it to the AI. Specifically, we are getting user preferences from the database, weather data, and nearby places from Google, and we inject this data into the prompt string directly. This prompt is sent to the AI. Since we dynamically retrieve the data every search, users can change their preferences, the weather can change, and nearby places can update their information without us having to do anything. As long as the APIs remain the same, the data can change and the AI model's job is to handle the data.
-
-## License
-Closed source at the moment. We may consider open sourcing when the project is done.
